@@ -12,6 +12,8 @@ const year = new Date().getFullYear();
     <div class="links">
       <a class="selectable" href="/rss.xml">{t('footer.rss')}</a>
       <a class="selectable" href={profile.github.url} rel="me">{t('footer.github')}</a>
+      <a class="selectable" href={profile.telegram.url} rel="me">{t('footer.telegram')}</a>
+      <a class="selectable" href={profile.instagram.url} rel="me">{t('footer.instagram')}</a>
     </div>
   </div>
 </footer>
@@ -34,7 +36,8 @@ const year = new Date().getFullYear();
 
   .links {
     display: flex;
-    gap: var(--space-5);
+    flex-wrap: wrap;
+    gap: 0 var(--space-5);
   }
 
   a {

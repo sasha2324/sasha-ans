@@ -27,6 +27,8 @@ export const ui = {
     'nav.skip': 'Vai al contenuto',
     'footer.github': 'Profilo GitHub',
     'footer.rss': 'Feed RSS',
+    'footer.telegram': 'Telegram',
+    'footer.instagram': 'Instagram',
     'blog.title': 'Blog',
     'blog.description': 'Appunti e articoli su quello che sto imparando: reti, Linux, cloud e sicurezza.',
     'blog.list': 'Articoli',

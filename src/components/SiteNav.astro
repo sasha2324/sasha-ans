@@ -83,6 +83,12 @@ const activeIndex = isHome ? 0 : isBlog ? blogIndex : null;
       sections.forEach((section, i) => {
         if (section && section.getBoundingClientRect().top <= line) index = i;
       });
+      // In fondo alla pagina l'ultima sezione (corta) non arriva alla linea: si accende lo stesso.
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atBottom) {
+        const last = sections.findLastIndex((section) => section !== null);
+        if (last >= 0) index = last;
+      }
       if (index === current) return;
       current = index;
       list.dispatchEvent(new CustomEvent('linesidebar:active', { detail: index }));

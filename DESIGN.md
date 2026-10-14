@@ -109,7 +109,7 @@ sezione visibile; sulle pagine del blog è accesa "Blog".
    primi due livelli hanno il link alla scheda del progetto che le dimostra.
 4. **Progetti**: una scheda per progetto (stato, titolo, link al codice se pubblico |
    cosa fa, con cosa è fatto, cosa ho imparato).
-5. **Contatti**: bottone GitHub.
+5. **Contatti**: bottoni Telegram, GitHub, Instagram (gli stessi link anche nel footer).
 
 ## Blog
 

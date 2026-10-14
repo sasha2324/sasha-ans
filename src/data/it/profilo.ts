@@ -30,6 +30,14 @@ export const profile = {
     username: 'sasha2324',
     url: 'https://github.com/sasha2324',
   },
+  telegram: {
+    username: 's_ans3',
+    url: 'https://t.me/s_ans3',
+  },
+  instagram: {
+    username: '3s.ans',
+    url: 'https://www.instagram.com/3s.ans/',
+  },
 
   intro: {
     headline: 'Sto imparando a gestire infrastrutture cloud e a proteggerle.',

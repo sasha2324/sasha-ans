@@ -6,7 +6,7 @@ import Projects from '../components/Projects.astro';
 import { profile } from '../data/it/profilo';
 import { projects } from '../data/it/progetti';
 
-const { name, intro, path, skills, github } = profile;
+const { name, intro, path, skills, github, telegram, instagram } = profile;
 ---
 
 <BaseLayout home>
@@ -26,8 +26,12 @@ const { name, intro, path, skills, github } = profile;
 
   <section id="contatti" class="section container contact" aria-labelledby="contatti-titolo">
     <h2 id="contatti-titolo">Contatti</h2>
-    <p>Il codice dei miei progetti e di questo sito è su GitHub.</p>
-    <a class="button selectable" href={github.url} rel="me">Apri il profilo GitHub</a>
+    <p>Per scrivermi usa Telegram. Il codice dei miei progetti e di questo sito è su GitHub.</p>
+    <div class="buttons">
+      <a class="button selectable" href={telegram.url} rel="me">Scrivimi su Telegram</a>
+      <a class="button selectable" href={github.url} rel="me">Apri il profilo GitHub</a>
+      <a class="button selectable" href={instagram.url} rel="me">Seguimi su Instagram</a>
+    </div>
   </section>
 </BaseLayout>
 
@@ -58,6 +62,12 @@ const { name, intro, path, skills, github } = profile;
 
   .contact p {
     margin-bottom: var(--space-5);
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
   }
 
   .button {
