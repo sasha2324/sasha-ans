@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts, tagSlug } from '../../lib/blog';
+import { useTranslations } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('it');
+  const tags = new Map<string, string>(); // slug → nome come scritto negli articoli
+  posts.forEach((post) => post.data.tags.forEach((tag) => tags.set(tagSlug(tag), tag)));
+  return [...tags].map(([slug, name]) => ({
+    params: { tag: slug },
+    props: { name, posts: posts.filter((post) => post.data.tags.some((t) => tagSlug(t) === slug)) },
+  }));
+}
+
+const { name, posts } = Astro.props;
+const t = useTranslations('it');
+const title = `${t('tag.title')} «${name}»`;
+---
+
+<BaseLayout title={title}>
+  <PostList posts={posts} title={title} />
+</BaseLayout>

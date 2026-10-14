@@ -13,6 +13,7 @@ Riferimenti attuali: quattro componenti di **React Bits** scelti da Sasha
 | TechText | il titolo; il **tratteggio** come segno di "in lavorazione"; la **cornice di selezione** con maniglie agli angoli |
 | LatticeLoader | il loader della sequenza di ingresso; i puntini in griglia |
 | ScrollExpand | la finestra arrotondata che si apre a tutto schermo; il velo (scrim) per leggere il testo sopra lo sfondo |
+| LineSidebar | elenco a righello del blog (articoli e indice), unico elemento viola |
 
 ---
 
@@ -31,7 +32,8 @@ Un solo momento animato forte: la sequenza di ingresso della home. Il resto è f
 
 ## Colori
 
-Bianco su nero, nessun accento. **Solo tema scuro** (scelta di Sasha: niente tema chiaro).
+Bianco su nero. **Solo tema scuro** (scelta di Sasha: niente tema chiaro).
+Unico colore: il **viola di LineSidebar**, usato solo in quel componente.
 
 | Token | Valore | Ruolo |
 |---|---|---|
@@ -40,6 +42,9 @@ Bianco su nero, nessun accento. **Solo tema scuro** (scelta di Sasha: niente tem
 | `--muted` | `#a3a3a3` | testo secondario, bordi tratteggiati |
 | `--hairline` | `#333333` | divisori (solo decorativi) |
 | `--code-bg` | `#111111` | blocchi di codice |
+| `--accent` | `#a855f7` | solo LineSidebar: voce in evidenza/attiva (5.3:1 su nero) |
+| `--sidebar-text` | `#c4c4c4` | solo LineSidebar: voci a riposo |
+| `--sidebar-marker` | `#6c6c6c` | solo LineSidebar: tacche (decorative) |
 
 Contrasto: `--muted` 8.6:1 su nero (anche sotto il velo, che è nero).
 
@@ -91,6 +96,19 @@ scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home �
 4. **Progetti**: compare solo quando ce n'è almeno uno.
 5. **Contatti**: bottone GitHub.
 
+## Blog
+
+- **Elenco** (`/blog/`, `/tag/<tag>/`): da 1024 px, in alto a sinistra LineSidebar con i
+  titoli (fisso scorrendo), a destra l'anteprima dell'articolo in evidenza con cornice di
+  selezione; cambia passando sulle voci. Su telefono: anteprime una sotto l'altra.
+- **Articolo**: da 1024 px, in alto a sinistra l'indice (titoli `##`) con LineSidebar,
+  fisso; la sezione che si sta leggendo resta accesa in viola. Su telefono l'indice è
+  un blocco richiudibile sopra il testo. Testo a 68ch.
+- Markdown: citazioni con bordo tratteggiato, separatori tratteggiati, codice con tema
+  Shiki `min-dark` su `--code-bg`.
+- Metadati (data, minuti di lettura, «Bozza») in IBM Plex Mono piccolo.
+- **404**: il numero in contorno (come le lettere "in lavorazione" di TechText).
+
 ## Sequenza di ingresso (solo home)
 
 1. Finestra arrotondata 42% × 58% (telefono 76% × 52%) con Pattern Waves
@@ -110,7 +128,8 @@ Da fare
 - verificare il contrasto per ogni colore nuovo (meglio: non aggiungerne).
 
 Da evitare
-- colori d'accento, gradienti decorativi, ombre, angoli arrotondati;
+- altri colori oltre al viola di LineSidebar, viola fuori da LineSidebar, gradienti
+  decorativi, ombre, angoli arrotondati;
 - altre animazioni automatiche oltre all'intro;
 - monospace per paragrafi o etichette decorative senza informazione;
 - testi che fanno pensare a esperienze o certificazioni che non esistono.

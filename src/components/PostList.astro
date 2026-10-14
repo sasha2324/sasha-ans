@@ -1,0 +1,232 @@
+---
+// Elenco articoli (pagina Blog e pagine dei tag).
+// Desktop: in alto a sinistra LineSidebar con i titoli, a destra l'anteprima
+// dell'articolo in evidenza. Telefono: tutte le anteprime una sotto l'altra.
+import LineSidebar from './LineSidebar.astro';
+import { formatDate, postUrl, readingMinutes, tagUrl, type Post } from '../lib/blog';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  posts: Post[];
+  title: string;
+  description?: string;
+}
+
+const { posts, title, description } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const items = posts.map((post) => ({ label: post.data.title, href: postUrl(post) }));
+---
+
+<div class="container blog-list">
+  {
+    posts.length > 0 && (
+      <aside class="side">
+        <LineSidebar items={items} label={t('blog.list')} />
+      </aside>
+    )
+  }
+
+  <div class="main">
+    <header class="intro">
+      <h1>{title}</h1>
+      {description && <p>{description}</p>}
+    </header>
+
+    {posts.length === 0 && <p class="empty">{t('blog.empty')}</p>}
+
+    <div class="previews" data-previews>
+      {
+        posts.map((post, index) => (
+          <article class="preview" data-current={index === 0 ? '' : undefined}>
+            <span class="frame" aria-hidden="true" />
+            <p class="meta">
+              <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>
+              <span>
+                {readingMinutes(post)} {t('blog.minutes')}
+              </span>
+              {post.data.draft && <span class="draft">{t('blog.draft')}</span>}
+            </p>
+            <h2>
+              <a href={postUrl(post)}>{post.data.title}</a>
+            </h2>
+            <p class="description">{post.data.description}</p>
+            {post.data.tags.length > 0 && (
+              <ul class="tags" aria-label={t('blog.tags')}>
+                {post.data.tags.map((tag) => (
+                  <li>
+                    <a class="tag selectable" href={tagUrl(tag)}>
+                      {tag}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <a class="button selectable" href={postUrl(post)}>
+              {t('blog.read')}
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  // Desktop: l'anteprima segue la voce in evidenza nell'elenco a sinistra.
+  document.querySelectorAll<HTMLElement>('.blog-list').forEach((block) => {
+    const nav = block.querySelector<HTMLElement>('[data-line-sidebar]');
+    const previews = Array.from(block.querySelectorAll<HTMLElement>('.preview'));
+    nav?.addEventListener('linesidebar:hover', ((e: CustomEvent<number | null>) => {
+      if (e.detail == null) return;
+      previews.forEach((p, i) => p.toggleAttribute('data-current', i === e.detail));
+    }) as EventListener);
+  });
+</script>
+
+<style>
+  .blog-list {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .side {
+    display: none;
+  }
+
+  .intro h1 {
+    margin-bottom: var(--space-3);
+  }
+
+  .intro p {
+    color: var(--muted);
+    max-width: 52ch;
+  }
+
+  .empty {
+    margin-top: var(--space-6);
+  }
+
+  .previews {
+    display: grid;
+    gap: var(--space-7);
+    margin-top: var(--space-7);
+  }
+
+  .preview {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
+  }
+
+  .frame {
+    display: none;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+  }
+
+  .draft {
+    padding-inline: var(--space-2);
+    border: 1px dashed var(--muted);
+  }
+
+  .preview h2 {
+    font-size: var(--step-2);
+  }
+
+  .preview h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .preview h2 a:hover {
+    text-decoration: underline;
+  }
+
+  .description {
+    max-width: 60ch;
+  }
+
+  .tags {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tag {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--hairline);
+    font-size: var(--step--1);
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  /* Desktop: elenco a sinistra, una sola anteprima a destra */
+  @media (min-width: 64rem) {
+    .blog-list {
+      grid-template-columns: minmax(16rem, 22rem) 1fr;
+      gap: var(--space-8);
+      align-items: start;
+    }
+
+    .side {
+      display: block;
+      position: sticky;
+      top: var(--space-6);
+    }
+
+    .preview:not([data-current]) {
+      display: none;
+    }
+
+    .preview {
+      padding: var(--space-6);
+    }
+
+    .preview h2 {
+      font-size: var(--step-3);
+    }
+
+    /* L'anteprima in evidenza è "selezionata": cornice con maniglie */
+    .preview {
+      position: relative;
+    }
+
+    .frame {
+      display: block;
+      position: absolute;
+      inset: 0;
+      border: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
+      background:
+        linear-gradient(var(--ink), var(--ink)) top left / 5px 5px no-repeat,
+        linear-gradient(var(--ink), var(--ink)) top right / 5px 5px no-repeat,
+        linear-gradient(var(--ink), var(--ink)) bottom left / 5px 5px no-repeat,
+        linear-gradient(var(--ink), var(--ink)) bottom right / 5px 5px no-repeat;
+      background-origin: border-box;
+      pointer-events: none;
+    }
+  }
+</style>

@@ -1,0 +1,346 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LineSidebar from '../../components/LineSidebar.astro';
+import { formatDate, getPosts, postSlug, readingMinutes, tagUrl, type Post } from '../../lib/blog';
+import { useTranslations } from '../../i18n/utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('it');
+  return posts.map((post) => ({ params: { slug: postSlug(post) }, props: { post } }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const t = useTranslations('it');
+
+// Indice: solo i titoli di secondo livello (## nel Markdown)
+const toc = headings.filter((h) => h.depth === 2).map((h) => ({ label: h.text, href: `#${h.slug}` }));
+const { title, description, date, updated, tags, draft } = post.data;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="container post-layout">
+    {
+      toc.length > 0 && (
+        <aside class="toc">
+          <p class="toc-title">{t('blog.toc')}</p>
+          <LineSidebar items={toc} label={t('blog.toc')} current="location" class="toc-nav" />
+        </aside>
+      )
+    }
+
+    <article class="post">
+      <header class="post-header">
+        <a class="back selectable" href="/blog/">{t('blog.back')}</a>
+        <h1>{title}</h1>
+        <p class="meta">
+          <time datetime={date.toISOString()}>{formatDate(date)}</time>
+          <span>{readingMinutes(post)} {t('blog.minutes')}</span>
+          {
+            updated && (
+              <span>
+                {t('blog.updated')} <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+              </span>
+            )
+          }
+          {draft && <span class="draft">{t('blog.draft')}</span>}
+        </p>
+        <p class="lead">{description}</p>
+        {
+          tags.length > 0 && (
+            <ul class="tags" aria-label={t('blog.tags')}>
+              {tags.map((tag) => (
+                <li>
+                  <a class="tag selectable" href={tagUrl(tag)}>
+                    {tag}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </header>
+
+      {
+        toc.length > 0 && (
+          <details class="toc-mobile">
+            <summary>{t('blog.toc')}</summary>
+            <LineSidebar items={toc} label={t('blog.toc')} current="location" class="toc-nav" />
+          </details>
+        )
+      }
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <footer class="post-footer">
+        <a class="button selectable" href="/blog/">{t('blog.back')}</a>
+      </footer>
+    </article>
+  </div>
+</BaseLayout>
+
+<script>
+  // Accende nell'indice la sezione che si sta leggendo.
+  const headings = Array.from(document.querySelectorAll<HTMLElement>('.prose h2[id]'));
+  const navs = Array.from(document.querySelectorAll<HTMLElement>('.toc-nav'));
+  let current: number | null = null;
+  let scheduled = false;
+
+  const update = () => {
+    scheduled = false;
+    const line = window.innerHeight * 0.3;
+    let index: number | null = null;
+    headings.forEach((h, i) => {
+      if (h.getBoundingClientRect().top <= line) index = i;
+    });
+    if (index === current) return;
+    current = index;
+    navs.forEach((nav) => nav.dispatchEvent(new CustomEvent('linesidebar:active', { detail: index })));
+  };
+
+  if (headings.length && navs.length) {
+    update();
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true }
+    );
+  }
+</script>
+
+<style>
+  .post-layout {
+    display: grid;
+    gap: var(--space-6);
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  .toc {
+    display: none;
+  }
+
+  .toc-title {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+  }
+
+  .post {
+    min-width: 0;
+    max-width: var(--measure);
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-bottom: var(--space-4);
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .post-header h1 {
+    margin-bottom: var(--space-4);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+  }
+
+  .draft {
+    padding-inline: var(--space-2);
+    border: 1px dashed var(--muted);
+  }
+
+  .lead {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+    line-height: 1.5;
+  }
+
+  .tags {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+  }
+
+  .tag {
+    display: inline-block;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--hairline);
+    font-size: var(--step--1);
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .toc-mobile {
+    margin-top: var(--space-6);
+    border-block: 1px solid var(--hairline);
+  }
+
+  .toc-mobile summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .post-footer {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-5);
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  /* Desktop: indice fisso in alto a sinistra */
+  @media (min-width: 64rem) {
+    .post-layout {
+      grid-template-columns: minmax(14rem, 18rem) 1fr;
+      gap: var(--space-8);
+      align-items: start;
+    }
+
+    .toc {
+      display: block;
+      position: sticky;
+      top: var(--space-6);
+      max-height: calc(100vh - 2 * var(--space-6));
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-right: var(--space-6); /* spazio per lo scivolamento delle voci */
+    }
+
+    .toc-mobile {
+      display: none;
+    }
+  }
+
+  /* ---------- Testo dell'articolo (Markdown) ---------- */
+
+  .prose {
+    margin-top: var(--space-7);
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .prose :global(> * + *) {
+    margin-top: var(--space-4);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--space-8);
+    font-size: var(--step-3);
+    scroll-margin-top: var(--space-6);
+  }
+
+  .prose :global(h3) {
+    margin-top: var(--space-6);
+    font-size: var(--step-2);
+    scroll-margin-top: var(--space-6);
+  }
+
+  .prose :global(h2 + *),
+  .prose :global(h3 + *) {
+    margin-top: var(--space-3);
+  }
+
+  .prose :global(ul),
+  .prose :global(ol) {
+    padding-left: var(--space-5);
+  }
+
+  .prose :global(li + li) {
+    margin-top: var(--space-2);
+  }
+
+  .prose :global(li::marker) {
+    color: var(--muted);
+  }
+
+  .prose :global(strong) {
+    font-weight: 600;
+  }
+
+  .prose :global(blockquote) {
+    padding-left: var(--space-5);
+    border-left: 2px dashed var(--muted);
+    color: var(--muted);
+  }
+
+  .prose :global(:not(pre) > code) {
+    padding: 0.1em 0.35em;
+    background: var(--code-bg);
+    border: 1px solid var(--hairline);
+    font-size: 0.88em;
+  }
+
+  .prose :global(pre) {
+    padding: var(--space-4) var(--space-5);
+    background: var(--code-bg) !important; /* sostituisce lo sfondo del tema di Shiki */
+    border: 1px solid var(--hairline);
+    overflow-x: auto;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .prose :global(table) {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  .prose :global(th),
+  .prose :global(td) {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--hairline);
+    text-align: left;
+  }
+
+  .prose :global(th) {
+    font-weight: 600;
+  }
+
+  .prose :global(hr) {
+    margin-block: var(--space-7);
+    border: 0;
+    border-top: 1px dashed var(--muted);
+  }
+
+  .prose :global(img) {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--hairline);
+  }
+</style>

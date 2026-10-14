@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/blog';
+import { useTranslations } from '../../i18n/utils';
+
+const t = useTranslations('it');
+const posts = await getPosts('it');
+---
+
+<BaseLayout title={t('blog.title')} description={t('blog.description')}>
+  <PostList posts={posts} title={t('blog.title')} description={t('blog.description')} />
+</BaseLayout>
