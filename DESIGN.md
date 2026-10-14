@@ -88,8 +88,8 @@ scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home �
 ## Menu (tutte le pagine)
 
 LineSidebar fissa in alto a sinistra, al posto di una barra in alto (che non c'è).
-Voci: Home, Chi sono, Competenze, Contatti, Blog. Sulla home si accende la sezione
-visibile; sulle pagine del blog è accesa "Blog".
+Voci: Home, Chi sono, Competenze, Progetti, Blog, Contatti. Sulla home si accende la
+sezione visibile; sulle pagine del blog è accesa "Blog".
 
 - Da 1024 px: sidebar fissa larga `--nav-width` (16rem); `main` e footer lasciano
   quello spazio a sinistra.

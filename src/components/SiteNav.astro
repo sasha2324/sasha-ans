@@ -16,10 +16,12 @@ const items = [
   { label: t('nav.home'), href: '/' },
   { label: t('nav.about'), href: `${home}#chi-sono` },
   { label: t('nav.skills'), href: `${home}#competenze` },
-  { label: t('nav.contact'), href: `${home}#contatti` },
-  { label: t('nav.blog'), href: '/blog/' }
+  { label: t('nav.projects'), href: `${home}#progetti` },
+  { label: t('nav.blog'), href: '/blog/' },
+  { label: t('nav.contact'), href: `${home}#contatti` }
 ];
-const activeIndex = isHome ? 0 : isBlog ? items.length - 1 : null;
+const blogIndex = items.findIndex((item) => item.href === '/blog/');
+const activeIndex = isHome ? 0 : isBlog ? blogIndex : null;
 ---
 
 <div class="site-nav" data-site-nav data-home={isHome ? '' : undefined}>

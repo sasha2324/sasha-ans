@@ -19,6 +19,7 @@ export const ui = {
     'nav.blog': 'Blog',
     'nav.about': 'Chi sono',
     'nav.skills': 'Competenze',
+    'nav.projects': 'Progetti',
     'nav.contact': 'Contatti',
     'nav.menu': 'Menu',
     'nav.close': 'Chiudi',
