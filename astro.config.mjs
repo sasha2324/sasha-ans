@@ -4,9 +4,8 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   // Indirizzo del sito: serve per RSS, mappa del sito e link canonici.
-  // PROVVISORIO: va sostituito con l'indirizzo vero quando creiamo il progetto
-  // su Cloudflare Pages (es. https://<nome-progetto>.pages.dev o un dominio proprio).
-  site: 'https://sasha2324.pages.dev',
+  // Progetto Cloudflare Pages «sasha-ans». Se aggiungi un dominio tuo, cambialo qui.
+  site: 'https://sasha-ans.pages.dev',
 
   integrations: [sitemap()],
 
