@@ -17,12 +17,14 @@ import { getLangFromUrl, useTranslations } from '../i18n/utils';
 interface Props {
   title?: string;
   description?: string;
+  /** Home: header sopra lo sfondo animato e sequenza di ingresso. */
+  home?: boolean;
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const { title, description = t('site.description') } = Astro.props;
+const { title, description = t('site.description'), home = false } = Astro.props;
 const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
 ---
 
@@ -33,8 +35,8 @@ const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f2f5f9" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f1c2c" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
     <!--
@@ -51,12 +53,35 @@ const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
           theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         document.documentElement.dataset.theme = theme;
+        document.documentElement.classList.add('js');
       })();
     </script>
+    {
+      home && (
+        <script is:inline>
+          // Sequenza di ingresso: solo alla prima apertura della visita
+          // e solo se non è attivo "riduci movimento".
+          (function () {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            try {
+              if (sessionStorage.getItem('intro-seen')) return;
+            } catch (e) {
+              return;
+            }
+            var root = document.documentElement;
+            root.classList.add('intro');
+            // Rete di sicurezza: se lo script dell'intro non parte, la pagina si mostra comunque.
+            setTimeout(function () {
+              root.classList.remove('intro', 'intro-open', 'intro-reveal');
+            }, 8000);
+          })();
+        </script>
+      )
+    }
   </head>
   <body>
     <a class="skip-link" href="#contenuto">{t('nav.skip')}</a>
-    <Header />
+    <Header overlay={home} />
     <main id="contenuto">
       <slot />
     </main>
