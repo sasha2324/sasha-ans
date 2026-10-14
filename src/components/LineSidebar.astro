@@ -1,0 +1,189 @@
+---
+/*
+ * Line Sidebar — elenco verticale a righello: le voci vicine al cursore scivolano
+ * e si accendono.
+ *
+ * Adattato da React Bits (https://reactbits.dev, https://github.com/DavidHDev/react-bits).
+ * Modifiche: rimosso React; le voci sono link veri (<a>) raggiungibili da tastiera,
+ * l'effetto si attiva anche al focus; voce attiva impostabile dall'esterno
+ * (evento `linesidebar:active`), voce in evidenza comunicata all'esterno
+ * (evento `linesidebar:hover`). Logica in src/scripts/line-sidebar.ts.
+ *
+ * MIT + Commons Clause License Condition v1.0 — Copyright (c) 2026 David Haz.
+ * Testo completo della licenza in src/scripts/pattern-waves.ts.
+ */
+
+export interface SidebarItem {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  items: SidebarItem[];
+  /** Nome della navigazione per gli screen reader */
+  label: string;
+  activeIndex?: number | null;
+  /** 'page' per l'elenco articoli, 'location' per l'indice dentro l'articolo */
+  current?: 'page' | 'location';
+  showIndex?: boolean;
+  showMarker?: boolean;
+  proximityRadius?: number;
+  maxShift?: number;
+  falloff?: 'linear' | 'smooth' | 'sharp';
+  markerLength?: number;
+  markerGap?: number;
+  tickScale?: number;
+  scaleTick?: boolean;
+  itemGap?: number;
+  fontSize?: number;
+  smoothing?: number;
+  class?: string;
+}
+
+// Configurazione scelta su React Bits (vedi CLAUDE.md); i colori sono nei token.
+const {
+  items,
+  label,
+  activeIndex = null,
+  current = 'page',
+  showIndex = true,
+  showMarker = true,
+  proximityRadius = 100,
+  maxShift = 30,
+  falloff = 'smooth',
+  markerLength = 60,
+  markerGap = 0,
+  tickScale = 0.5,
+  scaleTick = true,
+  itemGap = 20,
+  fontSize = 1.1,
+  smoothing = 100,
+  class: className = ''
+} = Astro.props;
+
+const vars = [
+  `--marker-length: ${markerLength}px`,
+  `--marker-gap: ${markerGap}px`,
+  `--tick-scale: ${tickScale}`,
+  `--max-shift: ${maxShift}px`,
+  `--item-gap: ${itemGap}px`,
+  `--font-size: ${fontSize}rem`
+].join('; ');
+---
+
+<nav
+  class:list={['line-sidebar', { markers: showMarker, 'scale-tick': scaleTick }, className]}
+  aria-label={label}
+  data-line-sidebar
+  data-radius={proximityRadius}
+  data-falloff={falloff}
+  data-smoothing={smoothing}
+  data-current={current}
+  style={vars}
+>
+  <ul class="list">
+    {
+      items.map((item, index) => (
+        <li class="item" data-active={activeIndex === index ? '' : undefined}>
+          {showMarker && <span class="marker" aria-hidden="true" />}
+          <a class="label" href={item.href} aria-current={activeIndex === index ? current : undefined}>
+            {showIndex && <span class="index">{String(index + 1).padStart(2, '0')}</span>}
+            <span class="text">{item.label}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<script>
+  import { initLineSidebars } from '../scripts/line-sidebar';
+  initLineSidebars();
+</script>
+
+<style>
+  .line-sidebar {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .markers {
+    padding-left: calc(var(--marker-length) + var(--marker-gap));
+  }
+
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--item-gap);
+  }
+
+  /* --effect (0..1) è aggiornato per ogni voce dallo script: colore, spostamento
+     e scala leggono lo stesso valore e si muovono insieme. */
+  .item {
+    position: relative;
+  }
+
+  /* Area sensibile più larga, così le voci reagiscono un attimo prima del cursore */
+  .item::before {
+    content: '';
+    position: absolute;
+    inset: -6px -48px;
+  }
+
+  .label {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    font-size: var(--font-size);
+    line-height: 1.2;
+    color: color-mix(in srgb, var(--accent) calc(var(--effect, 0) * 100%), var(--sidebar-text));
+    text-decoration: none;
+    transform: translateX(calc(var(--effect, 0) * var(--max-shift)));
+  }
+
+  .label:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .index {
+    flex: none;
+    font-family: var(--font-mono);
+    margin-right: 0.6rem;
+    font-size: 0.85em;
+    opacity: calc(0.55 + var(--effect, 0) * 0.45);
+  }
+
+  .marker {
+    position: absolute;
+    top: 0.6em;
+    left: calc(-1 * var(--marker-length) - var(--marker-gap));
+    height: 1px;
+    width: var(--marker-length);
+    background-color: color-mix(in srgb, var(--accent) calc(var(--effect, 0) * 100%), var(--sidebar-marker));
+    transform-origin: left center;
+    transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.5));
+  }
+
+  /* Tacca corta fissa a metà dello spazio tra due voci */
+  .markers .item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: calc(100% + var(--item-gap) / 2);
+    left: calc(-1 * var(--marker-length) - var(--marker-gap));
+    height: 1px;
+    width: calc(var(--marker-length) * var(--tick-scale));
+    background-color: var(--sidebar-marker);
+    opacity: 0.5;
+    transform: translateY(-50%);
+  }
+
+  .scale-tick .item:not(:last-child)::after {
+    transform-origin: left center;
+    transform: translateY(-50%) scaleX(calc(0.7 + var(--effect, 0) * 0.6));
+  }
+</style>

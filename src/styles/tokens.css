@@ -1,6 +1,7 @@
 /*
  * Token di design (vedi DESIGN.md — direzione «Selezione»).
  * Solo tema scuro: bianco su nero. Lo stato "in corso" si esprime con il tratteggio, non con un colore.
+ * Unico colore: il viola di LineSidebar (--accent), usato solo lì.
  * Se serve un colore nuovo, prima si aggiorna DESIGN.md.
  */
 
@@ -11,6 +12,11 @@
   --muted: #a3a3a3;
   --hairline: #333333;
   --code-bg: #111111;
+
+  /* LineSidebar (React Bits): unico colore del sito, solo per questo componente */
+  --accent: #a855f7; /* 5.3:1 su nero */
+  --sidebar-text: #c4c4c4;
+  --sidebar-marker: #6c6c6c;
 
   /* Font */
   --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
