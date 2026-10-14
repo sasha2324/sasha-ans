@@ -18,3 +18,11 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
 - Gli articoli li scrive Sasha: preparare solo struttura e segnaposto.
 - Piccoli passi, un commit chiaro per ogni passo; spiegare in breve le scelte importanti.
 - Chiedere prima di installare pacchetti o toccare file fuori da questa cartella.
+
+## Codice di terzi
+
+- **Pattern Waves** da React Bits (reactbits.dev, github.com/DavidHDev/react-bits),
+  licenza MIT + Commons Clause © David Haz. Uso consentito come parte del sito,
+  anche modificato. Obblighi: tenere nota di copyright e licenza nel file;
+  non vendere né ridistribuire il componente da solo (nemmeno riscritto).
+  Configurazione scelta: preset `silk`, bianco su nero, `fade="edges"`, interattivo.
