@@ -12,3 +12,6 @@ dist/
 
 # screenshot di verifica
 .playwright-mcp/
+
+# materiale di riferimento ricevuto (codice di terzi: non pubblicare)
+materiale/
