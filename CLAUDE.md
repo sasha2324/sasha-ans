@@ -32,4 +32,4 @@ licenza in ogni file; non vendere né ridistribuire i componenti da soli.
 | Pattern Waves | sfondo fisso di tutte le pagine e dell'intro | preset `silk`, bianco su nero, `fade="edges"`, interattivo; `rippleRate` 30 (orig. 60) per increspature più lente |
 | LatticeLoader | animazione di caricamento | etichette in inglese, ✓ bianca (non verde); config da ricevere |
 | ScrollExpand | passaggio caricamento → home | **automatico** (a tempo, non allo scroll); dentro la finestra c'è Pattern Waves |
-| TechText | titolo della home | testo `Sasha`, peso 600, `reveal="letter"`, tratteggio 4/2, 15 specks; h1 vero nascosto per accessibilità |
+| TechText | titolo della home | testo `Sasha`, peso 700 (orig. 600), fontSize 320 (orig. 150), alone nero 28 px, `reveal="letter"`, tratteggio 4/2, 15 specks; h1 vero nascosto per accessibilità |

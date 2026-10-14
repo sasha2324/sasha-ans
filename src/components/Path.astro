@@ -6,9 +6,11 @@ import type { PathStep } from '../data/it/profilo';
 
 interface Props {
   steps: PathStep[];
+  /** Versione compatta per la prima schermata della home: niente margini di sezione. */
+  compact?: boolean;
 }
 
-const { steps } = Astro.props;
+const { steps, compact = false } = Astro.props;
 
 const stateLabel = {
   done: 'Fatto',
@@ -17,7 +19,7 @@ const stateLabel = {
 } as const;
 ---
 
-<section class="section" aria-labelledby="percorso-titolo">
+<section class:list={['section', { compact }]} aria-labelledby="percorso-titolo">
   <div class="container">
     <h2 id="percorso-titolo">Percorso</h2>
     <ol class="path" style={`--count: ${steps.length}`}>
@@ -41,6 +43,20 @@ const stateLabel = {
 
   h2 {
     margin-bottom: var(--space-6);
+  }
+
+  .compact {
+    padding-block: 0;
+  }
+
+  .compact > .container {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .compact h2 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-4);
   }
 
   .path {
@@ -133,7 +149,7 @@ const stateLabel = {
   }
 
   @media (min-width: 48rem) {
-    .section {
+    .section:not(.compact) {
       padding-block: var(--space-8);
     }
 

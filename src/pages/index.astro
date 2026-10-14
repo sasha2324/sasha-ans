@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
-import Path from '../components/Path.astro';
 import Skills from '../components/Skills.astro';
 import { profile } from '../data/it/profilo';
 
@@ -9,7 +8,7 @@ const { name, intro, path, skills, projects, github } = profile;
 ---
 
 <BaseLayout home>
-  <Hero name={name} headline={intro.headline} />
+  <Hero name={name} headline={intro.headline} steps={path} />
 
   <section class="section container about" aria-labelledby="chi-sono-titolo">
     <h2 id="chi-sono-titolo">Chi sono</h2>
@@ -18,8 +17,6 @@ const { name, intro, path, skills, projects, github } = profile;
       <p class="languages">{intro.languages}</p>
     </div>
   </section>
-
-  <Path steps={path} />
 
   <Skills have={skills.have} learning={skills.learning} />
 

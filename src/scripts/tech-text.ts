@@ -3,7 +3,8 @@
  * lettere trascinabili.
  *
  * Adattato da React Bits (https://reactbits.dev, https://github.com/DavidHDev/react-bits).
- * Modifiche: rimosso React (montaggio con mountTechText), colori letti dal tema.
+ * Modifiche: rimosso React (montaggio con mountTechText), colori letti dal tema,
+ * alone attorno alle lettere piene (haloColor / haloBlur) per staccarle dallo sfondo.
  *
  * MIT + Commons Clause License Condition v1.0
  * Copyright (c) 2026 David Haz
@@ -64,6 +65,10 @@ export interface TechTextProps {
   draggable?: boolean;
   sweep?: boolean;
   speed?: number;
+  /** Alone attorno alle lettere piene (es. il colore di sfondo). Vuoto = nessun alone. */
+  haloColor?: string;
+  /** Ampiezza dell'alone in px CSS. */
+  haloBlur?: number;
 }
 
 type Settings = Required<TechTextProps>;
@@ -121,7 +126,9 @@ const DEFAULTS: Settings = {
   labels: true,
   draggable: true,
   sweep: true,
-  speed: 1
+  speed: 1,
+  haloColor: '',
+  haloBlur: 0
 };
 
 export interface TechTextHandle {
@@ -185,7 +192,8 @@ export function mountTechText(container: HTMLElement, initialProps: TechTextProp
   };
 
   const sprite = (s: Settings, view: Word, glyph: Shape, stroke: boolean): Art => {
-    const pad = Math.ceil(s.strokeWidth * 2 + 4);
+    const halo = !stroke && s.haloColor && s.haloBlur > 0 ? s.haloBlur : 0;
+    const pad = Math.ceil(s.strokeWidth * 2 + 4 + halo * 2);
     const left = glyph.box.x1 - pad;
     const top = glyph.box.y1 - pad;
     const w = glyph.box.x2 - glyph.box.x1 + pad * 2;
@@ -211,6 +219,15 @@ export function mountTechText(container: HTMLElement, initialProps: TechTextProp
       c.globalCompositeOperation = 'source-over';
     } else {
       c.fillStyle = s.color;
+      if (halo) {
+        // Due passate d'ombra per un alone più pieno, poi la lettera pulita sopra.
+        c.shadowColor = s.haloColor;
+        c.shadowBlur = halo * dpr;
+        c.fillText(glyph.char, glyph.x, view.baseline);
+        c.fillText(glyph.char, glyph.x, view.baseline);
+        c.shadowColor = 'transparent';
+        c.shadowBlur = 0;
+      }
       c.fillText(glyph.char, glyph.x, view.baseline);
     }
     return { image, left, top };

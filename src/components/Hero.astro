@@ -3,13 +3,16 @@
 // globale (Background.astro). Contiene il loader e la parte "contenuti" della sequenza
 // di ingresso (src/scripts/intro.ts); la parte "finestra" è in Background.astro.
 import LatticeLoader from './LatticeLoader.astro';
+import Path from './Path.astro';
+import type { PathStep } from '../data/it/profilo';
 
 interface Props {
   name: string;
   headline: string;
+  steps: PathStep[];
 }
 
-const { name, headline } = Astro.props;
+const { name, headline, steps } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="hero-titolo">
@@ -19,7 +22,10 @@ const { name, headline } = Astro.props;
     <!-- Titolo vero (per screen reader e motori di ricerca); senza JavaScript è anche quello visibile -->
     <h1 id="hero-titolo" class="title-text">{name}</h1>
     <div class="title-canvas" data-techtext data-text={name}></div>
-    <p class="headline">{headline}</p>
+    <div class="bottom">
+      <p class="headline">{headline}</p>
+      <Path steps={steps} compact />
+    </div>
   </div>
 
   <div class="intro-loader" data-intro-loader>
@@ -35,6 +41,7 @@ const { name, headline } = Astro.props;
 
   const css = getComputedStyle(root);
   const ink = css.getPropertyValue('--ink').trim() || '#ffffff';
+  const bg = css.getPropertyValue('--bg').trim() || '#000000';
   const font = css.getPropertyValue('--font-display').trim();
 
   const titleEl = document.querySelector<HTMLElement>('[data-techtext]');
@@ -42,14 +49,16 @@ const { name, headline } = Astro.props;
     ? mountTechText(titleEl, {
         text: titleEl.dataset.text ?? 'Sasha',
         fontFamily: font,
-        fontWeight: 600,
-        fontSize: 150,
+        fontWeight: 700, // originale 600: lettere più piene, più leggibili sullo sfondo
+        fontSize: 320, // originale 150: titolo più grande (si riduce da solo se non c'è spazio)
         reveal: 'letter',
         dashLength: 4,
         dashGap: 2,
         specks: 15,
         color: ink,
-        accentColor: ink
+        accentColor: ink,
+        haloColor: bg, // alone nero attorno alle lettere: le stacca dai puntini
+        haloBlur: 28
       })
     : null;
   if (title) root.classList.add('techtext-ready');
@@ -62,12 +71,14 @@ const { name, headline } = Astro.props;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    isolation: isolate; /* il velo con z-index -1 resta dentro la hero, sopra lo sfondo */
   }
 
   /* Velo in basso per leggere il testo sopra i puntini (come lo "scrim" di ScrollExpand) */
   .scrim {
     position: absolute;
     inset: 0;
+    z-index: -1; /* dietro al testo */
     pointer-events: none;
     background: linear-gradient(
       to top,
@@ -87,14 +98,15 @@ const { name, headline } = Astro.props;
   }
 
   .title-canvas {
-    height: clamp(9rem, 32vh, 20rem);
+    height: clamp(11rem, 40vh, 28rem);
     touch-action: pan-y;
     user-select: none;
   }
 
   /* Senza JavaScript (o se il canvas non parte) si vede il titolo in HTML */
   .title-text {
-    font-size: clamp(4rem, 14vw, 9rem);
+    font-size: clamp(5rem, 20vw, 14rem);
+    font-weight: 700;
     text-align: center;
     letter-spacing: -0.05em;
     padding-top: var(--space-6);
@@ -113,6 +125,11 @@ const { name, headline } = Astro.props;
 
   :global(html:not(.techtext-ready)) .title-canvas {
     display: none;
+  }
+
+  .bottom {
+    display: grid;
+    gap: var(--space-6);
   }
 
   .headline {

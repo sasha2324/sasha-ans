@@ -47,7 +47,7 @@ Contrasto: `--muted` 8.6:1 su nero (anche sotto il velo, che è nero).
 
 | Ruolo | Font | Uso |
 |---|---|---|
-| Titoli | IBM Plex Sans Condensed 600 | h1–h3, titolo TechText, frase della hero |
+| Titoli | IBM Plex Sans Condensed 600 (700 per "Sasha") | h1–h3, titolo TechText, frase della hero |
 | Testo | IBM Plex Sans 400 / 500 | paragrafi, navigazione, bottoni |
 | Tecnico | IBM Plex Mono 400 | **solo** etichette di stato e misure (come le etichette di TechText), codice |
 
@@ -82,14 +82,14 @@ scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home �
 
 ## Home
 
-1. **Hero** (100svh): "Sasha" in alto con TechText
-   (h1 vero nascosto accanto al canvas); frase di presentazione in basso a sinistra
-   sopra il velo. Header trasparente sopra, senza nome.
+1. **Hero** (100svh): "Sasha" grande in alto con TechText (peso 700, fino a 320 px,
+   alone nero attorno alle lettere per staccarle dai puntini; h1 vero nascosto accanto
+   al canvas). In basso: frase di presentazione e **percorso** in versione compatta
+   (orizzontale da 768 px, verticale su telefono). Header trasparente, senza nome.
 2. **Chi sono**: due colonne da 768 px (titolo | testo).
-3. **Percorso**: orizzontale da 768 px, verticale su telefono.
-4. **Competenze**: due gruppi con legenda (linea piena / tratteggiata).
-5. **Progetti**: compare solo quando ce n'è almeno uno.
-6. **Contatti**: bottone GitHub.
+3. **Competenze**: due gruppi con legenda (linea piena / tratteggiata).
+4. **Progetti**: compare solo quando ce n'è almeno uno.
+5. **Contatti**: bottone GitHub.
 
 ## Sequenza di ingresso (solo home)
 
