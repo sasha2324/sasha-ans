@@ -6,6 +6,14 @@ export default defineConfig({
   // Serve per RSS, sitemap e link canonici.
   // site: 'https://<nome-progetto>.pages.dev',
 
+  markdown: {
+    shikiConfig: {
+      // Tema scuro quasi monocromatico per i blocchi di codice degli articoli
+      theme: 'min-dark',
+      wrap: false,
+    },
+  },
+
   i18n: {
     // Per ora solo italiano. Per l'inglese basterà aggiungere 'en' qui
     // e le cartelle `en/` accanto a quelle `it/`.
