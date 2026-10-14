@@ -1,24 +1,54 @@
 ---
+// Competenze su tre livelli. Il bordo dice il livello, come nel resto del sito:
+// pieno bianco = uso nei progetti, pieno grigio = ho provato, tratteggiato = sto imparando.
+// Le voci dei primi due livelli portano al progetto che le dimostra.
+import type { Skills } from '../data/it/profilo';
+import { projectById } from '../data/it/progetti';
+
 interface Props {
-  have: string[];
-  learning: string[];
+  skills: Skills;
 }
 
-const { have, learning } = Astro.props;
+const { skills } = Astro.props;
+
+const levels = [
+  { kind: 'using', title: 'Uso nei progetti', items: skills.using },
+  { kind: 'tried', title: 'Ho provato', items: skills.tried },
+  { kind: 'learning', title: 'Sto imparando', items: skills.learning.map((name) => ({ name, projects: [] })) },
+];
 ---
 
 <section id="competenze" class="section" aria-labelledby="competenze-titolo">
   <div class="container">
     <h2 id="competenze-titolo">Competenze</h2>
-    <div class="columns">
-      <div class="group" data-kind="have">
-        <h3><span class="legend" aria-hidden="true"></span>So usare</h3>
-        <ul>{have.map((item) => <li>{item}</li>)}</ul>
-      </div>
-      <div class="group" data-kind="learning">
-        <h3><span class="legend" aria-hidden="true"></span>Sto imparando</h3>
-        <ul>{learning.map((item) => <li>{item}</li>)}</ul>
-      </div>
+    <div class="levels">
+      {
+        levels.map((level) => (
+          <div class="level" data-kind={level.kind}>
+            <h3>
+              <span class="legend" aria-hidden="true" />
+              {level.title}
+            </h3>
+            <ul>
+              {level.items.map((item) => (
+                <li>
+                  <span class="name">{item.name}</span>
+                  {item.projects.length > 0 && (
+                    <span class="proof">
+                      <span class="visually-hidden">Progetti:</span>
+                      {item.projects.map((id) => (
+                        <a class="selectable" href={`#progetto-${id}`}>
+                          {projectById(id).title}
+                        </a>
+                      ))}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
     </div>
   </div>
 </section>
@@ -32,20 +62,9 @@ const { have, learning } = Astro.props;
     margin-bottom: var(--space-6);
   }
 
-  .columns {
+  .levels {
     display: grid;
     gap: var(--space-7);
-  }
-
-  @media (min-width: 48rem) {
-    .section {
-      padding-block: var(--space-8);
-    }
-
-    .columns {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-6);
-    }
   }
 
   h3 {
@@ -62,6 +81,10 @@ const { have, learning } = Astro.props;
     border-top: 1.5px solid var(--ink);
   }
 
+  [data-kind='tried'] .legend {
+    border-top-color: var(--muted);
+  }
+
   [data-kind='learning'] .legend {
     border-top-style: dashed;
     border-top-color: var(--muted);
@@ -70,19 +93,56 @@ const { have, learning } = Astro.props;
   ul {
     list-style: none;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
+    display: grid;
+    gap: var(--space-2);
   }
 
   li {
+    display: grid;
+    gap: var(--space-1);
     padding: var(--space-2) var(--space-3);
     border: 1px solid var(--ink);
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
     line-height: 1.4;
+  }
+
+  [data-kind='tried'] li {
+    border-color: var(--muted);
   }
 
   [data-kind='learning'] li {
     border-style: dashed;
     border-color: var(--muted);
+  }
+
+  .proof {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  .proof a {
+    position: relative;
+    font-size: var(--step--1);
+    color: var(--muted);
+    text-underline-offset: 3px;
+  }
+
+  .proof a:hover {
+    color: var(--ink);
+  }
+
+  @media (min-width: 48rem) {
+    .section {
+      padding-block: var(--space-8);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .levels {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-5);
+      align-items: start;
+    }
   }
 </style>

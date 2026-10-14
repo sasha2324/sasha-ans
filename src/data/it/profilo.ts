@@ -10,6 +10,20 @@ export interface PathStep {
   label?: string;
 }
 
+import type { ProjectId } from './progetti';
+
+export interface Skill {
+  name: string;
+  /** Progetti che dimostrano la competenza */
+  projects: ProjectId[];
+}
+
+export interface Skills {
+  using: Skill[];
+  tried: Skill[];
+  learning: string[];
+}
+
 export const profile = {
   name: 'Sasha',
   github: {
@@ -34,15 +48,32 @@ export const profile = {
     { title: 'Cybersecurity', state: 'next' },
   ] as PathStep[],
 
-  // TODO(Sasha): conferma o modifica queste liste.
+  // Competenze confermate da Sasha (ottobre 2026), ricavate dal codice dei progetti.
+  // Ogni voce dei primi due livelli indica il progetto che la dimostra.
   skills: {
-    have: ['Italiano, ucraino e russo', 'Basi di informatica'],
+    using: [
+      { name: 'Python', projects: ['pifsignal', 'sub4'] },
+      { name: 'Integrazione di API e SDK', projects: ['pifsignal', 'sub4'] },
+      { name: 'Gestione delle credenziali (.env, niente segreti in git)', projects: ['pifsignal'] },
+      { name: 'Test automatici con pytest', projects: ['pifsignal'] },
+      { name: 'Git e GitHub', projects: ['pifsignal'] },
+      { name: 'Elaborazione di dati (CSV, JSON, XML)', projects: ['sub4'] },
+      { name: 'Sviluppo con Claude Code', projects: ['pifsignal', 'sub4'] },
+    ],
+    tried: [
+      { name: 'Server Linux: VPS, systemd, ssh, rsync, cron', projects: ['pifsignal'] },
+      { name: 'Programmazione asincrona (asyncio)', projects: ['pifsignal'] },
+      { name: 'Login OAuth 2.0', projects: ['sub4'] },
+      { name: 'Modelli AI con risposta strutturata', projects: ['pifsignal'] },
+      { name: 'API web con FastAPI', projects: ['pifsignal'] },
+      { name: 'Dashboard con Streamlit e Next.js', projects: ['pifsignal'] },
+      { name: 'API di Notion', projects: ['sub4'] },
+    ],
     learning: [
       'Reti e protocollo TCP/IP',
       'Linux da riga di comando',
       'Fondamenti di cloud computing',
       'Fondamenti di sicurezza informatica',
     ],
-  },
-
+  } satisfies Skills,
 };

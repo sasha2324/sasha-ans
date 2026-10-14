@@ -24,7 +24,9 @@ tratteggiati, cornici di selezione, etichette con le misure. Due regole danno
 significato agli elementi:
 
 1. **Pieno = fatto, tratteggiato = in corso.** Vale per il percorso (nodi e
-   collegamenti) e per le competenze ("So usare" pieno, "Sto imparando" tratteggiato).
+   collegamenti), per le competenze ("Uso nei progetti" pieno bianco, "Ho provato"
+   pieno grigio, "Sto imparando" tratteggiato) e per i progetti (concluso pieno,
+   in corso tratteggiato).
 2. **La cornice di selezione è l'unico effetto hover/focus** (classe `.selectable`).
    La tappa del percorso in corso la porta sempre: è "selezionata".
 
@@ -103,8 +105,10 @@ sezione visibile; sulle pagine del blog è accesa "Blog".
    al canvas). In basso: frase di presentazione e **percorso** in versione compatta
    (orizzontale da 768 px, verticale su telefono).
 2. **Chi sono**: due colonne da 768 px (titolo | testo).
-3. **Competenze**: due gruppi con legenda (linea piena / tratteggiata).
-4. **Progetti**: compare solo quando ce n'è almeno uno.
+3. **Competenze**: tre livelli con legenda (tre colonne da 1024 px). Le voci dei
+   primi due livelli hanno il link alla scheda del progetto che le dimostra.
+4. **Progetti**: una scheda per progetto (stato, titolo, link al codice se pubblico |
+   cosa fa, con cosa è fatto, cosa ho imparato).
 5. **Contatti**: bottone GitHub.
 
 ## Blog
