@@ -9,6 +9,7 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
 
 ## Regole del progetto
 
+- Solo tema scuro (deciso da Sasha: niente tema chiaro né interruttore).
 - Lingua del sito: italiano. Struttura pronta per l'inglese (`/en/`): testi
   dell'interfaccia in `src/i18n/`, contenuti in sottocartelle per lingua (`it/`, `en/`).
 - Non inserire dati personali non forniti da Sasha (indirizzo, telefono, data di nascita…).
@@ -28,7 +29,7 @@ licenza in ogni file; non vendere né ridistribuire i componenti da soli.
 
 | Componente | Ruolo nel sito | Configurazione scelta |
 |---|---|---|
-| Pattern Waves | sfondo di caricamento e home | preset `silk`, bianco su nero, `fade="edges"`, interattivo; `rippleRate` 30 (orig. 60) per increspature più lente |
+| Pattern Waves | sfondo fisso di tutte le pagine e dell'intro | preset `silk`, bianco su nero, `fade="edges"`, interattivo; `rippleRate` 30 (orig. 60) per increspature più lente |
 | LatticeLoader | animazione di caricamento | etichette in inglese, ✓ bianca (non verde); config da ricevere |
 | ScrollExpand | passaggio caricamento → home | **automatico** (a tempo, non allo scroll); dentro la finestra c'è Pattern Waves |
 | TechText | titolo della home | testo `Sasha`, peso 600, `reveal="letter"`, tratteggio 4/2, 15 specks; h1 vero nascosto per accessibilità |

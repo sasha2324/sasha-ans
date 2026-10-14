@@ -3,7 +3,8 @@
  *
  * Adattato da React Bits (https://reactbits.dev, https://github.com/DavidHDev/react-bits).
  * Modifiche: rimosso React (montaggio con mountPatternWaves), colori letti dal tema,
- * velocità delle increspature regolabile (rippleRate). Shader invariati.
+ * velocità delle increspature regolabile (rippleRate), limite di fotogrammi (maxFps).
+ * Shader invariati.
  *
  * MIT + Commons Clause License Condition v1.0
  * Copyright (c) 2026 David Haz
@@ -66,6 +67,8 @@ export interface PatternWavesProps extends Partial<PresetValues> {
   cursorStrength?: number;
   /** Passi al secondo della simulazione delle increspature: più basso = onde più lente. */
   rippleRate?: number;
+  /** Limite di fotogrammi al secondo (0 = nessun limite). Serve a risparmiare batteria. */
+  maxFps?: number;
   intro?: boolean;
   paused?: boolean;
 }
@@ -81,6 +84,7 @@ interface Settings extends PresetValues {
   cursorSize: number;
   cursorStrength: number;
   rippleRate: number;
+  maxFps: number;
   intro: boolean;
   paused: boolean;
 }
@@ -515,6 +519,7 @@ const DEFAULTS = {
   cursorSize: 50,
   cursorStrength: 0.6,
   rippleRate: RIPPLE_RATE,
+  maxFps: 0,
   intro: true,
   paused: false
 };
@@ -545,6 +550,7 @@ const resolveSettings = (props: PatternWavesProps): Settings => {
     cursorSize: p.cursorSize,
     cursorStrength: p.cursorStrength,
     rippleRate: p.rippleRate,
+    maxFps: p.maxFps,
     intro: p.intro,
     paused: p.paused
   };
@@ -783,6 +789,11 @@ export function mountPatternWaves(
     raf = 0;
     if (!alive) return;
     const s = settings;
+    // Con un limite di fotogrammi, salta i frame troppo ravvicinati (senza perdere il tempo trascorso).
+    if (s.maxFps > 0 && !dirty && now - last < 1000 / s.maxFps - 2) {
+      raf = requestAnimationFrame(frame);
+      return;
+    }
     const dt = Math.min(0.05, Math.max(1 / 240, (now - last) / 1000));
     last = now;
 

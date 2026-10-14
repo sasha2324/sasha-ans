@@ -1,0 +1,143 @@
+---
+// Sfondo fisso di tutte le pagine: Pattern Waves + un velo nero che scurisce le onde
+// dietro al testo. Sulla home il velo parte trasparente e si scurisce scorrendo oltre
+// la prima schermata; sulle altre pagine è sempre attivo.
+// Contiene anche la parte "finestra" della sequenza di ingresso (src/scripts/intro.ts).
+
+interface Props {
+  home?: boolean;
+}
+
+const { home = false } = Astro.props;
+---
+
+<div class="background" aria-hidden="true" data-background data-home={home ? '' : undefined}>
+  <div class="stage">
+    <div class="waves" data-waves></div>
+  </div>
+  <div class="dim"></div>
+</div>
+
+<script>
+  import { mountPatternWaves } from '../scripts/pattern-waves';
+
+  const DIM_MAX = 0.72; // opacità massima del velo dietro al testo
+  const READING_FPS = 30; // fotogrammi al secondo quando lo sfondo è dietro al testo
+
+  const root = document.documentElement;
+  const background = document.querySelector<HTMLElement>('[data-background]');
+  const wavesEl = background?.querySelector<HTMLElement>('[data-waves]');
+  const dimEl = background?.querySelector<HTMLElement>('.dim');
+  const isHome = background?.hasAttribute('data-home') ?? false;
+
+  const css = getComputedStyle(root);
+
+  // Configurazione scelta su React Bits (vedi CLAUDE.md).
+  const waves = wavesEl
+    ? mountPatternWaves(wavesEl, {
+        preset: 'silk',
+        color: css.getPropertyValue('--ink').trim() || '#ffffff',
+        backgroundColor: css.getPropertyValue('--bg').trim() || '#000000',
+        fade: 'edges',
+        interactive: true,
+        cursorSize: 50,
+        cursorStrength: 0.6,
+        rippleRate: 30, // originale 60: increspature al mouse a metà velocità
+        maxFps: isHome ? 0 : READING_FPS
+      })
+    : null;
+
+  // Velo e fotogrammi in base allo scorrimento (solo home).
+  let reading = !isHome;
+  let scheduled = false;
+
+  const update = () => {
+    scheduled = false;
+    const progress = isHome ? Math.min(1, Math.max(0, window.scrollY / (window.innerHeight * 0.7))) : 1;
+    if (dimEl) dimEl.style.opacity = String(progress * DIM_MAX);
+    const nowReading = progress >= 1;
+    if (nowReading !== reading) {
+      reading = nowReading;
+      waves?.set({ maxFps: reading ? READING_FPS : 0 });
+    }
+  };
+
+  update();
+  if (isHome) {
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', update, { passive: true });
+  }
+</script>
+
+<style>
+  .background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--bg);
+    pointer-events: none;
+  }
+
+  .stage {
+    position: absolute;
+    inset: 0;
+  }
+
+  .waves {
+    position: absolute;
+    inset: 0;
+    transform-origin: center;
+  }
+
+  .dim {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    opacity: 0.72; /* valore senza JavaScript; lo script lo aggiorna */
+  }
+
+  /* Sulla home, con JavaScript, il velo parte trasparente (evita un lampo scuro all'apertura) */
+  :global(html.js) [data-home] .dim {
+    opacity: 0;
+  }
+
+  /* ---------- Sequenza di ingresso: la finestra ---------- */
+
+  :global(html.intro) .stage {
+    /* finestra iniziale di ScrollExpand: 42% × 58%, angoli da 24px */
+    clip-path: inset(21% 29% round 24px);
+    transition: clip-path 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  :global(html.intro) .waves {
+    transform: scale(1.35);
+    transition: transform 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  :global(html.intro-open) .stage {
+    clip-path: inset(0 0 0 0 round 0);
+  }
+
+  :global(html.intro-open) .waves {
+    transform: none;
+  }
+
+  /* Su telefono la finestra iniziale è più larga, altrimenti sarebbe minuscola */
+  @media (max-width: 47.99rem) {
+    :global(html.intro) .stage {
+      clip-path: inset(24% 12% round 20px);
+    }
+
+    :global(html.intro-open) .stage {
+      clip-path: inset(0 0 0 0 round 0);
+    }
+  }
+</style>

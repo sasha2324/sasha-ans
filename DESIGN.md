@@ -31,17 +31,17 @@ Un solo momento animato forte: la sequenza di ingresso della home. Il resto è f
 
 ## Colori
 
-Bianco e nero, nessun accento. Il tema chiaro è l'inversione del tema scuro.
+Bianco su nero, nessun accento. **Solo tema scuro** (scelta di Sasha: niente tema chiaro).
 
-| Token | Scuro | Chiaro | Ruolo |
-|---|---|---|---|
-| `--bg` | `#000000` | `#ffffff` | sfondo; deve coincidere con lo sfondo di Pattern Waves |
-| `--ink` | `#ffffff` | `#000000` | testo, puntini, bordi pieni, maniglie |
-| `--muted` | `#a3a3a3` | `#5c5c5c` | testo secondario, bordi tratteggiati |
-| `--hairline` | `#333333` | `#d4d4d4` | divisori (solo decorativi) |
-| `--code-bg` | `#111111` | `#f4f4f4` | blocchi di codice |
+| Token | Valore | Ruolo |
+|---|---|---|
+| `--bg` | `#000000` | sfondo; deve coincidere con lo sfondo di Pattern Waves |
+| `--ink` | `#ffffff` | testo, puntini, bordi pieni, maniglie |
+| `--muted` | `#a3a3a3` | testo secondario, bordi tratteggiati |
+| `--hairline` | `#333333` | divisori (solo decorativi) |
+| `--code-bg` | `#111111` | blocchi di codice |
 
-Contrasto: `--muted` 8.6:1 su nero, 6.7:1 su bianco.
+Contrasto: `--muted` 8.6:1 su nero (anche sotto il velo, che è nero).
 
 ## Tipografia
 
@@ -68,9 +68,21 @@ Righe di testo al massimo 68ch. Sentence case ovunque.
   che diventa 0 aprendosi.
 - Niente ombre. Tratteggio: 4 px pieno, 2 px vuoto (come TechText).
 
+## Sfondo (tutte le pagine)
+
+Pattern Waves è **fisso dietro a tutto il sito** (Background.astro), fino al footer.
+Sopra c'è un velo nero (`--bg`) che lo scurisce dietro al testo:
+
+- home: velo trasparente nella prima schermata, sale fino a opacità 0.72 entro il 70%
+  dell'altezza dello schermo;
+- altre pagine: velo sempre a 0.72.
+
+Risparmio batteria: quando lo sfondo è dietro al testo (velo pieno), l'animazione
+scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home è libera.
+
 ## Home
 
-1. **Hero** (100svh): Pattern Waves a tutto schermo; "Sasha" in alto con TechText
+1. **Hero** (100svh): "Sasha" in alto con TechText
    (h1 vero nascosto accanto al canvas); frase di presentazione in basso a sinistra
    sopra il velo. Header trasparente sopra, senza nome.
 2. **Chi sono**: due colonne da 768 px (titolo | testo).
@@ -78,8 +90,6 @@ Righe di testo al massimo 68ch. Sentence case ovunque.
 4. **Competenze**: due gruppi con legenda (linea piena / tratteggiata).
 5. **Progetti**: compare solo quando ce n'è almeno uno.
 6. **Contatti**: bottone GitHub.
-
-Pattern Waves vive solo nella hero: quando non è visibile si ferma.
 
 ## Sequenza di ingresso (solo home)
 

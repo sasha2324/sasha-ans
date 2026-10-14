@@ -1,6 +1,7 @@
 ---
-// Prima schermata della home: sfondo Pattern Waves, titolo TechText, frase di presentazione.
-// Contiene anche il loader e le regole CSS della sequenza di ingresso (src/scripts/intro.ts).
+// Prima schermata della home: titolo TechText e frase di presentazione, sopra lo sfondo
+// globale (Background.astro). Contiene il loader e la parte "contenuti" della sequenza
+// di ingresso (src/scripts/intro.ts); la parte "finestra" è in Background.astro.
 import LatticeLoader from './LatticeLoader.astro';
 
 interface Props {
@@ -12,10 +13,7 @@ const { name, headline } = Astro.props;
 ---
 
 <section class="hero" aria-labelledby="hero-titolo">
-  <div class="stage" aria-hidden="true">
-    <div class="waves" data-waves></div>
-    <div class="scrim"></div>
-  </div>
+  <div class="scrim" aria-hidden="true"></div>
 
   <div class="content container">
     <!-- Titolo vero (per screen reader e motori di ricerca); senza JavaScript è anche quello visibile -->
@@ -30,51 +28,28 @@ const { name, headline } = Astro.props;
 </section>
 
 <script>
-  import { mountPatternWaves } from '../scripts/pattern-waves';
   import { mountTechText } from '../scripts/tech-text';
   import '../scripts/intro';
 
   const root = document.documentElement;
 
-  const themeColors = () => {
-    const css = getComputedStyle(root);
-    return {
-      ink: css.getPropertyValue('--ink').trim() || '#ffffff',
-      bg: css.getPropertyValue('--bg').trim() || '#000000',
-      font: css.getPropertyValue('--font-display').trim()
-    };
-  };
-
-  const start = themeColors();
-
-  // Configurazione scelta su React Bits (vedi CLAUDE.md), colori presi dal tema.
-  const wavesEl = document.querySelector<HTMLElement>('[data-waves]');
-  const waves = wavesEl
-    ? mountPatternWaves(wavesEl, {
-        preset: 'silk',
-        color: start.ink,
-        backgroundColor: start.bg,
-        fade: 'edges',
-        interactive: true,
-        cursorSize: 50,
-        cursorStrength: 0.6,
-        rippleRate: 30 // originale 60: increspature al mouse a metà velocità
-      })
-    : null;
+  const css = getComputedStyle(root);
+  const ink = css.getPropertyValue('--ink').trim() || '#ffffff';
+  const font = css.getPropertyValue('--font-display').trim();
 
   const titleEl = document.querySelector<HTMLElement>('[data-techtext]');
   const title = titleEl
     ? mountTechText(titleEl, {
         text: titleEl.dataset.text ?? 'Sasha',
-        fontFamily: start.font,
+        fontFamily: font,
         fontWeight: 600,
         fontSize: 150,
         reveal: 'letter',
         dashLength: 4,
         dashGap: 2,
         specks: 15,
-        color: start.ink,
-        accentColor: start.ink
+        color: ink,
+        accentColor: ink
       })
     : null;
   if (title) root.classList.add('techtext-ready');
@@ -87,20 +62,6 @@ const { name, headline } = Astro.props;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    isolation: isolate;
-  }
-
-  .stage {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--bg);
-  }
-
-  .waves {
-    position: absolute;
-    inset: 0;
-    transform-origin: center;
   }
 
   /* Velo in basso per leggere il testo sopra i puntini (come lo "scrim" di ScrollExpand) */
@@ -174,17 +135,6 @@ const { name, headline } = Astro.props;
     overflow: hidden;
   }
 
-  :global(html.intro) .stage {
-    /* finestra iniziale di ScrollExpand: 42% × 58%, angoli da 24px */
-    clip-path: inset(21% 29% round 24px);
-    transition: clip-path 1100ms cubic-bezier(0.65, 0, 0.35, 1);
-  }
-
-  :global(html.intro) .waves {
-    transform: scale(1.35);
-    transition: transform 1100ms cubic-bezier(0.65, 0, 0.35, 1);
-  }
-
   :global(html.intro) .scrim {
     opacity: 0;
     transition: opacity 1100ms ease;
@@ -207,14 +157,6 @@ const { name, headline } = Astro.props;
     transition: opacity 300ms ease;
   }
 
-  :global(html.intro-open) .stage {
-    clip-path: inset(0 0 0 0 round 0);
-  }
-
-  :global(html.intro-open) .waves {
-    transform: none;
-  }
-
   :global(html.intro-open) .scrim {
     opacity: 1;
   }
@@ -229,18 +171,10 @@ const { name, headline } = Astro.props;
     transform: none;
   }
 
-  /* Su telefono la finestra iniziale è più larga, altrimenti sarebbe minuscola */
+  /* Su telefono la finestra iniziale è più larga (vedi Background.astro): il loader la segue */
   @media (max-width: 47.99rem) {
-    :global(html.intro) .stage {
-      clip-path: inset(24% 12% round 20px);
-    }
-
     :global(html.intro) .intro-loader {
       inset: auto 0 calc(24% - 3.5rem);
-    }
-
-    :global(html.intro-open) .stage {
-      clip-path: inset(0 0 0 0 round 0);
     }
   }
 </style>

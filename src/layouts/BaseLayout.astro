@@ -10,6 +10,7 @@ import '@fontsource/ibm-plex-mono/cyrillic-400.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
+import Background from '../components/Background.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
@@ -67,6 +68,7 @@ const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
   </head>
   <body>
     <a class="skip-link" href="#contenuto">{t('nav.skip')}</a>
+    <Background home={home} />
     <Header overlay={home} />
     <main id="contenuto">
       <slot />
