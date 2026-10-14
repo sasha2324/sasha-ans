@@ -76,7 +76,7 @@ p {
 }
 
 a {
-  color: var(--line);
+  color: var(--ink);
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
 }
@@ -86,7 +86,7 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 2px solid var(--line);
+  outline: 2px solid var(--ink);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -95,6 +95,44 @@ code,
 pre {
   font-family: var(--font-mono);
   font-size: 0.9em;
+}
+
+/*
+ * Cornice di selezione (da TechText): al passaggio o al focus da tastiera
+ * compaiono un contorno sottile e quattro maniglie agli angoli.
+ * È l'unico effetto hover del sito.
+ */
+.selectable {
+  position: relative;
+}
+
+.selectable::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border: 1px solid color-mix(in srgb, var(--ink) 50%, transparent);
+  background:
+    linear-gradient(var(--ink), var(--ink)) top left / 5px 5px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) top right / 5px 5px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) bottom left / 5px 5px no-repeat,
+    linear-gradient(var(--ink), var(--ink)) bottom right / 5px 5px no-repeat;
+  background-origin: border-box;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  pointer-events: none;
+}
+
+.selectable:hover::after,
+.selectable:focus-visible::after {
+  opacity: 1;
+}
+
+.selectable:focus-visible {
+  outline: none;
+}
+
+.selectable:focus-visible::after {
+  border-color: var(--ink);
 }
 
 /* Contenitore centrato con margini laterali */
@@ -123,7 +161,7 @@ pre {
   left: var(--space-4);
   top: -100px;
   padding: var(--space-2) var(--space-4);
-  background: var(--surface);
+  background: var(--bg);
   color: var(--ink);
   border: 1px solid var(--ink);
   border-radius: var(--radius);

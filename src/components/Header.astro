@@ -2,16 +2,30 @@
 import ThemeToggle from './ThemeToggle.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
+interface Props {
+  /** Sulla home l'header sta sopra lo sfondo animato e non mostra il nome (c'è già il titolo). */
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
 const t = useTranslations(getLangFromUrl(Astro.url));
 const path = Astro.url.pathname;
 const isBlog = path.startsWith('/blog') || path.startsWith('/tag');
 ---
 
-<header class="site-header">
+<header class:list={['site-header', { overlay }]}>
   <div class="container inner">
-    <a class="name" href="/" aria-current={path === '/' ? 'page' : undefined}>Sasha</a>
+    {
+      overlay ? (
+        <span />
+      ) : (
+        <a class="name selectable" href="/">
+          Sasha
+        </a>
+      )
+    }
     <nav aria-label="Principale">
-      <a href="/blog/" aria-current={isBlog ? 'page' : undefined}>{t('nav.blog')}</a>
+      <a class="selectable" href="/blog/" aria-current={isBlog ? 'page' : undefined}>{t('nav.blog')}</a>
       <ThemeToggle />
     </nav>
   </div>
@@ -19,7 +33,15 @@ const isBlog = path.startsWith('/blog') || path.startsWith('/tag');
 
 <style>
   .site-header {
+    position: relative;
+    z-index: 3;
     border-bottom: 1px solid var(--hairline);
+  }
+
+  .site-header.overlay {
+    position: absolute;
+    inset: 0 0 auto;
+    border-bottom: 0;
   }
 
   .inner {
@@ -47,15 +69,14 @@ const isBlog = path.startsWith('/blog') || path.startsWith('/tag');
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding-inline: var(--space-2);
+    padding-inline: var(--space-3);
     color: var(--ink);
     text-decoration: none;
   }
 
-  nav a:hover,
   nav a[aria-current='page'] {
     text-decoration: underline;
-    text-decoration-color: var(--line);
-    text-decoration-thickness: 2px;
+    text-decoration-style: dashed;
+    text-underline-offset: 0.35em;
   }
 </style>

@@ -17,7 +17,7 @@ const stateLabel = {
 } as const;
 ---
 
-<section class="band" aria-labelledby="percorso-titolo">
+<section class="section" aria-labelledby="percorso-titolo">
   <div class="container">
     <h2 id="percorso-titolo">Percorso</h2>
     <ol class="path" style={`--count: ${steps.length}`}>
@@ -35,9 +35,7 @@ const stateLabel = {
 </section>
 
 <style>
-  .band {
-    background: var(--band-bg);
-    color: var(--band-ink);
+  .section {
     padding-block: var(--space-7);
   }
 
@@ -46,8 +44,8 @@ const stateLabel = {
   }
 
   .path {
-    --node: 18px;
-    --stroke: 2px;
+    --node: 14px;
+    --stroke: 1.5px;
     list-style: none;
     padding: 0;
     display: grid;
@@ -64,23 +62,41 @@ const stateLabel = {
 
   .node {
     grid-row: span 2;
-    width: var(--node);
-    height: var(--node);
-    margin-top: 0.2em;
-    border-radius: 50%;
-    border: var(--stroke) solid var(--band-ink);
-    background: var(--band-bg);
     position: relative;
     z-index: 1;
+    width: var(--node);
+    height: var(--node);
+    margin-top: 0.3em;
+    border-radius: 50%;
+    border: var(--stroke) solid var(--ink);
+    background: var(--bg);
   }
 
   [data-state='done'] .node {
-    background: var(--band-ink);
+    background: var(--ink);
   }
 
   [data-state='current'] .node {
-    border-color: var(--band-progress);
-    background: radial-gradient(circle, var(--band-progress) 0 3px, var(--band-bg) 4px);
+    background: radial-gradient(circle, var(--ink) 0 2.5px, var(--bg) 3px);
+  }
+
+  /* La tappa in corso è "selezionata", come la lettera sotto la lente di TechText */
+  [data-state='current'] .node::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border: 1px solid color-mix(in srgb, var(--ink) 50%, transparent);
+    background:
+      linear-gradient(var(--ink), var(--ink)) top left / 4px 4px no-repeat,
+      linear-gradient(var(--ink), var(--ink)) top right / 4px 4px no-repeat,
+      linear-gradient(var(--ink), var(--ink)) bottom left / 4px 4px no-repeat,
+      linear-gradient(var(--ink), var(--ink)) bottom right / 4px 4px no-repeat;
+    background-origin: border-box;
+  }
+
+  [data-state='next'] .node {
+    border-style: dashed;
+    border-color: var(--muted);
   }
 
   .title {
@@ -91,32 +107,36 @@ const stateLabel = {
   }
 
   .state {
-    font-size: var(--step--1);
-    color: var(--band-muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
   }
 
   [data-state='current'] .state {
-    color: var(--band-progress);
+    color: var(--ink);
   }
 
-  /* Collegamento al nodo successivo: verticale su telefono */
+  /* Collegamento alla tappa successiva: pieno dopo una tappa fatta, tratteggiato verso il futuro */
   li:not(:last-child)::after {
     content: '';
     position: absolute;
     left: calc(var(--node) / 2 - var(--stroke) / 2);
-    top: calc(0.2em + var(--node));
+    top: calc(0.3em + var(--node));
     height: calc(100% - var(--node) + var(--space-6));
-    border-left: var(--stroke) solid var(--band-line);
+    border-left: var(--stroke) solid var(--ink);
     transform-origin: top;
   }
 
   li:not([data-state='done'])::after {
     border-left-style: dashed;
-    border-left-color: var(--band-muted);
+    border-left-color: var(--muted);
   }
 
-  /* Da tablet in su: schema orizzontale */
   @media (min-width: 48rem) {
+    .section {
+      padding-block: var(--space-8);
+    }
+
     .path {
       grid-template-columns: repeat(var(--count, 4), 1fr);
       gap: var(--space-4);
@@ -133,38 +153,18 @@ const stateLabel = {
     }
 
     li:not(:last-child)::after {
-      left: var(--node);
+      left: calc(var(--node) + 10px);
       top: calc(var(--node) / 2 - var(--stroke) / 2);
-      width: calc(100% - var(--node) + var(--space-4));
+      width: calc(100% - var(--node) - 20px + var(--space-4));
       height: 0;
       border-left: 0;
-      border-top: var(--stroke) solid var(--band-line);
+      border-top: var(--stroke) solid var(--ink);
       transform-origin: left;
     }
 
     li:not([data-state='done'])::after {
       border-top-style: dashed;
-      border-top-color: var(--band-muted);
-    }
-  }
-
-  /* Unica animazione del sito: il tratto già percorso si disegna al caricamento */
-  @media (prefers-reduced-motion: no-preference) {
-    [data-state='done']::after {
-      animation: draw 700ms 200ms ease-out both;
-    }
-
-    @keyframes draw {
-      from {
-        transform: scale(var(--from-x, 1), var(--from-y, 0));
-      }
-    }
-
-    @media (min-width: 48rem) {
-      [data-state='done']::after {
-        --from-x: 0;
-        --from-y: 1;
-      }
+      border-top-color: var(--muted);
     }
   }
 </style>

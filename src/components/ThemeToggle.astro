@@ -5,7 +5,7 @@ const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
 <button
-  class="theme-toggle"
+  class="theme-toggle selectable"
   type="button"
   data-label-dark={t('theme.toDark')}
   data-label-light={t('theme.toLight')}
@@ -40,13 +40,9 @@ const t = useTranslations(getLangFromUrl(Astro.url));
     padding: 0;
     background: transparent;
     color: var(--ink);
-    border: 1px solid var(--hairline);
+    border: 0;
     border-radius: var(--radius);
     cursor: pointer;
-  }
-
-  .theme-toggle:hover {
-    border-color: var(--ink);
   }
 
   .icon-sun {

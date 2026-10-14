@@ -1,26 +1,16 @@
 /*
- * Token di design (vedi DESIGN.md).
- * Ogni colore ha un ruolo: se serve un colore nuovo, prima si aggiorna DESIGN.md.
+ * Token di design (vedi DESIGN.md — direzione «Selezione»).
+ * Bianco e nero. Lo stato "in corso" si esprime con il tratteggio, non con un colore.
+ * Se serve un colore nuovo, prima si aggiorna DESIGN.md.
  */
 
 :root {
-  /* Colori — tema chiaro */
-  --bg: #f2f5f9;
-  --surface: #ffffff;
-  --ink: #13243a;
-  --muted: #4f5f73;
-  --line: #1f5bbf;
-  --progress: #9c6410;
-  --hairline: #c9d3df;
-  --code-bg: #ffffff;
-
-  /* Fascia scura (uguale in entrambi i temi) */
-  --band-bg: #0f1c2c;
-  --band-ink: #e6ecf3;
-  --band-muted: #9dacbf;
-  --band-line: #6fa0f0;
-  --band-progress: #e8b04f;
-  --band-hairline: #2a3c52;
+  /* Colori — tema chiaro (inversione del tema scuro) */
+  --bg: #ffffff;
+  --ink: #000000;
+  --muted: #5c5c5c;
+  --hairline: #d4d4d4;
+  --code-bg: #f4f4f4;
 
   /* Font */
   --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
@@ -28,6 +18,7 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Scala tipografica (~1.25) */
+  --step--2: 0.75rem;
   --step--1: 0.875rem;
   --step-0: 1rem;
   --step-1: 1.2rem;
@@ -49,38 +40,32 @@
   --container: 70rem; /* 1120 px */
   --gutter: var(--space-4);
   --measure: 68ch;
-  --radius: 4px;
+  --radius: 0;
+
+  /* Tratteggio "in corso" (come i contorni di TechText: 4 pieno, 2 vuoto) */
+  --dash: 4px;
+  --dash-gap: 2px;
 
   color-scheme: light;
 }
 
-/* Tema scuro: scelto a mano dall'interruttore… */
 :root[data-theme='dark'] {
-  --bg: #0f1c2c;
-  --surface: #162638;
-  --ink: #e6ecf3;
-  --muted: #9dacbf;
-  --line: #6fa0f0;
-  --progress: #e8b04f;
-  --hairline: #2a3c52;
-  --code-bg: #0b1622;
-  --band-bg: #0b1622;
+  --bg: #000000;
+  --ink: #ffffff;
+  --muted: #a3a3a3;
+  --hairline: #333333;
+  --code-bg: #111111;
 
   color-scheme: dark;
 }
 
-/* …oppure preso dalle impostazioni del sistema, se non c'è una scelta salvata. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0f1c2c;
-    --surface: #162638;
-    --ink: #e6ecf3;
-    --muted: #9dacbf;
-    --line: #6fa0f0;
-    --progress: #e8b04f;
-    --hairline: #2a3c52;
-    --code-bg: #0b1622;
-    --band-bg: #0b1622;
+    --bg: #000000;
+    --ink: #ffffff;
+    --muted: #a3a3a3;
+    --hairline: #333333;
+    --code-bg: #111111;
 
     color-scheme: dark;
   }
