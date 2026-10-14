@@ -18,8 +18,6 @@ export const ui = {
     'nav.home': 'Home',
     'nav.blog': 'Blog',
     'nav.skip': 'Vai al contenuto',
-    'theme.toDark': 'Passa al tema scuro',
-    'theme.toLight': 'Passa al tema chiaro',
     'footer.github': 'Profilo GitHub',
     'footer.rss': 'Feed RSS',
   },

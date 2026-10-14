@@ -78,13 +78,6 @@ const { name, headline } = Astro.props;
       })
     : null;
   if (title) root.classList.add('techtext-ready');
-
-  // Quando cambia il tema, i due canvas si ridisegnano con i nuovi colori.
-  new MutationObserver(() => {
-    const c = themeColors();
-    waves?.set({ color: c.ink, backgroundColor: c.bg });
-    title?.set({ color: c.ink, accentColor: c.ink });
-  }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
 </script>
 
 <style>

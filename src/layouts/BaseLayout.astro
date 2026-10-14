@@ -35,26 +35,12 @@ const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#000000" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    <!--
-      Applica il tema prima che la pagina venga disegnata, per evitare il lampo
-      di colore sbagliato. Se non c'è una scelta salvata, segue il sistema.
-    -->
+    <!-- Segnala che JavaScript è attivo (serve al titolo della home e all'intro) -->
     <script is:inline>
-      (function () {
-        let theme = null;
-        try {
-          theme = localStorage.getItem('theme');
-        } catch (e) {}
-        if (theme !== 'light' && theme !== 'dark') {
-          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        document.documentElement.dataset.theme = theme;
-        document.documentElement.classList.add('js');
-      })();
+      document.documentElement.classList.add('js');
     </script>
     {
       home && (
