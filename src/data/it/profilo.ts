@@ -54,9 +54,9 @@ export const profile = {
     using: [
       { name: 'Python', projects: ['pifsignal', 'sub4'] },
       { name: 'Integrazione di API e SDK', projects: ['pifsignal', 'sub4'] },
-      { name: 'Gestione delle credenziali (.env, niente segreti in git)', projects: ['pifsignal'] },
+      { name: 'Gestione delle credenziali (.env, niente segreti in git)', projects: ['pifsignal', 'sub4'] },
       { name: 'Test automatici con pytest', projects: ['pifsignal'] },
-      { name: 'Git e GitHub', projects: ['pifsignal'] },
+      { name: 'Git e GitHub', projects: ['pifsignal', 'sub4'] },
       { name: 'Elaborazione di dati (CSV, JSON, XML)', projects: ['sub4'] },
       { name: 'Sviluppo con Claude Code', projects: ['pifsignal', 'sub4'] },
     ],

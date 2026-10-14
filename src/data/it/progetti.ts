@@ -83,7 +83,7 @@ export const projects: Project[] = [
       'Non fidarsi dei dati grezzi: controllarli prima di usarli.',
       "Progettare un archivio locale per chiamare l'API il meno possibile.",
     ],
-    noUrl: 'Repository in preparazione',
+    url: 'https://github.com/sasha2324/sub4',
   },
 ];
 
