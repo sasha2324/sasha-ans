@@ -29,6 +29,7 @@ export const ui = {
     'footer.rss': 'Feed RSS',
     'footer.telegram': 'Telegram',
     'footer.instagram': 'Instagram',
+    'footer.x': 'X',
     'blog.title': 'Blog',
     'blog.description': 'Appunti e articoli su quello che sto imparando: reti, Linux, cloud e sicurezza.',
     'blog.list': 'Articoli',

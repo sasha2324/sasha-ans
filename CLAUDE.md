@@ -13,7 +13,7 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
 - Lingua del sito: italiano. Struttura pronta per l'inglese (`/en/`): testi
   dell'interfaccia in `src/i18n/`, contenuti in sottocartelle per lingua (`it/`, `en/`).
 - Non inserire dati personali non forniti da Sasha (indirizzo, telefono, data di nascita…).
-  Contatti autorizzati: GitHub `sasha2324`, Telegram `@s_ans3`, Instagram `3s.ans`.
+  Contatti autorizzati: GitHub `sasha2324`, Telegram `@s_ans3`, Instagram `3s.ans`, X `3s_ans`.
 - Non presentare esperienze, lavori o certificazioni che Sasha non ha.
   Sasha sta iniziando un ITS in infrastrutture digitali.
 - Gli articoli li scrive Sasha: preparare solo struttura e segnaposto.

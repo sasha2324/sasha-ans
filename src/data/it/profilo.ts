@@ -38,6 +38,10 @@ export const profile = {
     username: '3s.ans',
     url: 'https://www.instagram.com/3s.ans/',
   },
+  x: {
+    username: '3s_ans',
+    url: 'https://x.com/3s_ans',
+  },
 
   intro: {
     headline: 'Sto imparando a gestire infrastrutture cloud e a proteggerle.',

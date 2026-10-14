@@ -6,7 +6,7 @@ import Projects from '../components/Projects.astro';
 import { profile } from '../data/it/profilo';
 import { projects } from '../data/it/progetti';
 
-const { name, intro, path, skills, github, telegram, instagram } = profile;
+const { name, intro, path, skills, github, telegram, instagram, x } = profile;
 ---
 
 <BaseLayout home>
@@ -31,6 +31,7 @@ const { name, intro, path, skills, github, telegram, instagram } = profile;
       <a class="button selectable" href={telegram.url} rel="me">Scrivimi su Telegram</a>
       <a class="button selectable" href={github.url} rel="me">Apri il profilo GitHub</a>
       <a class="button selectable" href={instagram.url} rel="me">Seguimi su Instagram</a>
+      <a class="button selectable" href={x.url} rel="me">Seguimi su X</a>
     </div>
   </section>
 </BaseLayout>
