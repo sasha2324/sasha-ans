@@ -1,10 +1,115 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Path from '../components/Path.astro';
+import Skills from '../components/Skills.astro';
+import { profile } from '../data/it/profilo';
+
+const { intro, path, skills, projects, github } = profile;
 ---
 
 <BaseLayout>
-  <div class="container" style="padding-block: var(--space-8);">
-    <h1>Sasha</h1>
-    <p>Sito in costruzione.</p>
-  </div>
+  <section class="intro container">
+    <h1>{intro.headline}</h1>
+    {intro.text.map((paragraph) => <p class="lead">{paragraph}</p>)}
+    <p class="languages">{intro.languages}</p>
+  </section>
+
+  <Path steps={path} />
+
+  <Skills have={skills.have} learning={skills.learning} />
+
+  {
+    projects.length > 0 && (
+      <section class="section container" aria-labelledby="progetti-titolo">
+        <h2 id="progetti-titolo">Progetti</h2>
+        <ul class="projects">
+          {projects.map((project) => (
+            <li>
+              <h3>{project.url ? <a href={project.url}>{project.title}</a> : project.title}</h3>
+              <p>{project.description}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="section contact container" aria-labelledby="contatti-titolo">
+    <h2 id="contatti-titolo">Contatti</h2>
+    <p>Il codice dei miei progetti e di questo sito è su GitHub.</p>
+    <a class="button" href={github.url} rel="me">Apri il profilo GitHub</a>
+  </section>
 </BaseLayout>
+
+<style>
+  .intro {
+    padding-block: var(--space-7) var(--space-7);
+  }
+
+  .intro h1 {
+    max-width: 18ch;
+    margin-bottom: var(--space-5);
+  }
+
+  .lead {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    margin-bottom: var(--space-3);
+    max-width: 52ch;
+  }
+
+  .languages {
+    margin-top: var(--space-5);
+    color: var(--muted);
+  }
+
+  .section {
+    padding-block: var(--space-7);
+  }
+
+  .section h2 {
+    margin-bottom: var(--space-5);
+  }
+
+  .contact {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .contact p {
+    margin-bottom: var(--space-5);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-5);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .button:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .projects {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .intro {
+      padding-block: var(--space-8);
+    }
+
+    .section {
+      padding-block: var(--space-8);
+    }
+  }
+</style>

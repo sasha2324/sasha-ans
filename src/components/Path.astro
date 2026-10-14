@@ -1,0 +1,170 @@
+---
+// Schema del percorso (elemento firma, vedi DESIGN.md).
+// Nodo pieno = fatto, nodo con centro = in corso, nodo vuoto = obiettivo.
+// Il collegamento verso un nodo futuro è tratteggiato.
+import type { PathStep } from '../data/it/profilo';
+
+interface Props {
+  steps: PathStep[];
+}
+
+const { steps } = Astro.props;
+
+const stateLabel = {
+  done: 'Fatto',
+  current: 'In corso',
+  next: 'Obiettivo',
+} as const;
+---
+
+<section class="band" aria-labelledby="percorso-titolo">
+  <div class="container">
+    <h2 id="percorso-titolo">Percorso</h2>
+    <ol class="path" style={`--count: ${steps.length}`}>
+      {
+        steps.map((step) => (
+          <li data-state={step.state}>
+            <span class="node" aria-hidden="true" />
+            <span class="title">{step.title}</span>
+            <span class="state">{step.label ?? stateLabel[step.state]}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .band {
+    background: var(--band-bg);
+    color: var(--band-ink);
+    padding-block: var(--space-7);
+  }
+
+  h2 {
+    margin-bottom: var(--space-6);
+  }
+
+  .path {
+    --node: 18px;
+    --stroke: 2px;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  li {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--node) 1fr;
+    column-gap: var(--space-4);
+    align-items: start;
+  }
+
+  .node {
+    grid-row: span 2;
+    width: var(--node);
+    height: var(--node);
+    margin-top: 0.2em;
+    border-radius: 50%;
+    border: var(--stroke) solid var(--band-ink);
+    background: var(--band-bg);
+    position: relative;
+    z-index: 1;
+  }
+
+  [data-state='done'] .node {
+    background: var(--band-ink);
+  }
+
+  [data-state='current'] .node {
+    border-color: var(--band-progress);
+    background: radial-gradient(circle, var(--band-progress) 0 3px, var(--band-bg) 4px);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--step-1);
+    line-height: 1.3;
+  }
+
+  .state {
+    font-size: var(--step--1);
+    color: var(--band-muted);
+  }
+
+  [data-state='current'] .state {
+    color: var(--band-progress);
+  }
+
+  /* Collegamento al nodo successivo: verticale su telefono */
+  li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--node) / 2 - var(--stroke) / 2);
+    top: calc(0.2em + var(--node));
+    height: calc(100% - var(--node) + var(--space-6));
+    border-left: var(--stroke) solid var(--band-line);
+    transform-origin: top;
+  }
+
+  li:not([data-state='done'])::after {
+    border-left-style: dashed;
+    border-left-color: var(--band-muted);
+  }
+
+  /* Da tablet in su: schema orizzontale */
+  @media (min-width: 48rem) {
+    .path {
+      grid-template-columns: repeat(var(--count, 4), 1fr);
+      gap: var(--space-4);
+    }
+
+    li {
+      grid-template-columns: 1fr;
+      row-gap: var(--space-3);
+    }
+
+    .node {
+      grid-row: auto;
+      margin-top: 0;
+    }
+
+    li:not(:last-child)::after {
+      left: var(--node);
+      top: calc(var(--node) / 2 - var(--stroke) / 2);
+      width: calc(100% - var(--node) + var(--space-4));
+      height: 0;
+      border-left: 0;
+      border-top: var(--stroke) solid var(--band-line);
+      transform-origin: left;
+    }
+
+    li:not([data-state='done'])::after {
+      border-top-style: dashed;
+      border-top-color: var(--band-muted);
+    }
+  }
+
+  /* Unica animazione del sito: il tratto già percorso si disegna al caricamento */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-state='done']::after {
+      animation: draw 700ms 200ms ease-out both;
+    }
+
+    @keyframes draw {
+      from {
+        transform: scale(var(--from-x, 1), var(--from-y, 0));
+      }
+    }
+
+    @media (min-width: 48rem) {
+      [data-state='done']::after {
+        --from-x: 0;
+        --from-y: 1;
+      }
+    }
+  }
+</style>

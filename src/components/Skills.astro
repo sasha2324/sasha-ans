@@ -1,0 +1,70 @@
+---
+interface Props {
+  have: string[];
+  learning: string[];
+}
+
+const { have, learning } = Astro.props;
+---
+
+<section class="section" aria-labelledby="competenze-titolo">
+  <div class="container">
+    <h2 id="competenze-titolo">Competenze</h2>
+    <div class="columns">
+      <div class="group" data-kind="have">
+        <h3>So usare</h3>
+        <ul>{have.map((item) => <li>{item}</li>)}</ul>
+      </div>
+      <div class="group" data-kind="learning">
+        <h3>Sto imparando</h3>
+        <ul>{learning.map((item) => <li>{item}</li>)}</ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--space-7);
+  }
+
+  h2 {
+    margin-bottom: var(--space-6);
+  }
+
+  .columns {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 48rem) {
+    .section {
+      padding-block: var(--space-8);
+    }
+
+    .columns {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .group {
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--ink);
+  }
+
+  .group[data-kind='learning'] {
+    border-left-color: var(--progress);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-3);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+</style>
