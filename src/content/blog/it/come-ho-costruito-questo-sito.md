@@ -3,7 +3,7 @@ title: Come ho costruito questo sito
 description: Un sito statico con Astro, scritto insieme a Claude Code e pubblicato gratis su Cloudflare Pages. Le scelte che ho fatto e perché.
 date: 2026-10-15
 tags: [astro, cloudflare, claude-code]
-draft: true
+draft: false
 ---
 
 ## Cosa volevo
