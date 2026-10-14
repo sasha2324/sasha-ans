@@ -3,7 +3,7 @@
  *
  * Adattato da React Bits (https://reactbits.dev, https://github.com/DavidHDev/react-bits).
  * Modifiche: rimosso React (montaggio con mountPatternWaves), colori letti dal tema,
- * nessun'altra modifica agli shader.
+ * velocità delle increspature regolabile (rippleRate). Shader invariati.
  *
  * MIT + Commons Clause License Condition v1.0
  * Copyright (c) 2026 David Haz
@@ -64,6 +64,8 @@ export interface PatternWavesProps extends Partial<PresetValues> {
   interactive?: boolean;
   cursorSize?: number;
   cursorStrength?: number;
+  /** Passi al secondo della simulazione delle increspature: più basso = onde più lente. */
+  rippleRate?: number;
   intro?: boolean;
   paused?: boolean;
 }
@@ -78,6 +80,7 @@ interface Settings extends PresetValues {
   interactive: boolean;
   cursorSize: number;
   cursorStrength: number;
+  rippleRate: number;
   intro: boolean;
   paused: boolean;
 }
@@ -511,6 +514,7 @@ const DEFAULTS = {
   interactive: true,
   cursorSize: 50,
   cursorStrength: 0.6,
+  rippleRate: RIPPLE_RATE,
   intro: true,
   paused: false
 };
@@ -540,6 +544,7 @@ const resolveSettings = (props: PatternWavesProps): Settings => {
     interactive: p.interactive,
     cursorSize: p.cursorSize,
     cursorStrength: p.cursorStrength,
+    rippleRate: p.rippleRate,
     intro: p.intro,
     paused: p.paused
   };
@@ -750,7 +755,7 @@ export function mountPatternWaves(
   };
 
   const stepRipple = (field: RippleField, s: Settings, dt: number) => {
-    rippleClock = Math.min(rippleClock + dt * RIPPLE_RATE, 4);
+    rippleClock = Math.min(rippleClock + dt * clamp(s.rippleRate, 5, 120), 4);
     const strength = clamp(s.cursorStrength, 0, 1);
     const moved = Math.hypot(pointer.x - pointer.lastX, pointer.y - pointer.lastY);
     let impulse = (pointer.inside ? Math.min(moved / 14, 1) * 0.35 * strength : 0) + pointer.burst * strength;
