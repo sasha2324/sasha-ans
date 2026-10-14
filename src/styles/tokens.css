@@ -1,0 +1,93 @@
+/*
+ * Token di design (vedi DESIGN.md).
+ * Ogni colore ha un ruolo: se serve un colore nuovo, prima si aggiorna DESIGN.md.
+ */
+
+:root {
+  /* Colori — tema chiaro */
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --ink: #13243a;
+  --muted: #4f5f73;
+  --line: #1f5bbf;
+  --progress: #9c6410;
+  --hairline: #c9d3df;
+  --code-bg: #ffffff;
+
+  /* Fascia scura (uguale in entrambi i temi) */
+  --band-bg: #0f1c2c;
+  --band-ink: #e6ecf3;
+  --band-muted: #9dacbf;
+  --band-line: #6fa0f0;
+  --band-progress: #e8b04f;
+  --band-hairline: #2a3c52;
+
+  /* Font */
+  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Scala tipografica (~1.25) */
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.5rem;
+  --step-3: clamp(1.75rem, 3.5vw, 2.5rem);
+  --step-4: clamp(2.25rem, 5vw, 3.5rem);
+
+  /* Spaziature (base 4 px) */
+  --space-1: 0.25rem; /*  4 */
+  --space-2: 0.5rem; /*  8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem; /* 16 */
+  --space-5: 1.5rem; /* 24 */
+  --space-6: 2rem; /* 32 */
+  --space-7: 3rem; /* 48 */
+  --space-8: 5rem; /* 80 */
+
+  /* Layout */
+  --container: 70rem; /* 1120 px */
+  --gutter: var(--space-4);
+  --measure: 68ch;
+  --radius: 4px;
+
+  color-scheme: light;
+}
+
+/* Tema scuro: scelto a mano dall'interruttore… */
+:root[data-theme='dark'] {
+  --bg: #0f1c2c;
+  --surface: #162638;
+  --ink: #e6ecf3;
+  --muted: #9dacbf;
+  --line: #6fa0f0;
+  --progress: #e8b04f;
+  --hairline: #2a3c52;
+  --code-bg: #0b1622;
+  --band-bg: #0b1622;
+
+  color-scheme: dark;
+}
+
+/* …oppure preso dalle impostazioni del sistema, se non c'è una scelta salvata. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0f1c2c;
+    --surface: #162638;
+    --ink: #e6ecf3;
+    --muted: #9dacbf;
+    --line: #6fa0f0;
+    --progress: #e8b04f;
+    --hairline: #2a3c52;
+    --code-bg: #0b1622;
+    --band-bg: #0b1622;
+
+    color-scheme: dark;
+  }
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: var(--space-6);
+  }
+}

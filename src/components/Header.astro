@@ -1,0 +1,61 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+const path = Astro.url.pathname;
+const isBlog = path.startsWith('/blog') || path.startsWith('/tag');
+---
+
+<header class="site-header">
+  <div class="container inner">
+    <a class="name" href="/" aria-current={path === '/' ? 'page' : undefined}>Sasha</a>
+    <nav aria-label="Principale">
+      <a href="/blog/" aria-current={isBlog ? 'page' : undefined}>{t('nav.blog')}</a>
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 4rem;
+  }
+
+  .name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--step-1);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--space-2);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-decoration-thickness: 2px;
+  }
+</style>

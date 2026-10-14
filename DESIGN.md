@@ -54,6 +54,9 @@ Tre tagli della stessa famiglia, **IBM Plex**: è nata per contesti tecnici,
 | Testo | IBM Plex Sans 400 / 500 | paragrafi, navigazione, bottoni |
 | Schema | IBM Plex Mono 400 | **solo** etichette dei nodi e codice negli articoli |
 
+Nota: IBM Plex Sans Condensed non ha il cirillico. Se un titolo contiene
+cirillico, quelle lettere usano IBM Plex Sans (impostato come riserva in `--font-display`).
+
 Scala (rapporto ~1.25, base 18 px su desktop, 17 px su telefono):
 
 | Token | Dimensione | Interlinea | Spaziatura lettere |
