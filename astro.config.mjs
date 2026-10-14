@@ -1,10 +1,14 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  // Indirizzo definitivo del sito: lo impostiamo quando creiamo il progetto su Cloudflare Pages.
-  // Serve per RSS, sitemap e link canonici.
-  // site: 'https://<nome-progetto>.pages.dev',
+  // Indirizzo del sito: serve per RSS, mappa del sito e link canonici.
+  // PROVVISORIO: va sostituito con l'indirizzo vero quando creiamo il progetto
+  // su Cloudflare Pages (es. https://<nome-progetto>.pages.dev o un dominio proprio).
+  site: 'https://sasha2324.pages.dev',
+
+  integrations: [sitemap()],
 
   markdown: {
     shikiConfig: {

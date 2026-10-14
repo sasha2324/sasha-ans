@@ -9,7 +9,10 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container inner">
     <p>© {year} Sasha</p>
-    <a class="selectable" href={profile.github.url} rel="me">{t('footer.github')}</a>
+    <div class="links">
+      <a class="selectable" href="/rss.xml">{t('footer.rss')}</a>
+      <a class="selectable" href={profile.github.url} rel="me">{t('footer.github')}</a>
+    </div>
   </div>
 </footer>
 
@@ -27,6 +30,11 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: var(--space-3);
     padding-block: var(--space-5);
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-5);
   }
 
   a {
