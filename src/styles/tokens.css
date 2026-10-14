@@ -46,6 +46,7 @@
   --container: 70rem; /* 1120 px */
   --gutter: var(--space-4);
   --measure: 68ch;
+  --nav-width: 16rem; /* menu fisso a sinistra, da 1024 px */
   --radius: 0;
 
   /* Tratteggio "in corso" (come i contorni di TechText: 4 pieno, 2 vuoto) */

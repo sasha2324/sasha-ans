@@ -12,14 +12,14 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 
 import Background from '../components/Background.astro';
-import Header from '../components/Header.astro';
+import SiteNav from '../components/SiteNav.astro';
 import Footer from '../components/Footer.astro';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   title?: string;
   description?: string;
-  /** Home: header sopra lo sfondo animato e sequenza di ingresso. */
+  /** Home: sfondo con velo progressivo e sequenza di ingresso. */
   home?: boolean;
 }
 
@@ -70,7 +70,7 @@ const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
   <body>
     <a class="skip-link" href="#contenuto">{t('nav.skip')}</a>
     <Background home={home} />
-    <Header overlay={home} />
+    <SiteNav />
     <main id="contenuto">
       <slot />
     </main>

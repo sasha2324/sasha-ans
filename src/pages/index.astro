@@ -10,7 +10,7 @@ const { name, intro, path, skills, projects, github } = profile;
 <BaseLayout home>
   <Hero name={name} headline={intro.headline} steps={path} />
 
-  <section class="section container about" aria-labelledby="chi-sono-titolo">
+  <section id="chi-sono" class="section container about" aria-labelledby="chi-sono-titolo">
     <h2 id="chi-sono-titolo">Chi sono</h2>
     <div>
       {intro.text.map((paragraph) => <p class="lead">{paragraph}</p>)}
@@ -36,7 +36,7 @@ const { name, intro, path, skills, projects, github } = profile;
     )
   }
 
-  <section class="section container contact" aria-labelledby="contatti-titolo">
+  <section id="contatti" class="section container contact" aria-labelledby="contatti-titolo">
     <h2 id="contatti-titolo">Contatti</h2>
     <p>Il codice dei miei progetti e di questo sito è su GitHub.</p>
     <a class="button selectable" href={github.url} rel="me">Apri il profilo GitHub</a>

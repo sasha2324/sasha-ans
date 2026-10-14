@@ -135,6 +135,19 @@ pre {
   border-color: var(--ink);
 }
 
+/* Le ancore del menu (#chi-sono…) non finiscono sotto il bordo dello schermo */
+section[id] {
+  scroll-margin-top: var(--space-5);
+}
+
+/* Da 1024 px il menu (SiteNav) è fisso a sinistra: il contenuto gli lascia spazio */
+@media (min-width: 64rem) {
+  main,
+  .site-footer {
+    padding-left: var(--nav-width);
+  }
+}
+
 /* Contenitore centrato con margini laterali */
 .container {
   width: 100%;

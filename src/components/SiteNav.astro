@@ -1,0 +1,182 @@
+---
+// Menu del sito: LineSidebar fissa in alto a sinistra su tutte le pagine.
+// Telefono: bottone "Menu" che apre la stessa sidebar a tutto schermo.
+// Home: la voce della sezione visibile si accende scorrendo.
+import LineSidebar from './LineSidebar.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
+const path = Astro.url.pathname;
+const isHome = path === '/';
+const isBlog = path.startsWith('/blog') || path.startsWith('/tag');
+
+// Sulla home i link alle sezioni sono ancore; dalle altre pagine riportano alla home.
+const home = isHome ? '' : '/';
+const items = [
+  { label: t('nav.home'), href: '/' },
+  { label: t('nav.about'), href: `${home}#chi-sono` },
+  { label: t('nav.skills'), href: `${home}#competenze` },
+  { label: t('nav.contact'), href: `${home}#contatti` },
+  { label: t('nav.blog'), href: '/blog/' }
+];
+const activeIndex = isHome ? 0 : isBlog ? items.length - 1 : null;
+---
+
+<div class="site-nav" data-site-nav data-home={isHome ? '' : undefined}>
+  <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav-panel">
+    <span class="menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span class="menu-label" data-open-label={t('nav.menu')} data-close-label={t('nav.close')}>{t('nav.menu')}</span>
+  </button>
+
+  <div class="panel" id="site-nav-panel">
+    <LineSidebar items={items} label={t('nav.main')} activeIndex={activeIndex} class="site-nav-list" />
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-site-nav]');
+  const button = root?.querySelector<HTMLButtonElement>('.menu-button');
+  const label = root?.querySelector<HTMLElement>('.menu-label');
+  const panel = root?.querySelector<HTMLElement>('.panel');
+  const list = root?.querySelector<HTMLElement>('[data-line-sidebar]');
+  const mobile = window.matchMedia('(max-width: 63.99rem)');
+
+  // ---- Apertura e chiusura su telefono ----
+  const setOpen = (open: boolean) => {
+    if (!root || !button || !label) return;
+    root.toggleAttribute('data-open', open);
+    button.setAttribute('aria-expanded', String(open));
+    label.textContent = (open ? label.dataset.closeLabel : label.dataset.openLabel) ?? '';
+    document.documentElement.classList.toggle('nav-open', open);
+    if (open) panel?.querySelector<HTMLAnchorElement>('a')?.focus();
+  };
+
+  button?.addEventListener('click', () => setOpen(!root?.hasAttribute('data-open')));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && root?.hasAttribute('data-open')) {
+      setOpen(false);
+      button?.focus();
+    }
+  });
+  // Un clic su una voce chiude il menu (serve per le ancore della home)
+  panel?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a') && mobile.matches) setOpen(false);
+  });
+  mobile.addEventListener('change', () => setOpen(false));
+
+  // ---- Home: accende la voce della sezione che si sta guardando ----
+  if (root?.hasAttribute('data-home') && list) {
+    const links = Array.from(list.querySelectorAll<HTMLAnchorElement>('a'));
+    const sections = links.map((a) => {
+      const hash = new URL(a.href).hash;
+      return hash ? document.querySelector<HTMLElement>(hash) : null;
+    });
+    let current = 0;
+    let scheduled = false;
+
+    const update = () => {
+      scheduled = false;
+      const line = window.innerHeight * 0.35;
+      let index = 0; // in cima alla pagina: Home
+      sections.forEach((section, i) => {
+        if (section && section.getBoundingClientRect().top <= line) index = i;
+      });
+      if (index === current) return;
+      current = index;
+      list.dispatchEvent(new CustomEvent('linesidebar:active', { detail: index }));
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true }
+    );
+    update();
+  }
+</script>
+
+<style>
+  .site-nav {
+    --nav-top: var(--space-5);
+  }
+
+  /* ---------- Telefono e tablet: bottone + pannello a tutto schermo ---------- */
+
+  .menu-button {
+    position: fixed;
+    top: var(--space-3);
+    left: var(--space-3);
+    z-index: 11;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-3);
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* Tre tacche come quelle del righello di LineSidebar */
+  .menu-icon {
+    display: grid;
+    gap: 4px;
+    width: 18px;
+  }
+
+  .menu-icon span {
+    height: 1px;
+    background: currentColor;
+  }
+
+  .menu-icon span:nth-child(2) {
+    width: 60%;
+  }
+
+  .panel {
+    display: none;
+  }
+
+  [data-open] .panel {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    padding: 5.5rem var(--space-5) var(--space-6);
+    overflow-y: auto;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+  }
+
+  [data-open] .panel :global(.site-nav-list) {
+    --font-size: 1.5rem !important;
+    --item-gap: 28px !important;
+  }
+
+  :global(html.nav-open) {
+    overflow: hidden;
+  }
+
+  /* ---------- Desktop: sidebar fissa in alto a sinistra ---------- */
+
+  @media (min-width: 64rem) {
+    .menu-button {
+      display: none;
+    }
+
+    .panel {
+      display: block;
+      position: fixed;
+      top: var(--nav-top);
+      left: var(--space-4);
+      z-index: 10;
+      width: calc(var(--nav-width) - var(--space-4));
+    }
+  }
+</style>

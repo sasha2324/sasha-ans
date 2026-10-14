@@ -13,7 +13,7 @@ Riferimenti attuali: quattro componenti di **React Bits** scelti da Sasha
 | TechText | il titolo; il **tratteggio** come segno di "in lavorazione"; la **cornice di selezione** con maniglie agli angoli |
 | LatticeLoader | il loader della sequenza di ingresso; i puntini in griglia |
 | ScrollExpand | la finestra arrotondata che si apre a tutto schermo; il velo (scrim) per leggere il testo sopra lo sfondo |
-| LineSidebar | elenco a righello del blog (articoli e indice), unico elemento viola |
+| LineSidebar | il **menu del sito** (fisso in alto a sinistra) e l'indice degli articoli; unico elemento viola |
 
 ---
 
@@ -85,12 +85,23 @@ Sopra c'è un velo nero (`--bg`) che lo scurisce dietro al testo:
 Risparmio batteria: quando lo sfondo è dietro al testo (velo pieno), l'animazione
 scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home è libera.
 
+## Menu (tutte le pagine)
+
+LineSidebar fissa in alto a sinistra, al posto di una barra in alto (che non c'è).
+Voci: Home, Chi sono, Competenze, Contatti, Blog. Sulla home si accende la sezione
+visibile; sulle pagine del blog è accesa "Blog".
+
+- Da 1024 px: sidebar fissa larga `--nav-width` (16rem); `main` e footer lasciano
+  quello spazio a sinistra.
+- Sotto 1024 px: bottone «Menu» fisso in alto a sinistra (tre tacche come icona) che
+  apre la sidebar a tutto schermo; si chiude con «Chiudi», con Esc o scegliendo una voce.
+
 ## Home
 
 1. **Hero** (100svh): "Sasha" grande in alto con TechText (peso 700, fino a 320 px,
    alone nero attorno alle lettere per staccarle dai puntini; h1 vero nascosto accanto
    al canvas). In basso: frase di presentazione e **percorso** in versione compatta
-   (orizzontale da 768 px, verticale su telefono). Header trasparente, senza nome.
+   (orizzontale da 768 px, verticale su telefono).
 2. **Chi sono**: due colonne da 768 px (titolo | testo).
 3. **Competenze**: due gruppi con legenda (linea piena / tratteggiata).
 4. **Progetti**: compare solo quando ce n'è almeno uno.
@@ -98,12 +109,11 @@ scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home �
 
 ## Blog
 
-- **Elenco** (`/blog/`, `/tag/<tag>/`): da 1024 px, in alto a sinistra LineSidebar con i
-  titoli (fisso scorrendo), a destra l'anteprima dell'articolo in evidenza con cornice di
-  selezione; cambia passando sulle voci. Su telefono: anteprime una sotto l'altra.
-- **Articolo**: da 1024 px, in alto a sinistra l'indice (titoli `##`) con LineSidebar,
-  fisso; la sezione che si sta leggendo resta accesa in viola. Su telefono l'indice è
-  un blocco richiudibile sopra il testo. Testo a 68ch.
+- **Elenco** (`/blog/`, `/tag/<tag>/`): anteprime una sotto l'altra (data, minuti,
+  titolo, descrizione, tag, «Leggi l'articolo»), separate da un divisore da 1024 px.
+- **Articolo**: da 1280 px l'indice (titoli `##`) con LineSidebar è fisso **a destra**
+  (a sinistra c'è il menu); la sezione che si sta leggendo resta accesa in viola. Sotto
+  1280 px l'indice è un blocco richiudibile sopra il testo. Testo a 68ch.
 - Markdown: citazioni con bordo tratteggiato, separatori tratteggiati, codice con tema
   Shiki `min-dark` su `--code-bg`.
 - Metadati (data, minuti di lettura, «Bozza») in IBM Plex Mono piccolo.
@@ -115,7 +125,7 @@ scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home �
    ingrandito a 1.35; sotto, LatticeLoader "Loading" con cronometro.
 2. Pagina e font caricati (minimo 1,4 s): ✓ bianca, "Ready in X.Xs" (tempo trascorso).
 3. Dopo 0,65 s la finestra si apre a tutto schermo in 1,1 s; lo sfondo torna a scala 1.
-4. Al 68% dell'apertura entrano header e contenuti (opacità + 18 px dal basso).
+4. Al 68% dell'apertura entrano menu e contenuti (opacità + 18 px dal basso).
 
 Regole: una volta per visita (sessionStorage), salto con clic o tasto, nessuna intro
 con "riduci movimento" o senza JavaScript, rete di sicurezza a 8 s.
