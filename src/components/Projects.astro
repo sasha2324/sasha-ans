@@ -1,0 +1,192 @@
+---
+// Sezione Progetti della home: una scheda per progetto.
+// Bordo pieno = concluso, tratteggiato = in corso (stessa regola del percorso).
+import type { Project } from '../data/it/progetti';
+
+interface Props {
+  projects: Project[];
+}
+
+const { projects } = Astro.props;
+---
+
+<section id="progetti" class="section" aria-labelledby="progetti-titolo">
+  <div class="container">
+    <h2 id="progetti-titolo">Progetti</h2>
+    <p class="intro">Due progetti personali, sviluppati con l'aiuto di Claude Code.</p>
+
+    <div class="cards">
+      {
+        projects.map((project) => {
+          const List = project.ordered ? 'ol' : 'ul';
+          return (
+            <article class="card" id={`progetto-${project.id}`} data-state={project.state} aria-labelledby={`progetto-${project.id}-titolo`}>
+              <header class="head">
+                <p class="state">{project.stateLabel}</p>
+                <h3 id={`progetto-${project.id}-titolo`}>{project.title}</h3>
+                <p class="summary">{project.summary}</p>
+                {project.url ? (
+                  <a class="code selectable" href={project.url}>
+                    Codice su GitHub
+                  </a>
+                ) : (
+                  <p class="no-code">{project.noUrl}</p>
+                )}
+              </header>
+
+              <div class="body">
+                <h4>Cosa fa</h4>
+                <p>{project.what}</p>
+                <List class="steps">
+                  {project.steps.map((step) => (
+                    <li>{step}</li>
+                  ))}
+                </List>
+
+                <h4>Con cosa è fatto</h4>
+                <ul class="stack">
+                  {project.stack.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+
+                <h4>Cosa ho imparato</h4>
+                <ul class="learned">
+                  {project.learned.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: var(--space-7);
+  }
+
+  h2 {
+    margin-bottom: var(--space-3);
+  }
+
+  .intro {
+    color: var(--muted);
+    margin-bottom: var(--space-6);
+  }
+
+  .cards {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .card {
+    display: grid;
+    gap: var(--space-5);
+    padding: var(--space-5);
+    border: 1px solid var(--ink);
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+    scroll-margin-top: var(--space-6);
+  }
+
+  .card[data-state='current'] {
+    border: 1px dashed var(--muted);
+  }
+
+  .state {
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    color: var(--muted);
+  }
+
+  h3 {
+    margin-top: var(--space-2);
+    font-size: var(--step-3);
+  }
+
+  .summary {
+    margin-top: var(--space-2);
+    font-size: var(--step-1);
+    line-height: 1.4;
+  }
+
+  .code {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .no-code {
+    margin-top: var(--space-4);
+    color: var(--muted);
+    font-size: var(--step--1);
+  }
+
+  h4 {
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+  }
+
+  h4:not(:first-child) {
+    margin-top: var(--space-5);
+  }
+
+  .body p,
+  .body li {
+    max-width: 60ch;
+  }
+
+  .steps,
+  .learned {
+    margin-top: var(--space-2);
+    padding-left: var(--space-5);
+  }
+
+  .steps li + li,
+  .learned li + li {
+    margin-top: var(--space-1);
+  }
+
+  .steps li::marker,
+  .learned li::marker {
+    color: var(--muted);
+  }
+
+  .stack {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .stack li {
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--hairline);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  @media (min-width: 48rem) {
+    .section {
+      padding-block: var(--space-8);
+    }
+
+    .card {
+      grid-template-columns: 1fr 2fr;
+      gap: var(--space-6);
+      padding: var(--space-6);
+    }
+  }
+</style>

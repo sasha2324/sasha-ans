@@ -2,9 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import Skills from '../components/Skills.astro';
+import Projects from '../components/Projects.astro';
 import { profile } from '../data/it/profilo';
+import { projects } from '../data/it/progetti';
 
-const { name, intro, path, skills, projects, github } = profile;
+const { name, intro, path, skills, github } = profile;
 ---
 
 <BaseLayout home>
@@ -20,21 +22,7 @@ const { name, intro, path, skills, projects, github } = profile;
 
   <Skills have={skills.have} learning={skills.learning} />
 
-  {
-    projects.length > 0 && (
-      <section class="section container" aria-labelledby="progetti-titolo">
-        <h2 id="progetti-titolo">Progetti</h2>
-        <ul class="projects">
-          {projects.map((project) => (
-            <li>
-              <h3>{project.url ? <a href={project.url}>{project.title}</a> : project.title}</h3>
-              <p>{project.description}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
+  <Projects projects={projects} />
 
   <section id="contatti" class="section container contact" aria-labelledby="contatti-titolo">
     <h2 id="contatti-titolo">Contatti</h2>
@@ -81,13 +69,6 @@ const { name, intro, path, skills, projects, github } = profile;
     color: var(--ink);
     font-weight: 500;
     text-decoration: none;
-  }
-
-  .projects {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    gap: var(--space-6);
   }
 
   @media (min-width: 48rem) {

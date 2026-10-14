@@ -10,13 +10,6 @@ export interface PathStep {
   label?: string;
 }
 
-export interface Project {
-  title: string;
-  description: string;
-  url?: string;
-  tags: string[];
-}
-
 export const profile = {
   name: 'Sasha',
   github: {
@@ -52,6 +45,4 @@ export const profile = {
     ],
   },
 
-  // Vuoto per ora: la sezione Progetti compare quando c'è almeno un progetto.
-  projects: [] as Project[],
 };
