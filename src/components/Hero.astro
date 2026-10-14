@@ -18,13 +18,16 @@ const { name, headline, steps } = Astro.props;
 <section class="hero" aria-labelledby="hero-titolo">
   <div class="scrim" aria-hidden="true"></div>
 
-  <div class="content container">
+  <div class="content">
     <!-- Titolo vero (per screen reader e motori di ricerca); senza JavaScript è anche quello visibile -->
     <h1 id="hero-titolo" class="title-text">{name}</h1>
+    <!-- Il titolo è centrato sullo schermo intero, non sulla colonna accanto al menu -->
     <div class="title-canvas" data-techtext data-text={name}></div>
-    <div class="bottom">
-      <p class="headline">{headline}</p>
-      <Path steps={steps} compact />
+    <div class="bottom-wrap">
+      <div class="bottom container">
+        <p class="headline">{headline}</p>
+        <Path steps={steps} compact />
+      </div>
     </div>
   </div>
 
@@ -88,6 +91,21 @@ const { name, headline, steps } = Astro.props;
     );
   }
 
+  /* Da 1024 px la hero si allarga sotto al menu, così il titolo si centra sullo schermo */
+  @media (min-width: 64rem) {
+    .hero {
+      margin-left: calc(-1 * var(--nav-width));
+    }
+
+    .content .title-canvas {
+      margin-inline: var(--nav-width); /* spazio libero uguale ai due lati: non tocca il menu */
+    }
+
+    .bottom-wrap {
+      padding-left: var(--nav-width); /* allineato alle sezioni sotto */
+    }
+  }
+
   .content {
     flex: 1;
     display: flex;
@@ -104,6 +122,7 @@ const { name, headline, steps } = Astro.props;
   }
 
   .title-canvas {
+    margin-inline: var(--gutter);
     height: clamp(11rem, 40vh, 28rem);
     touch-action: pan-y;
     user-select: none;
