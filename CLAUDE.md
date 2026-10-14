@@ -21,8 +21,14 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
 
 ## Codice di terzi
 
-- **Pattern Waves** da React Bits (reactbits.dev, github.com/DavidHDev/react-bits),
-  licenza MIT + Commons Clause © David Haz. Uso consentito come parte del sito,
-  anche modificato. Obblighi: tenere nota di copyright e licenza nel file;
-  non vendere né ridistribuire il componente da solo (nemmeno riscritto).
-  Configurazione scelta: preset `silk`, bianco su nero, `fade="edges"`, interattivo.
+Componenti da React Bits (reactbits.dev, github.com/DavidHDev/react-bits),
+licenza MIT + Commons Clause © David Haz. Uso consentito come parte del sito,
+anche modificato e riscritto senza React. Obblighi: tenere nota di copyright e
+licenza in ogni file; non vendere né ridistribuire i componenti da soli.
+
+| Componente | Ruolo nel sito | Configurazione scelta |
+|---|---|---|
+| Pattern Waves | sfondo di caricamento e home | preset `silk`, bianco su nero, `fade="edges"`, interattivo |
+| LatticeLoader | animazione di caricamento | etichette in inglese, ✓ bianca (non verde); config da ricevere |
+| ScrollExpand | passaggio caricamento → home | **automatico** (a tempo, non allo scroll); dentro la finestra c'è Pattern Waves |
+| TechText | titolo della home | testo `Sasha`, peso 600, `reveal="letter"`, tratteggio 4/2, 15 specks; h1 vero nascosto per accessibilità |
