@@ -36,9 +36,21 @@ _Scrivi qui: un'altra cosa che i dati ti hanno fatto capire._
 
 ## I progressi
 
-| Periodo | Km a settimana | Passo medio | Lungo |
-|---|---|---|---|
-| _settimane_ | _km_ | _min/km_ | _km_ |
+| Sett. | Uscite | Km | Passo | Lungo |
+|---|---|---|---|---|
+| 03/08 | 1 | 5,8 | 6:42 | 5,8 |
+| 10/08 | 6 | 40,4 | 6:29 | 10,0 |
+| 17/08 | 4 | 30,0 | 6:36 | 10,5 |
+| 24/08 | 4 | 33,7 | 7:07 | 13,0 |
+| 31/08 | 1 | 7,2 | 6:31 | 7,2 |
+| 07/09 | 1 | 5,8 | 7:16 | 5,8 |
+| 14/09 | 3 | 17,5 | 6:27 | 6,0 |
+| 21/09 | 4 | 33,7 | 6:26 | 18,2 |
+| 28/09 | 4 | 31,3 | 6:04 | 15,3 |
+| 05/10 | 4 | 32,5 | 5:53 | 15,2 |
+| 12/10 | 3 | 29,5 | 6:11 | 17,8 |
+
+Settimane dal lunedì, dati di Sub4 fino al 18/10. Passo: tempo totale diviso per i km della settimana, in minuti al km. Lungo: la corsa più lunga della settimana, in km.
 
 _Scrivi qui: com'è andata finora, in parole tue._
 
