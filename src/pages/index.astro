@@ -5,8 +5,16 @@ import Skills from '../components/Skills.astro';
 import Projects from '../components/Projects.astro';
 import { profile } from '../data/it/profilo';
 import { projects } from '../data/it/progetti';
+import { loadPortfolioRepos } from '../data/github';
 
 const { name, intro, path, skills, github, telegram, instagram, x } = profile;
+
+// Progetti pubblici da GitHub (topic «portfolio») + schede scritte a mano di quelli privati
+const repos = await loadPortfolioRepos();
+const projectTitles = Object.fromEntries([
+  ...repos.map((repo) => [repo.name, repo.name]),
+  ...projects.map((project) => [project.id, project.title]),
+]);
 ---
 
 <BaseLayout home>
@@ -20,9 +28,9 @@ const { name, intro, path, skills, github, telegram, instagram, x } = profile;
     </div>
   </section>
 
-  <Skills skills={skills} />
+  <Skills skills={skills} projectTitles={projectTitles} />
 
-  <Projects projects={projects} />
+  <Projects repos={repos} projects={projects} />
 
   <section id="contatti" class="section container contact" aria-labelledby="contatti-titolo">
     <h2 id="contatti-titolo">Contatti</h2>

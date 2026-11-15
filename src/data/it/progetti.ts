@@ -1,11 +1,11 @@
-// Progetti mostrati nella home.
+// Schede scritte a mano: solo per i progetti PRIVATI, il cui codice non si può linkare.
+// I progetti pubblici arrivano da GitHub al momento della build (vedi ../github.ts):
+// basta dare al repository il topic «portfolio».
 // Regole: niente risultati economici (PifSignal), niente dati di salute, mappe o date
-// di gara (Sub4). Le voci di «Cosa ho imparato» sono bozze da rivedere con Sasha.
-
-export type ProjectId = 'pifsignal' | 'sub4';
+// di gara. Le voci di «Cosa ho imparato» sono bozze da rivedere con Sasha.
 
 export interface Project {
-  id: ProjectId;
+  id: string;
   title: string;
   /** Una riga: che cos'è */
   summary: string;
@@ -19,10 +19,8 @@ export interface Project {
   ordered: boolean;
   stack: string[];
   learned: string[];
-  /** Link al codice, solo se il repository è pubblico */
-  url?: string;
-  /** Testo al posto del link quando il codice non è pubblico */
-  noUrl?: string;
+  /** Testo al posto del link al codice, per esempio «Repository privato» */
+  noUrl: string;
 }
 
 export const projects: Project[] = [
@@ -63,28 +61,5 @@ export const projects: Project[] = [
     ],
     noUrl: 'Repository privato',
   },
-  {
-    id: 'sub4',
-    title: 'Sub4',
-    summary: 'Il mio tracker per preparare una maratona sotto le 4 ore.',
-    state: 'current',
-    stateLabel: 'In corso',
-    what: 'Raccoglie le mie corse e le confronta con il piano di allenamento.',
-    steps: [
-      'Scarica ogni corsa una volta sola (da Strava e Garmin Connect) in un archivio locale: le analisi poi funzionano offline.',
-      'Calcola il passo equivalente in piano, per confrontare corse con dislivelli diversi.',
-      'Controlla la qualità dei dati: ha trovato un salto del GPS che falsava un record.',
-      'Segue un piano a «cancelli»: si passa alla fase successiva quando si raggiungono i criteri, non a data fissa.',
-    ],
-    ordered: false,
-    stack: ['Python', 'API di Strava (OAuth 2.0)', 'Garmin Connect', 'CSV e JSON', 'openpyxl (Excel)', 'API di Notion'],
-    learned: [
-      "Usare un'API con login OAuth 2.0 e token che scadono.",
-      'Non fidarsi dei dati grezzi: controllarli prima di usarli.',
-      "Progettare un archivio locale per chiamare l'API il meno possibile.",
-    ],
-    url: 'https://github.com/sasha2324/sub4',
-  },
 ];
 
-export const projectById = (id: ProjectId) => projects.find((p) => p.id === id)!;

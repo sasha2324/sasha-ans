@@ -2,18 +2,23 @@
 // Competenze su tre livelli. Il bordo dice il livello, come nel resto del sito:
 // pieno bianco = uso nei progetti, pieno grigio = ho provato, tratteggiato = sto imparando.
 // Le voci dei primi due livelli portano al progetto che le dimostra.
-import type { Skills } from '../data/it/profilo';
-import { projectById } from '../data/it/progetti';
+import type { Skill, Skills } from '../data/it/profilo';
 
 interface Props {
   skills: Skills;
+  /** id del progetto → titolo da mostrare. Gli id che mancano (per esempio un
+   *  repository a cui è stato tolto il topic) non diventano link a schede inesistenti. */
+  projectTitles: Record<string, string>;
 }
 
-const { skills } = Astro.props;
+const { skills, projectTitles } = Astro.props;
+
+const withKnownProjects = (items: Skill[]) =>
+  items.map((item) => ({ ...item, projects: item.projects.filter((id) => id in projectTitles) }));
 
 const levels = [
-  { kind: 'using', title: 'Uso nei progetti', items: skills.using },
-  { kind: 'tried', title: 'Ho provato', items: skills.tried },
+  { kind: 'using', title: 'Uso nei progetti', items: withKnownProjects(skills.using) },
+  { kind: 'tried', title: 'Ho provato', items: withKnownProjects(skills.tried) },
   { kind: 'learning', title: 'Sto imparando', items: skills.learning.map((name) => ({ name, projects: [] })) },
 ];
 ---
@@ -38,7 +43,7 @@ const levels = [
                       <span class="visually-hidden">Progetti:</span>
                       {item.projects.map((id) => (
                         <a class="selectable" href={`#progetto-${id}`}>
-                          {projectById(id).title}
+                          {projectTitles[id]}
                         </a>
                       ))}
                     </span>

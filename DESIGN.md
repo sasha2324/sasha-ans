@@ -107,8 +107,10 @@ sezione visibile; sulle pagine del blog è accesa "Blog".
 2. **Chi sono**: due colonne da 768 px (titolo | testo).
 3. **Competenze**: tre livelli con legenda (tre colonne da 1024 px). Le voci dei
    primi due livelli hanno il link alla scheda del progetto che le dimostra.
-4. **Progetti**: una scheda per progetto (stato, titolo, link al codice se pubblico |
-   cosa fa, con cosa è fatto, cosa ho imparato).
+4. **Progetti**: una scheda per progetto. Pubblici: letti da GitHub alla build (topic
+   `portfolio`), in griglia: stato (archiviato = pieno), nome, descrizione, link al codice.
+   Privati: scheda scritta a mano (stato, titolo, «Repository privato» | cosa fa, con cosa
+   è fatto, cosa ho imparato).
 5. **Contatti**: bottoni Telegram, GitHub, Instagram, X (gli stessi link anche nel footer).
 
 ## Blog

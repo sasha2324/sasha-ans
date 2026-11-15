@@ -10,12 +10,11 @@ export interface PathStep {
   label?: string;
 }
 
-import type { ProjectId } from './progetti';
-
 export interface Skill {
   name: string;
-  /** Progetti che dimostrano la competenza */
-  projects: ProjectId[];
+  /** Progetti che dimostrano la competenza: il nome del repository GitHub
+   *  per i progetti pubblici, l'id della scheda in progetti.ts per quelli privati. */
+  projects: string[];
 }
 
 export interface Skills {
