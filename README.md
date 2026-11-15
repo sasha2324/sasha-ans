@@ -1,65 +1,65 @@
 # Sito di Sasha
 
-Portfolio e blog tecnico. Sito statico fatto con [Astro](https://astro.build):
-niente database, solo file. Pubblicato su Cloudflare Pages, che lo ricostruisce
-da solo a ogni push su GitHub.
+**Cosa fa:** portfolio e blog tecnico: presentazione, percorso, competenze, progetti e articoli.
+La sezione Progetti legge da GitHub, al momento della build, i repository pubblici con il
+topic `portfolio`. I progetti privati hanno invece una scheda scritta a mano.
 
-## Lavorare in locale
+**Con cosa è fatto:** [Astro](https://astro.build), sito statico senza database; articoli in
+Markdown; pubblicato su Cloudflare Pages, che lo ricostruisce a ogni push su GitHub.
+
+**Stato:** online su <https://sasha-ans.pages.dev>, cresce con gli articoli nuovi.
+
+## Avviarlo
 
 Serve Node.js 22.12 o più recente (la versione usata è in `.node-version`).
 
 ```
 npm install        # la prima volta
 npm run dev        # sito in prova su http://localhost:4321, si aggiorna mentre scrivi
-npm run build      # costruisce il sito finale nella cartella dist/
+npm run build      # costruisce il sito finale in dist/ (serve internet: legge GitHub)
 npm run preview    # mostra dist/ come sarà online
 ```
 
+Per pubblicare basta `git push`: Cloudflare ricostruisce il sito in un paio di minuti.
+Se la build fallisce (anche quando GitHub non risponde), resta online la versione precedente.
+
 ## Aggiungere un articolo
 
-1. Crea un file `.md` in `src/content/blog/it/`. Il nome del file diventa
-   l'indirizzo: `il-mio-articolo.md` → `/blog/il-mio-articolo/`.
-   Usa lettere minuscole e trattini, niente spazi né accenti.
-2. In cima al file metti l'intestazione:
-
-   ```
-   ---
-   title: Titolo dell'articolo
-   description: Una o due frasi: compaiono nell'elenco e nei risultati di ricerca.
-   date: 2026-10-14
-   tags: [linux, reti]
-   draft: true
-   ---
-   ```
-
-3. Sotto scrivi il testo in Markdown. I titoli `##` formano l'indice laterale.
-   In `esempio-markdown.md` c'è un promemoria della sintassi.
-4. Con `draft: true` l'articolo si vede solo con `npm run dev` (con l'etichetta
-   «Bozza»). Quando è pronto, cambia in `draft: false`.
-5. Se lo modifichi dopo la pubblicazione, aggiungi `updated: 2026-11-02`.
-
-Un file che inizia con `_` (per esempio `_idee.md`) viene ignorato.
-
-## Pubblicare
+Un file `.md` in `src/content/blog/it/`: il nome diventa l'indirizzo
+(`il-mio-articolo.md` → `/blog/il-mio-articolo/`, minuscole e trattini). In cima:
 
 ```
-npm run build                      # controlla che non ci siano errori
-git add -A
-git commit -m "Pubblica l'articolo su ..."
-git push
+---
+title: Titolo dell'articolo
+description: Una o due frasi: compaiono nell'elenco e nei risultati di ricerca.
+date: 2026-10-14
+tags: [linux, reti]
+draft: true
+---
 ```
 
-Dopo il push Cloudflare Pages ricostruisce il sito in un paio di minuti.
-Lo stato della build si vede nella dashboard di Cloudflare (Workers & Pages →
-il progetto → Deployments). Se la build fallisce, il sito resta alla versione
-precedente: niente va offline.
+Con `draft: true` si vede solo con `npm run dev`; quando è pronto, `draft: false`.
+Dopo la pubblicazione, per le modifiche aggiungi `updated: 2026-11-02`. I titoli `##`
+formano l'indice laterale; `esempio-markdown.md` è un promemoria della sintassi.
+I file che iniziano con `_` vengono ignorati.
+
+## Aggiungere un progetto
+
+- **Pubblico:** su GitHub dai al repository il topic `portfolio` e una descrizione.
+  Compare alla build successiva (un push, oppure «Retry deployment» su Cloudflare).
+- **Privato:** scrivi la scheda in `src/data/it/progetti.ts`.
+
+Se la build su Cloudflare fallisce con «GitHub ha risposto 403», è il limite delle
+richieste senza token: aggiungi la variabile `GITHUB_TOKEN` al progetto su Cloudflare
+(un token fine-grained senza permessi: legge solo dati pubblici).
 
 ## Dove sono le cose
 
 | Cosa | Dove |
 |---|---|
 | Testi della home (presentazione, percorso, competenze, contatti) | `src/data/it/profilo.ts` |
-| Progetti | `src/data/it/progetti.ts` |
+| Progetti pubblici (lettura da GitHub) | `src/data/github.ts` |
+| Progetti privati | `src/data/it/progetti.ts` |
 | Articoli | `src/content/blog/it/` |
 | Testi dell'interfaccia (menu, bottoni) | `src/i18n/ui.ts` |
 | Colori, font, spazi | `src/styles/tokens.css` (regole in `DESIGN.md`) |
