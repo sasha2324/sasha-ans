@@ -41,6 +41,7 @@ const { repos, projects } = Astro.props;
       )
     }
 
+    {projects.length > 0 && (
     <div class="cards">
       {
         projects.map((project) => {
@@ -82,6 +83,7 @@ const { repos, projects } = Astro.props;
         })
       }
     </div>
+    )}
   </div>
 </section>
 

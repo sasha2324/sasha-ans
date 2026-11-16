@@ -60,24 +60,24 @@ export const profile = {
   ] as PathStep[],
 
   // Competenze confermate da Sasha (ottobre 2026), ricavate dal codice dei progetti.
-  // Ogni voce dei primi due livelli indica il progetto che la dimostra.
+  // Le voci dei primi due livelli indicano, dove c'è, il progetto che le dimostra.
   skills: {
     using: [
-      { name: 'Python', projects: ['pifsignal', 'sub4'] },
-      { name: 'Integrazione di API e SDK', projects: ['pifsignal', 'sub4'] },
-      { name: 'Gestione delle credenziali (.env, niente segreti in git)', projects: ['pifsignal', 'sub4'] },
-      { name: 'Test automatici con pytest', projects: ['pifsignal'] },
-      { name: 'Git e GitHub', projects: ['pifsignal', 'sub4'] },
+      { name: 'Python', projects: ['sub4'] },
+      { name: 'Integrazione di API e SDK', projects: ['sub4'] },
+      { name: 'Gestione delle credenziali (.env, niente segreti in git)', projects: ['sub4'] },
+      { name: 'Test automatici con pytest', projects: [] },
+      { name: 'Git e GitHub', projects: ['sub4'] },
       { name: 'Elaborazione di dati (CSV, JSON, XML)', projects: ['sub4'] },
-      { name: 'Sviluppo con Claude Code', projects: ['pifsignal', 'sub4'] },
+      { name: 'Sviluppo con Claude Code', projects: ['sub4'] },
     ],
     tried: [
-      { name: 'Server Linux: VPS, systemd, ssh, rsync, cron', projects: ['pifsignal'] },
-      { name: 'Programmazione asincrona (asyncio)', projects: ['pifsignal'] },
+      { name: 'Server Linux: VPS, systemd, ssh, rsync, cron', projects: [] },
+      { name: 'Programmazione asincrona (asyncio)', projects: [] },
       { name: 'Login OAuth 2.0', projects: ['sub4'] },
-      { name: 'Modelli AI con risposta strutturata', projects: ['pifsignal'] },
-      { name: 'API web con FastAPI', projects: ['pifsignal'] },
-      { name: 'Dashboard con Streamlit e Next.js', projects: ['pifsignal'] },
+      { name: 'Modelli AI con risposta strutturata', projects: [] },
+      { name: 'API web con FastAPI', projects: [] },
+      { name: 'Dashboard con Streamlit e Next.js', projects: [] },
       { name: 'API di Notion', projects: ['sub4'] },
     ],
     learning: [
