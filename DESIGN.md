@@ -84,13 +84,14 @@ nel blog è accesa «Articoli».
 
 1. **Intro**: etichetta «Studente ITS · Cloud e Cybersecurity», «Ciao! Sono» e il nome con
    TechText (allineato a sinistra), una frase, «Guarda i progetti» e «Leggi il blog»,
-   icone LinkedIn e GitHub.
+   icone LinkedIn, GitHub, X e Telegram.
 2. **01 Progetti**: schede grandi, immagine 4:3 a sinistra e a destra numero, categoria,
    titolo, descrizione e link. Pubblici da GitHub, privati scritti a mano.
 3. **02 Percorso**: le tappe in fila, orizzontali da 54rem e verticali su telefono.
 4. **03 Studio ITS**: riquadro tratteggiato «In arrivo».
 5. **04 Articoli**: gli ultimi tre articoli.
-6. **05 Contatti**: LinkedIn e GitHub, niente modulo. Gli altri profili sono nel footer.
+6. **05 Contatti**: LinkedIn, GitHub, X e Telegram (due per riga), niente modulo.
+   Instagram e il feed RSS sono nel footer.
 
 ## Blog
 

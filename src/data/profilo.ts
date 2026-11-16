@@ -13,8 +13,8 @@ export interface PathStep {
 export const profile = {
   name: 'Sasha',
 
-  // Contatti autorizzati da Sasha. LinkedIn e GitHub sono quelli in evidenza;
-  // gli altri compaiono solo nel footer.
+  // Contatti autorizzati da Sasha. LinkedIn, GitHub, X e Telegram sono nell'intro e nei
+  // Contatti della home; Instagram solo nel footer.
   linkedin: {
     url: 'https://www.linkedin.com/in/oleksandr-mazur-a62959217/',
   },

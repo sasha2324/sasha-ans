@@ -73,6 +73,12 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
         <a class="btn btn-secondary" href={profile.github.url} rel="me">
           <span class="with-icon"><Icon name="github" class="icon" />GitHub</span><span class="arrow"><Icon name="external" /></span>
         </a>
+        <a class="btn btn-secondary" href={profile.x.url} rel="me">
+          <span class="with-icon"><Icon name="x" class="icon" />X (Twitter)</span><span class="arrow"><Icon name="external" /></span>
+        </a>
+        <a class="btn btn-secondary" href={profile.telegram.url} rel="me">
+          <span class="with-icon"><Icon name="telegram" class="icon" />Telegram</span><span class="arrow"><Icon name="external" /></span>
+        </a>
       </div>
     </section>
   </div>
@@ -133,10 +139,15 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
     gap: var(--space-2);
   }
 
+  /* Quattro contatti: due per riga, tutti della stessa larghezza */
   .buttons {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
+  }
+
+  .buttons .btn {
+    justify-content: space-between;
   }
 
   @media (max-width: 54rem) {
@@ -146,9 +157,8 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
   }
 
   @media (max-width: 32rem) {
-    .buttons .btn {
-      flex: 1 1 100%;
-      justify-content: space-between;
+    .buttons {
+      grid-template-columns: 1fr;
     }
   }
 </style>

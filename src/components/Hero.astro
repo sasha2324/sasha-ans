@@ -1,6 +1,6 @@
 ---
 // Intro della home: etichetta, «Ciao! Sono» e il nome disegnato con TechText (React Bits),
-// una frase, i pulsanti verso progetti e blog, LinkedIn e GitHub.
+// una frase, i pulsanti verso progetti e blog, LinkedIn, GitHub, X e Telegram.
 // Senza JavaScript (o se il canvas non parte) si vede il titolo in HTML.
 import Icon from './Icon.astro';
 import { profile } from '../data/profilo';
@@ -33,6 +33,8 @@ const { name } = profile;
     <div class="socials">
       <a class="icon-btn" href={profile.linkedin.url} rel="me" aria-label="LinkedIn"><Icon name="linkedin" /></a>
       <a class="icon-btn" href={profile.github.url} rel="me" aria-label="GitHub"><Icon name="github" /></a>
+      <a class="icon-btn" href={profile.x.url} rel="me" aria-label="X (Twitter)"><Icon name="x" /></a>
+      <a class="icon-btn" href={profile.telegram.url} rel="me" aria-label="Telegram"><Icon name="telegram" /></a>
     </div>
   </div>
 </section>
