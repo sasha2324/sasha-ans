@@ -20,7 +20,7 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
   (nell'intro e nei Contatti della home), Instagram `3s.ans` (solo nel footer).
 - Non presentare esperienze, lavori o certificazioni che Sasha non ha.
   Sasha è studente ITS in infrastrutture digitali (in corso).
-- Immagini dei progetti: niente dati veri di persone (per DDA solo dati di prova inventati),
+- Immagini dei progetti: niente dati veri di persone (solo dati di prova inventati),
   niente dati di salute né date di gara.
 - Gli articoli li scrive Sasha: preparare solo struttura e segnaposto.
 - Piccoli passi, un commit chiaro per ogni passo; spiegare in breve le scelte importanti.

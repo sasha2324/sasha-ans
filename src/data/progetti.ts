@@ -11,10 +11,9 @@
 // niente dati veri di dipendenti nelle immagini.
 import type { ImageMetadata } from 'astro';
 import type { Localized } from '../i18n/utils';
-// Immagini 4:3: schermate vere dei progetti (per DDA solo dati di prova inventati)
+// Immagini 4:3: schermate vere dei progetti (con dati di prova, mai dati veri di persone)
 import imgCarburanti from '../assets/progetti/carburanti-terni.png';
 import imgSub4 from '../assets/progetti/sub4.png';
-import imgDda from '../assets/progetti/dda.png';
 
 export interface ProjectExtra {
   /** Ordine nella pagina (più basso = prima). Senza, il progetto va in fondo. */
@@ -66,19 +65,4 @@ export interface PrivateProject {
   imageAlt?: Localized;
 }
 
-export const privateProjects: PrivateProject[] = [
-  {
-    id: 'dda',
-    title: { it: 'DDA — Registro ore', en: 'DDA — Timesheet' },
-    category: { it: 'App per telefono · Privato', en: 'Mobile app · Private' },
-    description: {
-      it: "App per il telefono dei dipendenti: ore, viaggi, spese e cantiere di ogni giorno, con l'Excel del mese da condividere.",
-      en: "A phone app for employees: each day's hours, travel, expenses and job site, with the month's Excel file to share.",
-    },
-    image: imgDda,
-    imageAlt: {
-      it: "Due schermate dell'app con dati di prova: l'elenco dei giorni del mese e un giorno aperto con cantiere, ore e spese.",
-      en: 'Two screens of the app with sample data: the list of days in the month and an open day with job site, hours and expenses.',
-    },
-  },
-];
+export const privateProjects: PrivateProject[] = [];
