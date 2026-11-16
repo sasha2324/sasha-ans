@@ -1,0 +1,168 @@
+---
+// Scheda di un articolo: data, titolo, descrizione, freccia. Tutta la scheda è cliccabile.
+// Un articolo italiano mostrato in un'altra lingua porta l'etichetta «Italian only».
+import Icon from './Icon.astro';
+import {
+  formatShortDate,
+  postLang,
+  postUrl,
+  readingMinutes,
+  tagUrl,
+  type PostItem,
+} from '../lib/blog';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+interface Props {
+  item: PostItem;
+  /** h2 nelle pagine del blog, h3 nella home (sotto il titolo della sezione) */
+  heading?: 'h2' | 'h3';
+  /** Tag e minuti di lettura (pagine del blog) */
+  details?: boolean;
+}
+
+const { item, heading: Heading = 'h3', details = false } = Astro.props;
+const { post, fallback } = item;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const written = postLang(post);
+const { title, description, date, tags, draft } = post.data;
+---
+
+<article class="card post-card">
+  <p class="label meta">
+    <time datetime={date.toISOString()}>{formatShortDate(date, lang)}</time>
+    {details && <span>{readingMinutes(post)} {t('blog.minutes')}</span>}
+    {draft && <span class="pill">{t('blog.draft')}</span>}
+    {fallback && <span class="pill">{t('posts.onlyIt')}</span>}
+  </p>
+  <div class="text">
+    <Heading class="title">
+      <a href={postUrl(post)} lang={written !== lang ? written : undefined}>{title}</a>
+    </Heading>
+    <p class="description" lang={written !== lang ? written : undefined}>{description}</p>
+    {
+      details && tags.length > 0 && (
+        <ul class="tags" aria-label={t('blog.tags')}>
+          {tags.map((tag) => (
+            <li>
+              <a class="label" href={tagUrl(tag, written)}>
+                #{tag}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+  <span class="arrow-circle" aria-hidden="true"><Icon name="arrow" /></span>
+</article>
+
+<style>
+  .post-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr) auto;
+    gap: var(--space-2) var(--space-6);
+    align-items: center;
+    padding: var(--space-5);
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .title {
+    font-size: 1.35rem;
+    line-height: 1.25;
+  }
+
+  /* Tutta la scheda è il link */
+  .title a {
+    text-decoration: none;
+  }
+
+  .title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .post-card:hover .title a {
+    color: var(--accent-text);
+  }
+
+  .post-card:has(.title a:focus-visible) {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 3px;
+  }
+
+  .title a:focus-visible {
+    outline: none;
+  }
+
+  .description {
+    margin-top: var(--space-1);
+    color: var(--muted);
+  }
+
+  .tags {
+    position: relative; /* sopra il link della scheda */
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin-top: var(--space-3);
+    list-style: none;
+    padding: 0;
+  }
+
+  .tags a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    text-decoration: none;
+  }
+
+  .tags a:hover {
+    color: var(--accent-text);
+  }
+
+  .arrow-circle {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Telefono: data e freccia in alto, il testo prende tutta la larghezza */
+  @media (max-width: 40rem) {
+    .post-card {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'meta arrow'
+        'text text';
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+
+    .meta {
+      grid-area: meta;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-1) var(--space-3);
+    }
+
+    .text {
+      grid-area: text;
+    }
+
+    .arrow-circle {
+      grid-area: arrow;
+      width: 38px;
+      height: 38px;
+    }
+  }
+</style>

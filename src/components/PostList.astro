@@ -1,169 +1,61 @@
 ---
-// Elenco articoli (pagina Blog e pagine dei tag): anteprime una sotto l'altra.
-import { formatDate, postUrl, readingMinutes, tagUrl, type Post } from '../lib/blog';
+// Elenco articoli (pagina Blog e pagine dei tag): un pannello con il titolo e le schede.
+import PostCard from './PostCard.astro';
+import type { PostItem } from '../lib/blog';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
-  posts: Post[];
+  items: PostItem[];
   title: string;
   description?: string;
+  /** Etichetta sopra il titolo, es. «// Blog» */
+  eyebrow?: string;
 }
 
-const { posts, title, description } = Astro.props;
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const { items, title, description, eyebrow } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
-<div class="container blog-list">
-  <div class="main">
-    <header class="intro">
-      <h1>{title}</h1>
-      {description && <p>{description}</p>}
+<div class="container page">
+  <section class="panel" aria-labelledby="elenco-titolo">
+    <header class="section-head intro">
+      <div>
+        {eyebrow && <p class="label">// {eyebrow}</p>}
+        <h1 id="elenco-titolo">{title}</h1>
+        {description && <p class="description">{description}</p>}
+      </div>
     </header>
 
-    {posts.length === 0 && <p class="empty">{t('blog.empty')}</p>}
+    {items.length === 0 && <p class="empty">{t('blog.empty')}</p>}
 
-    <div class="previews" data-previews>
-      {
-        posts.map((post) => (
-          <article class="preview">
-            <p class="meta">
-              <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, lang)}</time>
-              <span>
-                {readingMinutes(post)} {t('blog.minutes')}
-              </span>
-              {post.data.draft && <span class="draft">{t('blog.draft')}</span>}
-            </p>
-            <h2>
-              <a href={postUrl(post)}>{post.data.title}</a>
-            </h2>
-            <p class="description">{post.data.description}</p>
-            {post.data.tags.length > 0 && (
-              <ul class="tags" aria-label={t('blog.tags')}>
-                {post.data.tags.map((tag) => (
-                  <li>
-                    <a class="tag selectable" href={tagUrl(tag)}>
-                      {tag}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <a class="button selectable" href={postUrl(post)}>
-              {t('blog.read')}
-            </a>
-          </article>
-        ))
-      }
+    <div class="list">
+      {items.map((item) => <PostCard item={item} heading="h2" details />)}
     </div>
-  </div>
+  </section>
 </div>
 
-
 <style>
-  .blog-list {
-    padding-block: 4.5rem var(--space-8);
+  .page {
+    padding-top: 6rem;
+    padding-bottom: var(--space-5);
   }
 
-  @media (min-width: 64rem) {
-    .blog-list {
-      padding-top: var(--space-7);
-    }
-  }
-
-  .intro h1 {
-    margin-bottom: var(--space-3);
-  }
-
-  .intro p {
-    color: var(--muted);
-    max-width: 52ch;
-  }
-
-  .empty {
-    margin-top: var(--space-6);
-  }
-
-  .previews {
-    display: grid;
-    gap: var(--space-7);
-    margin-top: var(--space-7);
-  }
-
-  .preview {
-    display: grid;
-    gap: var(--space-3);
-    justify-items: start;
-  }
-
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2) var(--space-4);
-    font-family: var(--font-mono);
-    font-size: var(--step--2);
-    color: var(--muted);
-  }
-
-  .draft {
-    padding-inline: var(--space-2);
-    border: 1px dashed var(--muted);
-  }
-
-  .preview h2 {
-    font-size: var(--step-2);
-  }
-
-  .preview h2 a {
-    color: var(--ink);
-    text-decoration: none;
-  }
-
-  .preview h2 a:hover {
-    text-decoration: underline;
+  h1 {
+    margin-top: var(--space-2);
   }
 
   .description {
-    max-width: 60ch;
-  }
-
-  .tags {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-  }
-
-  .tag {
-    display: inline-block;
-    padding: var(--space-1) var(--space-2);
-    border: 1px solid var(--hairline);
-    font-size: var(--step--1);
+    margin-top: var(--space-3);
     color: var(--muted);
-    text-decoration: none;
+    font-size: var(--step-1);
   }
 
-  .button {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    margin-top: var(--space-2);
-    padding: var(--space-2) var(--space-5);
-    border: 1px solid var(--ink);
-    color: var(--ink);
-    font-weight: 500;
-    text-decoration: none;
+  .list {
+    display: grid;
+    gap: var(--space-3);
   }
 
-  @media (min-width: 64rem) {
-    .preview + .preview {
-      padding-top: var(--space-7);
-      border-top: 1px solid var(--hairline);
-    }
-
-    .preview h2 {
-      font-size: var(--step-3);
-    }
+  .empty {
+    color: var(--muted);
   }
 </style>

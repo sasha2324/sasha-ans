@@ -86,7 +86,7 @@ const vars = [
       items.map((item, index) => (
         <li class="item" data-active={activeIndex === index ? '' : undefined}>
           {showMarker && <span class="marker" aria-hidden="true" />}
-          <a class="label" href={item.href} aria-current={activeIndex === index ? current : undefined}>
+          <a class="item-label" href={item.href} aria-current={activeIndex === index ? current : undefined}>
             {showIndex && <span class="index">{String(index + 1).padStart(2, '0')}</span>}
             <span class="text">{item.label}</span>
           </a>
@@ -134,7 +134,7 @@ const vars = [
     inset: -6px -48px;
   }
 
-  .label {
+  .item-label {
     position: relative;
     display: inline-flex;
     align-items: baseline;
@@ -145,7 +145,7 @@ const vars = [
     transform: translateX(calc(var(--effect, 0) * var(--max-shift)));
   }
 
-  .label:focus-visible {
+  .item-label:focus-visible {
     outline: 1px solid var(--accent);
     outline-offset: 4px;
   }

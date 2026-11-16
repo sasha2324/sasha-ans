@@ -1,142 +1,115 @@
 ---
-// Prima schermata della home: titolo TechText e frase di presentazione, sopra lo sfondo
-// globale (Background.astro). Contiene il loader e la parte "contenuti" della sequenza
-// di ingresso (src/scripts/intro.ts); la parte "finestra" è in Background.astro.
-import LatticeLoader from './LatticeLoader.astro';
-import Path from './Path.astro';
-import type { PathStep } from '../data/it/profilo';
+// Intro della home: etichetta, «Ciao! Sono» e il nome disegnato con TechText (React Bits),
+// una frase, i pulsanti verso progetti e blog, LinkedIn e GitHub.
+// Senza JavaScript (o se il canvas non parte) si vede il titolo in HTML.
+import Icon from './Icon.astro';
+import { profile } from '../data/profilo';
+import { getLangFromUrl, langPrefix, useTranslations } from '../i18n/utils';
 
-interface Props {
-  name: string;
-  headline: string;
-  steps: PathStep[];
-}
-
-const { name, headline, steps } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { name } = profile;
 ---
 
-<section class="hero" aria-labelledby="hero-titolo">
-  <div class="scrim" aria-hidden="true"></div>
+<section class="panel hero" aria-labelledby="hero-titolo">
+  <p class="badge label"><span class="dot" aria-hidden="true"></span>{t('hero.label')}</p>
 
-  <div class="content">
-    <!-- Titolo vero (per screen reader e motori di ricerca); senza JavaScript è anche quello visibile -->
-    <h1 id="hero-titolo" class="title-text">{name}</h1>
-    <!-- Il titolo è centrato sullo schermo intero, non sulla colonna accanto al menu -->
+  <!-- Titolo vero, per screen reader e motori di ricerca -->
+  <h1 id="hero-titolo" class="title-text">{t('hero.hi')} {name}</h1>
+  <div class="title-visual" aria-hidden="true">
+    <p class="hi">{t('hero.hi')}</p>
     <div class="title-canvas" data-techtext data-text={name}></div>
-    <div class="bottom-wrap">
-      <div class="bottom container">
-        <p class="headline">{headline}</p>
-        <Path steps={steps} compact />
-      </div>
-    </div>
   </div>
 
-  <div class="intro-loader" data-intro-loader>
-    <LatticeLoader />
+  <p class="lead">{t('hero.lead')}</p>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="#progetti">
+      {t('hero.projects')}<span class="arrow"><Icon name="arrow" /></span>
+    </a>
+    <a class="btn btn-secondary" href={`${langPrefix(lang)}/blog/`}>
+      {t('hero.blog')}<span class="arrow"><Icon name="arrow" /></span>
+    </a>
+    <div class="socials">
+      <a class="icon-btn" href={profile.linkedin.url} rel="me" aria-label="LinkedIn"><Icon name="linkedin" /></a>
+      <a class="icon-btn" href={profile.github.url} rel="me" aria-label="GitHub"><Icon name="github" /></a>
+    </div>
   </div>
 </section>
 
 <script>
   import { mountTechText } from '../scripts/tech-text';
-  import '../scripts/intro';
 
   const root = document.documentElement;
-
-  const css = getComputedStyle(root);
-  const ink = css.getPropertyValue('--ink').trim() || '#ffffff';
-  const bg = css.getPropertyValue('--bg').trim() || '#000000';
-  const font = css.getPropertyValue('--font-display').trim();
-
   const titleEl = document.querySelector<HTMLElement>('[data-techtext]');
+
+  const colors = () => {
+    const css = getComputedStyle(root);
+    return {
+      color: css.getPropertyValue('--ink').trim() || '#0f1724',
+      // tratteggio, lente, puntini e cornice di selezione nel colore d'accento
+      accentColor: css.getPropertyValue('--accent-text').trim() || '#2445d6'
+    };
+  };
+
   const title = titleEl
     ? mountTechText(titleEl, {
         text: titleEl.dataset.text ?? 'Sasha',
-        fontFamily: font,
-        fontWeight: 700, // originale 600: lettere più piene, più leggibili sullo sfondo
-        fontSize: 320, // originale 150: titolo più grande (si riduce da solo se non c'è spazio)
+        fontFamily: getComputedStyle(root).getPropertyValue('--font-display').trim(),
+        fontWeight: 700, // originale 600: lettere più piene
+        fontSize: 320, // originale 150: si riduce da solo se non c'è spazio
         reveal: 'letter',
         dashLength: 4,
         dashGap: 2,
         specks: 15,
-        color: ink,
-        accentColor: ink,
-        haloColor: bg, // alone nero attorno alle lettere: le stacca dai puntini
-        haloBlur: 28
+        align: 'left', // allineato al resto dell'intro
+        ...colors()
       })
     : null;
-  if (title) root.classList.add('techtext-ready');
+
+  if (title) {
+    root.classList.add('techtext-ready');
+    document.addEventListener('themechange', () => title.set(colors()));
+  }
 </script>
 
 <style>
   .hero {
-    position: relative;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
+    padding-block: clamp(2.5rem, 7vw, 5.5rem);
     overflow: hidden;
-    isolation: isolate; /* il velo con z-index -1 resta dentro la hero, sopra lo sfondo */
   }
 
-  /* Velo in basso per leggere il testo sopra i puntini (come lo "scrim" di ScrollExpand) */
-  .scrim {
-    position: absolute;
-    inset: 0;
-    z-index: -1; /* dietro al testo */
-    pointer-events: none;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--bg) 85%, transparent),
-      transparent 45%,
-      color-mix(in srgb, var(--bg) 35%, transparent)
-    );
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
   }
 
-  /* Da 1024 px la hero si allarga sotto al menu, così il titolo si centra sullo schermo */
-  @media (min-width: 64rem) {
-    .hero {
-      margin-left: calc(-1 * var(--nav-width));
-    }
-
-    .content .title-canvas {
-      margin-inline: var(--nav-width); /* spazio libero uguale ai due lati: non tocca il menu */
-    }
-
-    .bottom-wrap {
-      padding-left: var(--nav-width); /* allineato alle sezioni sotto */
-    }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 20%, transparent);
   }
 
-  .content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding-top: 4.5rem; /* spazio per il bottone Menu su telefono */
-    padding-bottom: var(--space-7);
-  }
-
-  @media (min-width: 64rem) {
-    .content {
-      padding-top: var(--space-6);
-    }
-  }
-
-  .title-canvas {
-    margin-inline: var(--gutter);
-    height: clamp(11rem, 40vh, 28rem);
-    touch-action: pan-y;
-    user-select: none;
-  }
-
-  /* Senza JavaScript (o se il canvas non parte) si vede il titolo in HTML */
+  /* Senza JavaScript: titolo in HTML */
   .title-text {
-    font-size: clamp(5rem, 20vw, 14rem);
-    font-weight: 700;
-    text-align: center;
-    letter-spacing: -0.05em;
-    padding-top: var(--space-6);
+    margin-block: var(--space-5) var(--space-4);
+    font-size: clamp(2.9rem, 8vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
   }
 
+  .title-visual {
+    display: none;
+  }
+
+  /* Con TechText pronto: «Ciao! Sono» in HTML, il nome nel canvas */
   :global(html.techtext-ready) .title-text {
     position: absolute;
     width: 1px;
@@ -148,75 +121,50 @@ const { name, headline, steps } = Astro.props;
     white-space: nowrap;
   }
 
-  :global(html:not(.techtext-ready)) .title-canvas {
-    display: none;
+  :global(html.techtext-ready) .title-visual {
+    display: block;
+    margin-block: var(--space-5) var(--space-2);
   }
 
-  .bottom {
-    display: grid;
-    gap: var(--space-6);
-  }
-
-  .headline {
-    max-width: 22ch;
+  .hi {
     font-family: var(--font-display);
-    font-weight: 600;
-    font-size: var(--step-3);
-    line-height: 1.15;
-    letter-spacing: -0.015em;
-    text-wrap: balance;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 5.5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
   }
 
-  .intro-loader {
-    display: none;
+  .title-canvas {
+    /* il canvas lascia 16 px a sinistra per la cornice: si sposta indietro di altrettanto */
+    margin-left: -16px;
+    height: clamp(7.5rem, 19vw, 14rem);
+    touch-action: pan-y;
+    user-select: none;
   }
 
-  /* ---------- Sequenza di ingresso ---------- */
-
-  :global(html.intro) {
-    overflow: hidden;
+  .lead {
+    max-width: 40ch;
+    font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+    color: var(--muted);
   }
 
-  :global(html.intro) .scrim {
-    opacity: 0;
-    transition: opacity 1100ms ease;
-  }
-
-  :global(html.intro) .content,
-  :global(html.intro .site-nav) {
-    opacity: 0;
-    transform: translate3d(0, 18px, 0);
-    transition:
-      opacity 500ms ease,
-      transform 500ms cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  :global(html.intro) .intro-loader {
+  .actions {
     display: flex;
-    justify-content: center;
-    position: fixed; /* centrato sullo schermo, come la finestra dello sfondo */
-    inset: auto 0 calc(21% - 3.5rem);
-    transition: opacity 300ms ease;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
   }
 
-  :global(html.intro-open) .scrim {
-    opacity: 1;
+  .socials {
+    display: flex;
+    gap: var(--space-2);
   }
 
-  :global(html.intro-open) .intro-loader {
-    opacity: 0;
-  }
-
-  :global(html.intro-reveal) .content,
-  :global(html.intro-reveal .site-nav) {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* Su telefono la finestra iniziale è più larga (vedi Background.astro): il loader la segue */
-  @media (max-width: 47.99rem) {
-    :global(html.intro) .intro-loader {
-      inset: auto 0 calc(24% - 3.5rem);
+  @media (max-width: 32rem) {
+    .actions .btn {
+      flex: 1 1 100%;
+      justify-content: space-between;
     }
   }
 </style>

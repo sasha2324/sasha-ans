@@ -1,51 +1,77 @@
 ---
-// Scheletro comune a tutte le pagine: <head>, header, footer.
+// Scheletro comune a tutte le pagine: <head>, sfondo, menu, footer.
+// Sulla home contiene anche il loader della sequenza di ingresso.
 import '@fontsource/ibm-plex-sans/latin-400.css';
 import '@fontsource/ibm-plex-sans/latin-500.css';
+import '@fontsource/ibm-plex-sans/latin-600.css';
+import '@fontsource/ibm-plex-sans/latin-700.css';
 import '@fontsource/ibm-plex-sans/cyrillic-400.css';
 import '@fontsource/ibm-plex-sans/cyrillic-500.css';
-import '@fontsource/ibm-plex-sans-condensed/latin-600.css';
-import '@fontsource/ibm-plex-sans-condensed/latin-700.css';
+import '@fontsource/ibm-plex-sans/cyrillic-600.css';
+import '@fontsource/ibm-plex-sans/cyrillic-700.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
 import '@fontsource/ibm-plex-mono/cyrillic-400.css';
+import '@fontsource/ibm-plex-mono/cyrillic-500.css';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
 import Background from '../components/Background.astro';
 import SiteNav from '../components/SiteNav.astro';
 import Footer from '../components/Footer.astro';
-import { getLangFromUrl, useTranslations } from '../i18n/utils';
+import LatticeLoader from '../components/LatticeLoader.astro';
+import type { Lang } from '../i18n/ui';
+import { getLangFromUrl, langs, localizePath, useTranslations } from '../i18n/utils';
 
 interface Props {
   title?: string;
   description?: string;
-  /** Home: sfondo con velo progressivo e sequenza di ingresso. */
+  /** Home: velo progressivo sullo sfondo e sequenza di ingresso. */
   home?: boolean;
+  /** Indirizzo della stessa pagina nelle altre lingue, se non è solo il prefisso a cambiare */
+  alternates?: Partial<Record<Lang, string>>;
+  /** Pagine che esistono in una lingua sola (es. un articolo non tradotto) */
+  noAlternates?: boolean;
 }
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
 
-const { title, description = t('site.description'), home = false } = Astro.props;
+const { title, description = t('site.description'), home = false, alternates = {}, noAlternates = false } = Astro.props;
 const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
+const path = Astro.url.pathname;
+const hreflangs = noAlternates ? [] : langs.map((l) => ({ lang: l, path: alternates[l] ?? localizePath(path, l) }));
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#e6ecf2" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    {Astro.site && <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />}
+    {Astro.site && <link rel="canonical" href={new URL(path, Astro.site)} />}
+    {Astro.site && hreflangs.map((h) => <link rel="alternate" hreflang={h.lang} href={new URL(h.path, Astro.site)} />)}
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <link rel="alternate" type="application/rss+xml" title={`${t('site.title')} — ${t('blog.title')}`} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${t('site.title')} — Blog`} href="/rss.xml" />
 
-    <!-- Segnala che JavaScript è attivo (serve al titolo della home e all'intro) -->
+    <!-- Tema prima del primo disegno: scelta salvata, altrimenti quello del sistema -->
     <script is:inline>
-      document.documentElement.classList.add('js');
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
+        var theme;
+        try {
+          theme = localStorage.getItem('theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        root.dataset.theme = theme;
+        if (theme === 'dark') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0b1018');
+      })();
     </script>
     {
       home && (
@@ -73,10 +99,65 @@ const fullTitle = title ? `${title} | ${t('site.title')}` : t('site.title');
   <body>
     <a class="skip-link" href="#contenuto">{t('nav.skip')}</a>
     <Background home={home} />
-    <SiteNav />
+    <SiteNav alternates={alternates} />
     <main id="contenuto">
       <slot />
     </main>
     <Footer />
+    {
+      home && (
+        <div class="intro-loader" data-intro-loader>
+          <LatticeLoader />
+        </div>
+      )
+    }
+    {home && <script>import '../scripts/intro';</script>}
   </body>
 </html>
+
+<style is:global>
+  /* ---------- Sequenza di ingresso (solo home, vedi src/scripts/intro.ts) ---------- */
+  .intro-loader {
+    display: none;
+  }
+
+  html.intro {
+    overflow: hidden;
+  }
+
+  html.intro main,
+  html.intro .site-nav,
+  html.intro .site-footer {
+    opacity: 0;
+    translate: 0 18px;
+    transition:
+      opacity 500ms ease,
+      translate 500ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  html.intro .intro-loader {
+    display: flex;
+    justify-content: center;
+    position: fixed; /* sotto la finestra dello sfondo (Background.astro) */
+    inset: auto 0 calc(21% - 3.5rem);
+    z-index: 40;
+    transition: opacity 300ms ease;
+  }
+
+  html.intro-open .intro-loader {
+    opacity: 0;
+  }
+
+  html.intro-reveal main,
+  html.intro-reveal .site-nav,
+  html.intro-reveal .site-footer {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @media (max-width: 47.99rem) {
+    html.intro .intro-loader {
+      inset: auto 0 calc(24% - 3.5rem);
+    }
+  }
+</style>

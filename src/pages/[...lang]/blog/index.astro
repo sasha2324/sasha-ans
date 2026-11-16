@@ -1,0 +1,19 @@
+---
+// Elenco degli articoli, uno per lingua: /blog/ e /en/blog/.
+// In inglese compaiono anche gli articoli italiani non ancora tradotti («Italian only»).
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostList from '../../../components/PostList.astro';
+import { getPostsFor } from '../../../lib/blog';
+import type { Lang } from '../../../i18n/ui';
+import { langPaths, useTranslations } from '../../../i18n/utils';
+
+export const getStaticPaths = () => langPaths();
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+const items = await getPostsFor(lang);
+---
+
+<BaseLayout title={t('blog.title')} description={t('blog.description')}>
+  <PostList items={items} eyebrow={t('blog.title')} title={t('blog.title')} description={t('blog.description')} />
+</BaseLayout>

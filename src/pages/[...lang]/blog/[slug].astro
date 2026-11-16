@@ -1,54 +1,59 @@
 ---
+// Pagina di un articolo, nella lingua in cui è scritto: /blog/<slug>/, /en/blog/<slug>/.
+// Il selettore di lingua porta alla traduzione se c'è, altrimenti al blog dell'altra lingua.
 import { render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import LineSidebar from '../../components/LineSidebar.astro';
-import { formatDate, getPosts, postSlug, readingMinutes, tagUrl, type Post } from '../../lib/blog';
-import { useTranslations } from '../../i18n/utils';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LineSidebar from '../../../components/LineSidebar.astro';
+import Icon from '../../../components/Icon.astro';
+import { formatDate, getPosts, postSlug, readingMinutes, tagUrl, type Post } from '../../../lib/blog';
+import type { Lang } from '../../../i18n/ui';
+import { langPaths, langPrefix, langs, useTranslations } from '../../../i18n/utils';
 
 export async function getStaticPaths() {
-  const posts = await getPosts('it');
-  return posts.map((post) => ({ params: { slug: postSlug(post) }, props: { post } }));
+  const paths = [];
+  for (const { params, props } of langPaths()) {
+    for (const post of await getPosts(props.lang)) {
+      paths.push({ params: { ...params, slug: postSlug(post) }, props: { lang: props.lang, post } });
+    }
+  }
+  return paths;
 }
 
-interface Props {
-  post: Post;
-}
-
-const { post } = Astro.props;
+const { lang, post } = Astro.props as { lang: Lang; post: Post };
 const { Content, headings } = await render(post);
-const t = useTranslations('it');
+const t = useTranslations(lang);
+
+const slug = postSlug(post);
+const alternates: Partial<Record<Lang, string>> = {};
+for (const l of langs) {
+  const translated = (await getPosts(l)).some((p) => postSlug(p) === slug);
+  alternates[l] = translated ? `${langPrefix(l)}/blog/${slug}/` : `${langPrefix(l)}/blog/`;
+}
+const translatedLangs = langs.filter((l) => alternates[l]?.endsWith(`/${slug}/`));
 
 // Indice: solo i titoli di secondo livello (## nel Markdown)
 const toc = headings.filter((h) => h.depth === 2).map((h) => ({ label: h.text, href: `#${h.slug}` }));
 const { title, description, date, updated, tags, draft } = post.data;
+const blogUrl = `${langPrefix(lang)}/blog/`;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} alternates={alternates} noAlternates={translatedLangs.length < 2}>
   <div class="container post-layout">
-    {
-      toc.length > 0 && (
-        <aside class="toc">
-          <p class="toc-title">{t('blog.toc')}</p>
-          <LineSidebar items={toc} label={t('blog.toc')} current="location" class="toc-nav" />
-        </aside>
-      )
-    }
-
-    <article class="post">
+    <article class="panel post">
       <header class="post-header">
-        <a class="back selectable" href="/blog/">{t('blog.back')}</a>
+        <a class="back label" href={blogUrl}><span aria-hidden="true">←</span> {t('blog.back')}</a>
         <h1>{title}</h1>
-        <p class="meta">
-          <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        <p class="label meta">
+          <time datetime={date.toISOString()}>{formatDate(date, lang)}</time>
           <span>{readingMinutes(post)} {t('blog.minutes')}</span>
           {
             updated && (
               <span>
-                {t('blog.updated')} <time datetime={updated.toISOString()}>{formatDate(updated)}</time>
+                {t('blog.updated')} <time datetime={updated.toISOString()}>{formatDate(updated, lang)}</time>
               </span>
             )
           }
-          {draft && <span class="draft">{t('blog.draft')}</span>}
+          {draft && <span class="pill">{t('blog.draft')}</span>}
         </p>
         <p class="lead">{description}</p>
         {
@@ -56,8 +61,8 @@ const { title, description, date, updated, tags, draft } = post.data;
             <ul class="tags" aria-label={t('blog.tags')}>
               {tags.map((tag) => (
                 <li>
-                  <a class="tag selectable" href={tagUrl(tag)}>
-                    {tag}
+                  <a class="label" href={tagUrl(tag, lang)}>
+                    #{tag}
                   </a>
                 </li>
               ))}
@@ -70,7 +75,7 @@ const { title, description, date, updated, tags, draft } = post.data;
         toc.length > 0 && (
           <details class="toc-mobile">
             <summary>{t('blog.toc')}</summary>
-            <LineSidebar items={toc} label={t('blog.toc')} current="location" class="toc-nav" />
+            <LineSidebar items={toc} label={t("blog.toc")} current="location" class="toc-nav" fontSize={0.9} maxShift={14} markerLength={32} itemGap={14} />
           </details>
         )
       }
@@ -80,9 +85,20 @@ const { title, description, date, updated, tags, draft } = post.data;
       </div>
 
       <footer class="post-footer">
-        <a class="button selectable" href="/blog/">{t('blog.back')}</a>
+        <a class="btn btn-secondary" href={blogUrl}>
+          {t('blog.back')}<span class="arrow"><Icon name="arrow" /></span>
+        </a>
       </footer>
     </article>
+
+    {
+      toc.length > 0 && (
+        <aside class="toc">
+          <p class="label">// {t('blog.toc')}</p>
+          <LineSidebar items={toc} label={t("blog.toc")} current="location" class="toc-nav" fontSize={0.9} maxShift={14} markerLength={32} itemGap={14} />
+        </aside>
+      )
+    }
   </div>
 </BaseLayout>
 
@@ -122,38 +138,30 @@ const { title, description, date, updated, tags, draft } = post.data;
 <style>
   .post-layout {
     display: grid;
-    gap: var(--space-6);
-    padding-block: 4.5rem var(--space-8);
-  }
-
-  @media (min-width: 64rem) {
-    .post-layout {
-      padding-top: var(--space-7);
-    }
-  }
-
-  .toc {
-    display: none;
-  }
-
-  .toc-title {
-    font-family: var(--font-mono);
-    font-size: var(--step--2);
-    color: var(--muted);
+    gap: var(--space-5);
+    padding-top: 6rem;
+    padding-bottom: var(--space-5);
   }
 
   .post {
     min-width: 0;
+  }
+
+  .post > * {
     max-width: var(--measure);
   }
 
   .back {
     display: inline-flex;
     align-items: center;
+    gap: var(--space-2);
     min-height: 44px;
     margin-bottom: var(--space-4);
-    color: var(--muted);
     text-decoration: none;
+  }
+
+  .back:hover {
+    color: var(--accent-text);
   }
 
   .post-header h1 {
@@ -163,44 +171,43 @@ const { title, description, date, updated, tags, draft } = post.data;
   .meta {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-2) var(--space-4);
-    font-family: var(--font-mono);
-    font-size: var(--step--2);
-    color: var(--muted);
-  }
-
-  .draft {
-    padding-inline: var(--space-2);
-    border: 1px dashed var(--muted);
   }
 
   .lead {
     margin-top: var(--space-5);
     font-size: var(--step-1);
     line-height: 1.5;
+    color: var(--muted);
   }
 
   .tags {
-    list-style: none;
-    padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-top: var(--space-5);
+    gap: var(--space-1) var(--space-4);
+    margin-top: var(--space-4);
+    list-style: none;
+    padding: 0;
   }
 
-  .tag {
-    display: inline-block;
-    padding: var(--space-1) var(--space-2);
-    border: 1px solid var(--hairline);
-    font-size: var(--step--1);
-    color: var(--muted);
+  .tags a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
     text-decoration: none;
+  }
+
+  .tags a:hover {
+    color: var(--accent-text);
   }
 
   .toc-mobile {
     margin-top: var(--space-6);
-    border-block: 1px solid var(--hairline);
+    padding: var(--space-2) var(--space-4) var(--space-4);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--panel-strong) 60%, transparent);
   }
 
   .toc-mobile summary {
@@ -208,49 +215,44 @@ const { title, description, date, updated, tags, draft } = post.data;
     display: flex;
     align-items: center;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
+  }
+
+  .toc {
+    display: none;
   }
 
   .post-footer {
     margin-top: var(--space-8);
     padding-top: var(--space-6);
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--line);
   }
 
-  .button {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: var(--space-2) var(--space-5);
-    border: 1px solid var(--ink);
-    color: var(--ink);
-    font-weight: 500;
-    text-decoration: none;
-  }
-
-  /* Schermi larghi: indice fisso a destra (a sinistra c'è il menu del sito) */
-  @media (min-width: 80rem) {
+  /* Schermi larghi: indice fisso a destra, in un piccolo pannello */
+  @media (min-width: 72rem) {
     .post-layout {
-      grid-template-columns: minmax(0, var(--measure)) minmax(12rem, 16rem);
-      gap: var(--space-8);
+      grid-template-columns: minmax(0, 1fr) 16rem;
       align-items: start;
     }
 
-    .post {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
     .toc {
-      grid-column: 2;
-      grid-row: 1;
       display: block;
       position: sticky;
-      top: var(--space-6);
-      max-height: calc(100vh - 2 * var(--space-6));
+      top: 6rem;
+      max-height: calc(100vh - 7.5rem);
       overflow-y: auto;
       overflow-x: hidden;
-      padding-right: var(--space-6); /* spazio per lo scivolamento delle voci */
+      padding: var(--space-5) var(--space-6) var(--space-5) var(--space-5);
+      border-radius: var(--radius-card);
+      background: color-mix(in srgb, var(--panel) 74%, transparent);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .toc .label {
+      margin-bottom: var(--space-3);
     }
 
     .toc-mobile {
@@ -273,18 +275,20 @@ const { title, description, date, updated, tags, draft } = post.data;
   .prose :global(h2) {
     margin-top: var(--space-8);
     font-size: var(--step-3);
-    scroll-margin-top: var(--space-6);
   }
 
   .prose :global(h3) {
     margin-top: var(--space-6);
     font-size: var(--step-2);
-    scroll-margin-top: var(--space-6);
   }
 
   .prose :global(h2 + *),
   .prose :global(h3 + *) {
     margin-top: var(--space-3);
+  }
+
+  .prose :global(a) {
+    color: var(--accent-text);
   }
 
   .prose :global(ul),
@@ -305,22 +309,25 @@ const { title, description, date, updated, tags, draft } = post.data;
   }
 
   .prose :global(blockquote) {
-    padding-left: var(--space-5);
-    border-left: 2px dashed var(--muted);
+    padding: var(--space-3) var(--space-5);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
     color: var(--muted);
   }
 
   .prose :global(:not(pre) > code) {
-    padding: 0.1em 0.35em;
-    background: var(--code-bg);
-    border: 1px solid var(--hairline);
+    padding: 0.1em 0.4em;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--panel-strong) 80%, transparent);
+    border: 1px solid var(--line);
     font-size: 0.88em;
   }
 
   .prose :global(pre) {
     padding: var(--space-4) var(--space-5);
-    background: var(--code-bg) !important; /* sostituisce lo sfondo del tema di Shiki */
-    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    border: 1px solid var(--line);
     overflow-x: auto;
     font-size: 0.88rem;
     line-height: 1.6;
@@ -336,16 +343,9 @@ const { title, description, date, updated, tags, draft } = post.data;
 
   .prose :global(th),
   .prose :global(td) {
-    padding: var(--space-2);
-    border: 1px solid var(--hairline);
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--line);
     text-align: left;
-  }
-
-  @media (min-width: 48rem) {
-    .prose :global(th),
-    .prose :global(td) {
-      padding-inline: var(--space-3);
-    }
   }
 
   .prose :global(th) {
@@ -355,12 +355,13 @@ const { title, description, date, updated, tags, draft } = post.data;
   .prose :global(hr) {
     margin-block: var(--space-7);
     border: 0;
-    border-top: 1px dashed var(--muted);
+    border-top: 1px dashed color-mix(in srgb, var(--muted) 60%, transparent);
   }
 
   .prose :global(img) {
     max-width: 100%;
     height: auto;
-    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    border: 1px solid var(--line);
   }
 </style>

@@ -2,7 +2,7 @@
 // Compaiono i repository pubblici del profilo che hanno il topic «portfolio»:
 // per aggiungerne uno basta dargli il topic su GitHub e ricostruire il sito.
 // Nome, descrizione e link vengono da GitHub: si cambiano lì, non qui.
-import { profile } from './it/profilo';
+import { profile } from './profilo';
 
 const TOPIC = 'portfolio';
 
@@ -25,7 +25,11 @@ interface GitHubRepo {
   topics?: string[];
 }
 
-export async function loadPortfolioRepos(): Promise<Repo[]> {
+// Una richiesta sola per build, anche se la home esiste in più lingue.
+let cached: Promise<Repo[]> | undefined;
+export const loadPortfolioRepos = (): Promise<Repo[]> => (cached ??= fetchPortfolioRepos());
+
+async function fetchPortfolioRepos(): Promise<Repo[]> {
   // Senza token GitHub concede 60 richieste l'ora per indirizzo IP. Se la build
   // su Cloudflare fallisce per questo, aggiungi GITHUB_TOKEN alle variabili del
   // progetto (un token fine-grained senza permessi basta: legge solo dati pubblici).

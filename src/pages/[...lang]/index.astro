@@ -1,0 +1,154 @@
+---
+// Home, una per lingua: / (italiano) e /en/ (inglese).
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import Projects from '../../components/Projects.astro';
+import Path from '../../components/Path.astro';
+import PostCard from '../../components/PostCard.astro';
+import Icon from '../../components/Icon.astro';
+import { profile } from '../../data/profilo';
+import { loadPortfolioRepos } from '../../data/github';
+import { showcase } from '../../lib/projects';
+import { getPostsFor } from '../../lib/blog';
+import type { Lang } from '../../i18n/ui';
+import { langPaths, langPrefix, useTranslations } from '../../i18n/utils';
+
+export const getStaticPaths = () => langPaths();
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+
+// Progetti pubblici da GitHub (topic «portfolio») + schede scritte a mano di quelli privati
+const projects = showcase(await loadPortfolioRepos(), lang);
+const posts = (await getPostsFor(lang)).slice(0, 3);
+---
+
+<BaseLayout home>
+  <div class="container home">
+    <Hero />
+
+    <Projects projects={projects} />
+
+    <Path steps={profile.path} />
+
+    <section id="studio" class="panel" aria-labelledby="studio-titolo">
+      <div class="section-head">
+        <div>
+          <p class="label"><span class="num">03</span> // {t('nav.its')}</p>
+          <h2 id="studio-titolo">{t('its.title')}</h2>
+        </div>
+      </div>
+      <div class="soon">
+        <span class="pill">{t('its.soon')}</span>
+        <p>{t('its.text')}</p>
+      </div>
+    </section>
+
+    <section id="articoli" class="panel" aria-labelledby="articoli-titolo">
+      <div class="section-head">
+        <div>
+          <p class="label"><span class="num">04</span> // {t('nav.posts')}</p>
+          <h2 id="articoli-titolo">{t('posts.title')}</h2>
+        </div>
+        <a class="btn btn-secondary" href={`${langPrefix(lang)}/blog/`}>
+          {t('posts.all')}<span class="arrow"><Icon name="arrow" /></span>
+        </a>
+      </div>
+      {posts.length === 0 && <p class="empty">{t('blog.empty')}</p>}
+      <div class="posts">
+        {posts.map((item) => <PostCard item={item} />)}
+      </div>
+    </section>
+
+    <section id="contatti" class="panel contact" aria-labelledby="contatti-titolo">
+      <div>
+        <p class="label"><span class="num">05</span> // {t('nav.contact')}</p>
+        <h2 id="contatti-titolo">{t('contact.title')}</h2>
+        <p class="lead">{t('contact.text')}</p>
+      </div>
+      <div class="buttons">
+        <a class="btn btn-primary" href={profile.linkedin.url} rel="me">
+          <span class="with-icon"><Icon name="linkedin" class="icon" />LinkedIn</span><span class="arrow"><Icon name="external" /></span>
+        </a>
+        <a class="btn btn-secondary" href={profile.github.url} rel="me">
+          <span class="with-icon"><Icon name="github" class="icon" />GitHub</span><span class="arrow"><Icon name="external" /></span>
+        </a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .home {
+    display: grid;
+    gap: 20px;
+    padding-top: 6rem;
+    padding-bottom: var(--space-4);
+  }
+
+  .soon {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-5);
+    padding: var(--space-5);
+    border-radius: var(--radius-card);
+    border: 1.5px dashed color-mix(in srgb, var(--muted) 45%, transparent);
+  }
+
+  .soon p {
+    max-width: 52ch;
+    color: var(--muted);
+  }
+
+  .posts {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .empty {
+    color: var(--muted);
+  }
+
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--space-5);
+  }
+
+  .contact h2 {
+    margin-top: var(--space-2);
+  }
+
+  .contact .lead {
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: var(--step-1);
+  }
+
+  .with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  @media (max-width: 54rem) {
+    .contact {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 32rem) {
+    .buttons .btn {
+      flex: 1 1 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

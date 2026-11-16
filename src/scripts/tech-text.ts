@@ -4,7 +4,8 @@
  *
  * Adattato da React Bits (https://reactbits.dev, https://github.com/DavidHDev/react-bits).
  * Modifiche: rimosso React (montaggio con mountTechText), colori letti dal tema,
- * alone attorno alle lettere piene (haloColor / haloBlur) per staccarle dallo sfondo.
+ * alone attorno alle lettere piene (haloColor / haloBlur) per staccarle dallo sfondo,
+ * allineamento a sinistra facoltativo (align: 'left').
  *
  * MIT + Commons Clause License Condition v1.0
  * Copyright (c) 2026 David Haz
@@ -69,12 +70,15 @@ export interface TechTextProps {
   haloColor?: string;
   /** Ampiezza dell'alone in px CSS. */
   haloBlur?: number;
+  /** Posizione orizzontale della parola: al centro (originale) o a sinistra. */
+  align?: 'center' | 'left';
 }
 
 type Settings = Required<TechTextProps>;
 
 const LABEL_FONT = '10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 const FALLOFF_STEPS = 8;
+const LEFT_INSET = 16; // px CSS a sinistra della parola con align: 'left'
 const SPRING = 320;
 const DAMPING = 22;
 
@@ -128,7 +132,8 @@ const DEFAULTS: Settings = {
   sweep: true,
   speed: 1,
   haloColor: '',
-  haloBlur: 0
+  haloBlur: 0,
+  align: 'center'
 };
 
 export interface TechTextHandle {
@@ -270,7 +275,8 @@ export function mountTechText(container: HTMLElement, initialProps: TechTextProp
     m = probe.measureText(s.text);
     const inkWidth = m.actualBoundingBoxLeft + m.actualBoundingBoxRight;
     const inkHeight = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
-    const x = (width - inkWidth) / 2 + m.actualBoundingBoxLeft;
+    // A sinistra resta un margine per la cornice di selezione e le sue maniglie
+    const x = (s.align === 'left' ? LEFT_INSET : (width - inkWidth) / 2) + m.actualBoundingBoxLeft;
     const baseline = (height - inkHeight) / 2 + m.actualBoundingBoxAscent;
     const next = {
       size,

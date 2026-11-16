@@ -1,25 +1,31 @@
 /*
- * Token di design (vedi DESIGN.md — direzione «Selezione»).
- * Solo tema scuro: bianco su nero. Lo stato "in corso" si esprime con il tratteggio, non con un colore.
- * Unico colore: il viola di LineSidebar (--accent), usato solo lì.
- * Se serve un colore nuovo, prima si aggiorna DESIGN.md.
+ * Token di design (vedi DESIGN.md — direzione «Vetro»).
+ * Tema chiaro di base; il tema scuro si attiva con data-theme="dark" su <html>
+ * (lo mette lo script nell'<head> di BaseLayout, il pulsante del menu lo cambia).
+ * Un solo colore d'accento: il blu elettrico. Se serve un colore nuovo, prima si aggiorna DESIGN.md.
  */
 
 :root {
-  /* Colori */
-  --bg: #000000;
-  --ink: #ffffff;
-  --muted: #a3a3a3;
-  --hairline: #333333;
-  --code-bg: #111111;
+  /* Colori — tema chiaro */
+  --bg: #e6ecf2; /* fondo grigio-azzurro */
+  --panel: #f4f7fa; /* pannelli (usati semitrasparenti) */
+  --panel-strong: #ffffff; /* schede dentro i pannelli, pulsanti chiari */
+  --ink: #0f1724; /* testo: 15.1:1 sul fondo */
+  --muted: #4e5a6b; /* testo secondario: 5.9:1 sul fondo, 6.5:1 sui pannelli */
+  --line: rgba(15, 23, 36, 0.1); /* bordi sottili e divisori */
+  --accent: #2b50f0; /* riempimenti: cerchio della freccia, punti, aloni */
+  --accent-text: #2445d6; /* accento usato come testo: 6.7:1 sui pannelli */
+  --on-accent: #ffffff; /* freccia sul cerchio blu: 6.0:1 */
+  --halo: 48%; /* intensità degli aloni ai bordi */
+  --veil: 0.62; /* velo sopra le onde di puntini, dietro al testo */
+  --shadow: 0 1px 2px rgba(15, 23, 36, 0.04), 0 14px 36px rgba(15, 23, 36, 0.07);
 
-  /* LineSidebar (React Bits): unico colore del sito, solo per questo componente */
-  --accent: #a855f7; /* 5.3:1 su nero */
-  --sidebar-text: #c4c4c4;
-  --sidebar-marker: #6c6c6c;
+  /* LineSidebar (React Bits), solo indice degli articoli */
+  --sidebar-text: var(--muted);
+  --sidebar-marker: color-mix(in srgb, var(--muted) 55%, transparent);
 
   /* Font */
-  --font-display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-display: 'IBM Plex Sans', system-ui, sans-serif;
   --font-body: 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
@@ -29,8 +35,8 @@
   --step-0: 1rem;
   --step-1: 1.2rem;
   --step-2: 1.5rem;
-  --step-3: clamp(1.75rem, 3.5vw, 2.5rem);
-  --step-4: clamp(2.25rem, 5vw, 3.5rem);
+  --step-3: clamp(1.75rem, 3.6vw, 2.6rem);
+  --step-4: clamp(2.4rem, 6vw, 4.25rem);
 
   /* Spaziature (base 4 px) */
   --space-1: 0.25rem; /*  4 */
@@ -42,16 +48,35 @@
   --space-7: 3rem; /* 48 */
   --space-8: 5rem; /* 80 */
 
-  /* Layout */
+  /* Layout e forme */
   --container: 70rem; /* 1120 px */
   --gutter: var(--space-4);
   --measure: 68ch;
-  --nav-width: 16rem; /* menu fisso a sinistra, da 1024 px */
-  --radius: 0;
+  --panel-pad: clamp(1.5rem, 4.5vw, 3.5rem);
+  --radius-panel: 32px;
+  --radius-card: 24px;
+  --radius-pill: 999px;
 
   /* Tratteggio "in corso" (come i contorni di TechText: 4 pieno, 2 vuoto) */
   --dash: 4px;
   --dash-gap: 2px;
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0b1018;
+  --panel: #141b26;
+  --panel-strong: #1a2230;
+  --ink: #e7edf5; /* 16.2:1 */
+  --muted: #9aa7b8; /* 7.8:1 sul fondo, 7.1:1 sui pannelli */
+  --line: rgba(231, 237, 245, 0.09);
+  --accent: #4d6bff;
+  --accent-text: #8aa2ff; /* 7.2:1 sui pannelli */
+  --on-accent: #ffffff; /* 4.3:1: basta per un'icona */
+  --halo: 34%;
+  --veil: 0.7;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 14px 36px rgba(0, 0, 0, 0.35);
 
   color-scheme: dark;
 }
@@ -59,5 +84,12 @@
 @media (min-width: 48rem) {
   :root {
     --gutter: var(--space-6);
+  }
+}
+
+@media (max-width: 32rem) {
+  :root {
+    --radius-panel: 26px;
+    --radius-card: 20px;
   }
 }

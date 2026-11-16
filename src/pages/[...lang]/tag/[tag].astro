@@ -1,0 +1,44 @@
+---
+// Articoli con un tag. Esistono solo nelle lingue in cui ci sono articoli con quel tag:
+// i tag di un articolo italiano portano sempre alle pagine italiane.
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostList from '../../../components/PostList.astro';
+import { getPosts, tagSlug } from '../../../lib/blog';
+import type { Lang } from '../../../i18n/ui';
+import { langPaths, langPrefix, langs, useTranslations } from '../../../i18n/utils';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const { params, props } of langPaths()) {
+    const posts = await getPosts(props.lang);
+    const tags = new Map<string, string>(); // slug → nome come scritto negli articoli
+    posts.forEach((post) => post.data.tags.forEach((tag) => tags.set(tagSlug(tag), tag)));
+    for (const [slug, name] of tags) {
+      paths.push({
+        params: { ...params, tag: slug },
+        props: {
+          lang: props.lang,
+          name,
+          posts: posts.filter((post) => post.data.tags.some((t) => tagSlug(t) === slug)),
+        },
+      });
+    }
+  }
+  return paths;
+}
+
+const { lang, name, posts } = Astro.props as {
+  lang: Lang;
+  name: string;
+  posts: Awaited<ReturnType<typeof getPosts>>;
+};
+const t = useTranslations(lang);
+const title = `${t('tag.title')} «${name}»`;
+// La stessa pagina nelle altre lingue potrebbe non esistere: lì si torna al blog
+const alternates: Partial<Record<Lang, string>> = Object.fromEntries(langs.map((l) => [l, `${langPrefix(l)}/blog/`]));
+alternates[lang] = Astro.url.pathname;
+---
+
+<BaseLayout title={title} alternates={alternates} noAlternates>
+  <PostList items={posts.map((post) => ({ post, fallback: false }))} eyebrow={t('blog.tags')} title={title} />
+</BaseLayout>

@@ -1,27 +1,38 @@
 ---
-import { profile } from '../data/it/profilo';
+import { profile } from '../data/profilo';
 import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 const t = useTranslations(getLangFromUrl(Astro.url));
 const year = new Date().getFullYear();
+const links = [
+  { label: t('footer.rss'), href: '/rss.xml' },
+  { label: 'LinkedIn', href: profile.linkedin.url, me: true },
+  { label: 'GitHub', href: profile.github.url, me: true },
+  { label: 'Telegram', href: profile.telegram.url, me: true },
+  { label: 'Instagram', href: profile.instagram.url, me: true },
+  { label: 'X', href: profile.x.url, me: true },
+];
 ---
 
 <footer class="site-footer">
   <div class="container inner">
-    <p>© {year} Sasha</p>
-    <div class="links">
-      <a class="selectable" href="/rss.xml">{t('footer.rss')}</a>
-      <a class="selectable" href={profile.github.url} rel="me">{t('footer.github')}</a>
-      <a class="selectable" href={profile.telegram.url} rel="me">{t('footer.telegram')}</a>
-      <a class="selectable" href={profile.instagram.url} rel="me">{t('footer.instagram')}</a>
-      <a class="selectable" href={profile.x.url} rel="me">{t('footer.x')}</a>
-    </div>
+    <p class="label">© {year} Sasha</p>
+    <ul class="links">
+      {
+        links.map((link) => (
+          <li>
+            <a href={link.href} rel={link.me ? 'me' : undefined}>
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--hairline);
     color: var(--muted);
     font-size: var(--step--1);
   }
@@ -31,19 +42,27 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
-    padding-block: var(--space-5);
+    gap: var(--space-2) var(--space-5);
+    padding-block: var(--space-5) var(--space-6);
   }
 
   .links {
     display: flex;
     flex-wrap: wrap;
     gap: 0 var(--space-5);
+    list-style: none;
+    padding: 0;
   }
 
   a {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--ink);
+    text-decoration: underline;
   }
 </style>
