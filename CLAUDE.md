@@ -16,7 +16,7 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
   testi dei dati come `{ it, en }` in `src/data/`, articoli in `src/content/blog/<lingua>/`.
   Un articolo non tradotto compare nelle altre lingue con «Italian only».
 - Non inserire dati personali non forniti da Sasha (indirizzo, telefono, data di nascita…).
-  Contatti autorizzati: LinkedIn, GitHub `sasha2324`, X `3s_ans` e Telegram `@s_ans3`
+  Contatti autorizzati: LinkedIn, GitHub `sasha2324`, X `x861929` e Telegram `@s_ans3`
   (nell'intro e nei Contatti della home), Instagram `3s.ans` (solo nel footer).
 - Non presentare esperienze, lavori o certificazioni che Sasha non ha.
   Sasha è studente ITS in infrastrutture digitali (in corso).

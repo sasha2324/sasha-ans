@@ -31,8 +31,8 @@ export const profile = {
     url: 'https://www.instagram.com/3s.ans/',
   },
   x: {
-    username: '3s_ans',
-    url: 'https://x.com/3s_ans',
+    username: 'x861929',
+    url: 'https://x.com/x861929',
   },
 
   // Il percorso è una sequenza: l'ordine qui è l'ordine nello schema.
