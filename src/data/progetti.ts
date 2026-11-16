@@ -26,6 +26,8 @@ export interface ProjectExtra {
   description?: Partial<Localized>;
   image?: ImageMetadata;
   imageAlt?: Localized;
+  /** Page that explains how the project works (second button on the card) */
+  explainer?: string;
 }
 
 export const extras: Record<string, ProjectExtra> = {
@@ -37,6 +39,7 @@ export const extras: Record<string, ProjectExtra> = {
       en: 'Fuel prices in the province of Terni, updated every morning from MIMIT open data.',
     },
     image: imgCarburanti,
+    explainer: 'https://sasha2324.github.io/carburanti-terni/come-funziona.html',
     imageAlt: {
       it: 'Grafici dei prezzi di benzina e gasolio di un distributore di Terni, self e servito, da aprile a novembre 2026.',
       en: 'Petrol and diesel price charts for a petrol station in Terni, self-service and full service, April to November 2026.',

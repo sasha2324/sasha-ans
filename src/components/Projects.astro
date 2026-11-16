@@ -52,16 +52,26 @@ const nn = (i: number) => String(i + 1).padStart(2, '0');
             </p>
             <h3 id={`progetto-${project.id}-titolo`}>{project.title}</h3>
             {project.description && <p class="description">{project.description}</p>}
-            {project.url ? (
-              <a class="btn btn-secondary" href={project.url}>
-                {t('projects.code')}
-                <span class="arrow">
-                  <Icon name="external" />
-                </span>
-              </a>
-            ) : (
-              <span class="btn btn-muted">{t('projects.private')}</span>
-            )}
+            <div class="actions">
+              {project.url ? (
+                <a class="btn btn-secondary" href={project.url}>
+                  {t('projects.code')}
+                  <span class="arrow">
+                    <Icon name="external" />
+                  </span>
+                </a>
+              ) : (
+                <span class="btn btn-muted">{t('projects.private')}</span>
+              )}
+              {project.explainer && (
+                <a class="btn btn-primary" href={project.explainer} hreflang="it">
+                  {t('projects.howItWorks')}
+                  <span class="arrow">
+                    <Icon name="arrow" />
+                  </span>
+                </a>
+              )}
+            </div>
           </div>
         </article>
       ))
@@ -132,9 +142,11 @@ const nn = (i: number) => String(i + 1).padStart(2, '0');
     color: var(--muted);
   }
 
-  .body .btn {
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
     margin-top: auto;
-    align-self: flex-start;
   }
 
   @media (max-width: 54rem) {
@@ -146,7 +158,7 @@ const nn = (i: number) => String(i + 1).padStart(2, '0');
       padding: var(--space-1) var(--space-2) var(--space-2);
     }
 
-    .body .btn {
+    .actions {
       margin-top: var(--space-2);
     }
   }

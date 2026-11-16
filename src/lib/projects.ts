@@ -15,6 +15,8 @@ export interface ShowcaseProject {
   url?: string;
   image?: ImageMetadata;
   imageAlt: string;
+  /** Page that explains how the project works (Italian) */
+  explainer?: string;
   /** Archiviato su GitHub = concluso */
   done: boolean;
 }
@@ -34,6 +36,7 @@ export function showcase(repos: Repo[], lang: Lang): ShowcaseProject[] {
         description: extra?.description?.[lang] ?? repo.description ?? undefined,
         url: repo.url,
         image: extra?.image,
+        explainer: extra?.explainer,
         imageAlt: extra?.imageAlt ? pick(extra.imageAlt, lang) : title,
         done: repo.archived,
       };
