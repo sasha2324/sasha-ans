@@ -1,151 +1,122 @@
-# DESIGN.md — «Selezione»
+# DESIGN.md — «Vetro»
 
-Sostituisce la prima direzione «Topologia» (partita dal DESIGN.md di Together AI,
-raccolta VoltAgent/awesome-design-md). Di quella restano: font IBM Plex, base di
-spaziatura a 4 px, bordi sottili al posto delle ombre, schema del percorso come lista.
+Sostituisce la direzione «Selezione» (bianco su nero, cornici di selezione, menu
+laterale). Riferimento visivo scelto da Sasha: **dilum.dev**, preso come stile e non
+copiato (dalla descrizione di Sasha: fondo chiaro con aloni, menu a pillola, pannelli
+arrotondati, etichette in monospazio). Cambiato rispetto al riferimento: accento blu
+invece dell'arancione, font IBM Plex, effetti di React Bits sul nome e sullo sfondo.
 
-Riferimenti attuali: quattro componenti di **React Bits** scelti da Sasha
-(licenza e configurazioni in CLAUDE.md):
+Restano dalla direzione precedente: font IBM Plex, base di spaziatura a 4 px, e i
+componenti di **React Bits** (licenza e configurazioni in CLAUDE.md):
 
-| Componente | Cosa ne prende il sito |
+| Componente | Cosa fa nel sito |
 |---|---|
-| Pattern Waves | lo sfondo a puntini e la palette bianco/nero |
-| TechText | il titolo; il **tratteggio** come segno di "in lavorazione"; la **cornice di selezione** con maniglie agli angoli |
-| LatticeLoader | il loader della sequenza di ingresso; i puntini in griglia |
-| ScrollExpand | la finestra arrotondata che si apre a tutto schermo; il velo (scrim) per leggere il testo sopra lo sfondo |
-| LineSidebar | il **menu del sito** (fisso in alto a sinistra) e l'indice degli articoli; unico elemento viola |
+| Pattern Waves | lo sfondo a onde di puntini, scuri sul chiaro e chiari sullo scuro |
+| TechText | il nome «Sasha» nell'intro: lente, tratteggio, puntini, cornice di selezione |
+| LatticeLoader + ScrollExpand | la sequenza di ingresso della home |
+| LineSidebar | solo l'indice degli articoli (il menu del sito ora è la pillola) |
 
 ---
 
 ## Idea
 
-Il sito sembra un programma di grafica sopra uno schema tecnico: puntini, contorni
-tratteggiati, cornici di selezione, etichette con le misure. Due regole danno
-significato agli elementi:
+Pannelli di vetro chiaro che galleggiano sopra uno sfondo vivo: onde di puntini e aloni
+blu ai bordi. Dentro i pannelli tutto è calmo e leggibile. Una regola dà significato
+agli elementi:
 
-1. **Pieno = fatto, tratteggiato = in corso.** Vale per il percorso (nodi e
-   collegamenti), per le competenze ("Uso nei progetti" pieno bianco, "Ho provato"
-   pieno grigio, "Sto imparando" tratteggiato) e per i progetti (concluso pieno,
-   in corso tratteggiato).
-2. **La cornice di selezione è l'unico effetto hover/focus** (classe `.selectable`).
-   La tappa del percorso in corso la porta sempre: è "selezionata".
-
-Un solo momento animato forte: la sequenza di ingresso della home. Il resto è fermo.
+**Pieno = fatto, tratteggiato = in corso o non ancora.** Vale per il percorso (punto
+pieno = fatto, punto con anello = in corso, punto vuoto = obiettivo), per il riquadro
+«In arrivo» e per il segnaposto «Codice privato».
 
 ## Colori
 
-Bianco su nero. **Solo tema scuro** (scelta di Sasha: niente tema chiaro).
-Unico colore: il **viola di LineSidebar**, usato solo in quel componente.
+Un solo colore d'accento: il **blu elettrico**. Tema chiaro di base; tema scuro con il
+pulsante nel menu (la scelta resta salvata; senza scelta si segue il sistema).
 
-| Token | Valore | Ruolo |
-|---|---|---|
-| `--bg` | `#000000` | sfondo; deve coincidere con lo sfondo di Pattern Waves |
-| `--ink` | `#ffffff` | testo, puntini, bordi pieni, maniglie |
-| `--muted` | `#a3a3a3` | testo secondario, bordi tratteggiati |
-| `--hairline` | `#333333` | divisori (solo decorativi) |
-| `--code-bg` | `#111111` | blocchi di codice |
-| `--accent` | `#a855f7` | solo LineSidebar: voce in evidenza/attiva (5.3:1 su nero) |
-| `--sidebar-text` | `#c4c4c4` | solo LineSidebar: voci a riposo |
-| `--sidebar-marker` | `#6c6c6c` | solo LineSidebar: tacche (decorative) |
+| Token | Chiaro | Scuro | Ruolo |
+|---|---|---|---|
+| `--bg` | `#e6ecf2` | `#0b1018` | fondo grigio-azzurro / blu notte |
+| `--panel` | `#f4f7fa` | `#141b26` | pannelli, usati al 74% con sfocatura dietro |
+| `--panel-strong` | `#ffffff` | `#1a2230` | schede dentro i pannelli, pulsanti chiari |
+| `--ink` | `#0f1724` | `#e7edf5` | testo (15.1:1 / 16.2:1) |
+| `--muted` | `#4e5a6b` | `#9aa7b8` | testo secondario (≥ 5.9:1 / 7.1:1) |
+| `--line` | ink al 10% | ink al 9% | bordi sottili |
+| `--accent` | `#2b50f0` | `#4d6bff` | cerchio della freccia, punti, aloni |
+| `--accent-text` | `#2445d6` | `#8aa2ff` | accento come testo (6.7:1 / 7.2:1) |
+| `--on-accent` | `#ffffff` | `#ffffff` | freccia sul cerchio blu |
 
-Contrasto: `--muted` 8.6:1 su nero (anche sotto il velo, che è nero).
+Il blu come **testo** usa sempre `--accent-text`, mai `--accent`.
 
 ## Tipografia
 
 | Ruolo | Font | Uso |
 |---|---|---|
-| Titoli | IBM Plex Sans Condensed 600 (700 per "Sasha") | h1–h3, titolo TechText, frase della hero |
-| Testo | IBM Plex Sans 400 / 500 | paragrafi, navigazione, bottoni |
-| Tecnico | IBM Plex Mono 400 | **solo** etichette di stato e misure (come le etichette di TechText), codice |
+| Titoli | IBM Plex Sans 700, interlinea stretta, tracking negativo | h1–h3, «Ciao! Sono», il nome (TechText) |
+| Testo | IBM Plex Sans 400 / 500 / 600 | paragrafi, menu, pulsanti |
+| Etichette | IBM Plex Mono 500, maiuscolo, spaziatura 0.1em | «01 // PROGETTI», date, stati, categorie |
 
-IBM Plex Sans Condensed non ha il cirillico: le lettere cirilliche nei titoli
-usano IBM Plex Sans (riserva in `--font-display`).
+Il numero della sezione nelle etichette è in `--accent-text`. Scala ~1.25, base 17 px
+su telefono e 18 px da 768 px. Righe di testo al massimo 68ch.
 
-Scala ~1.25: `--step--2` 0.75rem · `--step--1` 0.875rem · `--step-0` 1rem ·
-`--step-1` 1.2rem · `--step-2` 1.5rem · `--step-3` clamp(1.75–2.5rem) ·
-`--step-4` clamp(2.25–3.5rem). Base 17 px su telefono, 18 px da 768 px.
-Righe di testo al massimo 68ch. Sentence case ovunque.
+## Forme e profondità
 
-## Spaziatura, griglia, forme
-
-- Base 4 px: `--space-1…8` = 4 8 12 16 24 32 48 80 px.
-- Contenitore 1120 px; margini 16 px su telefono, 32 px da 768 px.
-- Sezioni: 48 px sopra/sotto su telefono, 80 px da 768 px.
-- Raggio 0 ovunque. Unica eccezione: la finestra dell'intro (24 px, 20 px su telefono),
-  che diventa 0 aprendosi.
-- Niente ombre. Tratteggio: 4 px pieno, 2 px vuoto (come TechText).
+- Pannelli: raggio 32 px (26 px sotto i 512 px), bordo `--line`, ombra leggera, vetro
+  (`backdrop-filter: blur(18px)`). Schede dentro i pannelli: raggio 24 px.
+- Pulsanti e menu: pillole (raggio 999 px). La freccia sta in un cerchio blu da 38 px.
+  Principale: pieno `--ink`. Secondario: `--panel-strong` con bordo.
+- Spaziatura base 4 px; contenitore 1120 px; margini 16 px su telefono, 32 da 768 px.
+- Aloni: tre sfumature radiali del blu, fisse ai bordi dello schermo.
 
 ## Sfondo (tutte le pagine)
 
-Pattern Waves è **fisso dietro a tutto il sito** (Background.astro), fino al footer.
-Sopra c'è un velo nero (`--bg`) che lo scurisce dietro al testo:
-
-- home: velo trasparente nella prima schermata, sale fino a opacità 0.72 entro il 70%
-  dell'altezza dello schermo;
-- altre pagine: velo sempre a 0.72.
-
-Risparmio batteria: quando lo sfondo è dietro al testo (velo pieno), l'animazione
-scende a 30 fotogrammi al secondo (`maxFps`); nella prima schermata della home è libera.
+Dal basso: fondo → Pattern Waves → aloni → velo del colore di fondo. Sulla home il velo
+parte trasparente e sale con lo scorrimento (fino a 0.62 chiaro, 0.7 scuro); sulle altre
+pagine è sempre su. Quando lo sfondo sta dietro al testo, le onde scendono a 30 fps.
 
 ## Menu (tutte le pagine)
 
-LineSidebar fissa in alto a sinistra, al posto di una barra in alto (che non c'è).
-Voci: Home, Chi sono, Competenze, Progetti, Blog, Contatti. Sulla home si accende la
-sezione visibile; sulle pagine del blog è accesa "Blog".
-
-- Da 1024 px: sidebar fissa larga `--nav-width` (16rem); `main` e footer lasciano
-  quello spazio a sinistra.
-- Sotto 1024 px: bottone «Menu» fisso in alto a sinistra (tre tacche come icona) che
-  apre la sidebar a tutto schermo; si chiude con «Chiudi», con Esc o scegliendo una voce.
+Pillola fissa in alto al centro: iniziale «S» a sinistra, poi le sezioni, poi il
+selettore di lingua (IT / EN) e il pulsante del tema. Sotto 54rem le sezioni si
+spostano in un pannello che si apre con «Menu». Sulla home si accende la sezione visibile;
+nel blog è accesa «Articoli».
 
 ## Home
 
-1. **Hero** (100svh): "Sasha" grande in alto con TechText (peso 700, fino a 320 px,
-   alone nero attorno alle lettere per staccarle dai puntini; h1 vero nascosto accanto
-   al canvas). In basso: frase di presentazione e **percorso** in versione compatta
-   (orizzontale da 768 px, verticale su telefono).
-2. **Chi sono**: due colonne da 768 px (titolo | testo).
-3. **Competenze**: tre livelli con legenda (tre colonne da 1024 px). Le voci dei
-   primi due livelli hanno il link alla scheda del progetto che le dimostra.
-4. **Progetti**: una scheda per progetto. Pubblici: letti da GitHub alla build (topic
-   `portfolio`), in griglia: stato (archiviato = pieno), nome, descrizione, link al codice.
-   Privati: scheda scritta a mano (stato, titolo, «Repository privato» | cosa fa, con cosa
-   è fatto, cosa ho imparato).
-5. **Contatti**: bottoni Telegram, GitHub, Instagram, X (gli stessi link anche nel footer).
+1. **Intro**: etichetta «Studente ITS · Cloud e Cybersecurity», «Ciao! Sono» e il nome con
+   TechText (allineato a sinistra), una frase, «Guarda i progetti» e «Leggi il blog»,
+   icone LinkedIn e GitHub.
+2. **01 Progetti**: schede grandi, immagine 4:3 a sinistra e a destra numero, categoria,
+   titolo, descrizione e link. Pubblici da GitHub, privati scritti a mano.
+3. **02 Percorso**: le tappe in fila, orizzontali da 54rem e verticali su telefono.
+4. **03 Studio ITS**: riquadro tratteggiato «In arrivo».
+5. **04 Articoli**: gli ultimi tre articoli.
+6. **05 Contatti**: LinkedIn e GitHub, niente modulo. Gli altri profili sono nel footer.
 
 ## Blog
 
-- **Elenco** (`/blog/`, `/tag/<tag>/`): anteprime una sotto l'altra (data, minuti,
-  titolo, descrizione, tag, «Leggi l'articolo»), separate da un divisore da 1024 px.
-- **Articolo**: da 1280 px l'indice (titoli `##`) con LineSidebar è fisso **a destra**
-  (a sinistra c'è il menu); la sezione che si sta leggendo resta accesa in viola. Sotto
-  1280 px l'indice è un blocco richiudibile sopra il testo. Testo a 68ch.
-- Markdown: citazioni con bordo tratteggiato, separatori tratteggiati, codice con tema
-  Shiki `min-dark` su `--code-bg`.
-- Metadati (data, minuti di lettura, «Bozza») in IBM Plex Mono piccolo.
-- **404**: il numero in contorno (come le lettere "in lavorazione" di TechText).
+- **Elenco** e **tag**: un pannello con il titolo e le schede degli articoli (tutta la
+  scheda è il link). In inglese gli articoli non tradotti hanno la pillola «Italian only».
+- **Articolo**: un pannello con il testo a 68ch; da 72rem l'indice (LineSidebar) è a
+  destra in un piccolo pannello fisso, sotto è un blocco richiudibile.
+- Codice: Shiki `min-light` nel tema chiaro, `min-dark` nello scuro.
 
 ## Sequenza di ingresso (solo home)
 
-1. Finestra arrotondata 42% × 58% (telefono 76% × 52%) con Pattern Waves
-   ingrandito a 1.35; sotto, LatticeLoader "Loading" con cronometro.
-2. Pagina e font caricati (minimo 1,4 s): ✓ bianca, "Ready in X.Xs" (tempo trascorso).
-3. Dopo 0,65 s la finestra si apre a tutto schermo in 1,1 s; lo sfondo torna a scala 1.
-4. Al 68% dell'apertura entrano menu e contenuti (opacità + 18 px dal basso).
-
-Regole: una volta per visita (sessionStorage), salto con clic o tasto, nessuna intro
-con "riduci movimento" o senza JavaScript, rete di sicurezza a 8 s.
+Come prima: finestra arrotondata con Pattern Waves e LatticeLoader sotto; al caricamento
+✓ e tempo, poi la finestra si apre a tutto schermo ed entrano menu, pannelli e aloni.
+Una volta per visita, salto con clic o tasto, niente intro con «riduci movimento».
 
 ## Da fare / da evitare
 
 Da fare
 - usare pieno/tratteggiato sempre con lo stesso significato;
-- usare `.selectable` per ogni elemento interattivo nuovo;
-- verificare il contrasto per ogni colore nuovo (meglio: non aggiungerne).
+- usare `--accent-text` per il blu come testo;
+- verificare il contrasto per ogni colore nuovo (meglio: non aggiungerne);
+- controllare ogni modifica nei due temi e su telefono.
 
 Da evitare
-- altri colori oltre al viola di LineSidebar, viola fuori da LineSidebar, gradienti
-  decorativi, ombre, angoli arrotondati;
-- altre animazioni automatiche oltre all'intro;
-- monospace per paragrafi o etichette decorative senza informazione;
+- altri colori d'accento oltre al blu, gradienti decorativi oltre agli aloni;
+- angoli vivi su pannelli e pulsanti;
+- altre animazioni automatiche oltre all'intro e allo sfondo;
+- monospazio per i paragrafi;
 - testi che fanno pensare a esperienze o certificazioni che non esistono.

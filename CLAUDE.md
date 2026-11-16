@@ -9,13 +9,19 @@ Pubblicazione: Cloudflare Pages con deploy automatico da GitHub.
 
 ## Regole del progetto
 
-- Solo tema scuro (deciso da Sasha: niente tema chiaro né interruttore).
-- Lingua del sito: italiano. Struttura pronta per l'inglese (`/en/`): testi
-  dell'interfaccia in `src/i18n/`, contenuti in sottocartelle per lingua (`it/`, `en/`).
+- Tema chiaro di base e tema scuro con il pulsante nel menu (deciso da Sasha, novembre 2026).
+  Ogni modifica va controllata nei due temi, su desktop e su telefono.
+- Lingue: italiano (`/`) e inglese (`/en/`); struttura pronta per ucraino e russo
+  (istruzioni in cima a `src/i18n/ui.ts`). Testi dell'interfaccia in `src/i18n/ui.ts`,
+  testi dei dati come `{ it, en }` in `src/data/`, articoli in `src/content/blog/<lingua>/`.
+  Un articolo non tradotto compare nelle altre lingue con «Italian only».
 - Non inserire dati personali non forniti da Sasha (indirizzo, telefono, data di nascita…).
-  Contatti autorizzati: GitHub `sasha2324`, Telegram `@s_ans3`, Instagram `3s.ans`, X `3s_ans`.
+  Contatti autorizzati: LinkedIn e GitHub `sasha2324` (in evidenza), Telegram `@s_ans3`,
+  Instagram `3s.ans`, X `3s_ans` (solo nel footer).
 - Non presentare esperienze, lavori o certificazioni che Sasha non ha.
-  Sasha sta iniziando un ITS in infrastrutture digitali.
+  Sasha è studente ITS in infrastrutture digitali (in corso).
+- Immagini dei progetti: niente dati veri di persone (per DDA solo dati di prova inventati),
+  niente dati di salute né date di gara.
 - Gli articoli li scrive Sasha: preparare solo struttura e segnaposto.
 - Piccoli passi, un commit chiaro per ogni passo; spiegare in breve le scelte importanti.
 - Chiedere prima di installare pacchetti o toccare file fuori da questa cartella.
@@ -29,8 +35,8 @@ licenza in ogni file; non vendere né ridistribuire i componenti da soli.
 
 | Componente | Ruolo nel sito | Configurazione scelta |
 |---|---|---|
-| Pattern Waves | sfondo fisso di tutte le pagine e dell'intro | preset `silk`, bianco su nero, `fade="edges"`, interattivo; `rippleRate` 30 (orig. 60) per increspature più lente |
-| LatticeLoader | animazione di caricamento | etichette in inglese, ✓ bianca (non verde); config da ricevere |
+| Pattern Waves | sfondo fisso di tutte le pagine e dell'intro | preset `silk`, colore `--ink` su `--bg` (cambia con il tema), `fade="edges"`, interattivo; `rippleRate` 30 (orig. 60) per increspature più lente |
+| LatticeLoader | animazione di caricamento | etichette in inglese, ✓ nel colore del testo (non verde) |
 | ScrollExpand | passaggio caricamento → home | **automatico** (a tempo, non allo scroll); dentro la finestra c'è Pattern Waves |
-| LineSidebar | **menu del sito** fisso in alto a sinistra (al posto della barra in alto) + indice dell'articolo a destra | colore viola `#A855F7` (unico colore del sito), resto valori standard; voci = link veri |
-| TechText | titolo della home | testo `Sasha`, peso 700 (orig. 600), fontSize 320 (orig. 150), alone nero 28 px, `reveal="letter"`, tratteggio 4/2, 15 specks; h1 vero nascosto per accessibilità |
+| LineSidebar | solo **indice dell'articolo** (il menu del sito è la pillola in SiteNav.astro) | colore `--accent` (blu); `fontSize` 0.9, `maxShift` 14, `markerLength` 32, `itemGap` 14 per la colonna stretta |
+| TechText | il nome nell'intro della home | testo `Sasha`, peso 700 (orig. 600), fontSize 320 (orig. 150), `align: 'left'` (aggiunta nostra), `reveal="letter"`, tratteggio 4/2, 15 specks; testo `--ink`, effetti `--accent-text`; h1 vero nascosto per accessibilità |

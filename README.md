@@ -1,8 +1,9 @@
 # Sito di Sasha
 
-**Cosa fa:** portfolio e blog tecnico: presentazione, percorso, competenze, progetti e articoli.
-La sezione Progetti legge da GitHub, al momento della build, i repository pubblici con il
-topic `portfolio`. I progetti privati hanno invece una scheda scritta a mano.
+**Cosa fa:** portfolio e blog tecnico in italiano e inglese: presentazione, progetti,
+percorso, studio ITS, articoli e contatti, con tema chiaro e scuro. La sezione Progetti legge
+da GitHub, al momento della build, i repository pubblici con il topic `portfolio`; i progetti
+privati hanno una scheda scritta a mano.
 
 **Con cosa è fatto:** [Astro](https://astro.build), sito statico senza database; articoli in
 Markdown; pubblicato su Cloudflare Pages, che lo ricostruisce a ogni push su GitHub.
@@ -25,7 +26,8 @@ Se la build fallisce (anche quando GitHub non risponde), resta online la version
 
 ## Aggiungere un articolo
 
-Un file `.md` in `src/content/blog/it/`: il nome diventa l'indirizzo
+Un file `.md` in `src/content/blog/it/` (in inglese: `src/content/blog/en/`, con lo stesso
+nome del file italiano se è una traduzione). Il nome diventa l'indirizzo
 (`il-mio-articolo.md` → `/blog/il-mio-articolo/`, minuscole e trattini). In cima:
 
 ```
@@ -41,13 +43,19 @@ draft: true
 Con `draft: true` si vede solo con `npm run dev`; quando è pronto, `draft: false`.
 Dopo la pubblicazione, per le modifiche aggiungi `updated: 2026-11-02`. I titoli `##`
 formano l'indice laterale; `esempio-markdown.md` è un promemoria della sintassi.
-I file che iniziano con `_` vengono ignorati.
+I file che iniziano con `_` vengono ignorati. Finché un articolo non è tradotto, la versione
+inglese del sito lo mostra in italiano con l'etichetta «Italian only».
 
 ## Aggiungere un progetto
 
 - **Pubblico:** su GitHub dai al repository il topic `portfolio` e una descrizione.
   Compare alla build successiva (un push, oppure «Retry deployment» su Cloudflare).
-- **Privato:** scrivi la scheda in `src/data/it/progetti.ts`.
+  Titolo leggibile, categoria, immagine e descrizione inglese vanno in `extras` in
+  `src/data/progetti.ts`.
+- **Privato:** scrivi la scheda in `privateProjects`, sempre in `src/data/progetti.ts`.
+
+Le immagini delle schede (4:3, almeno 1200 px di larghezza) stanno in `src/assets/progetti/`:
+Astro le converte e le ridimensiona da solo.
 
 Se la build su Cloudflare fallisce con «GitHub ha risposto 403», è il limite delle
 richieste senza token: aggiungi la variabile `GITHUB_TOKEN` al progetto su Cloudflare
@@ -57,16 +65,21 @@ richieste senza token: aggiungi la variabile `GITHUB_TOKEN` al progetto su Cloud
 
 | Cosa | Dove |
 |---|---|
-| Testi della home (presentazione, percorso, competenze, contatti) | `src/data/it/profilo.ts` |
+| Contatti e percorso | `src/data/profilo.ts` |
+| Progetti: dati in più e progetti privati | `src/data/progetti.ts` |
 | Progetti pubblici (lettura da GitHub) | `src/data/github.ts` |
-| Progetti privati | `src/data/it/progetti.ts` |
-| Articoli | `src/content/blog/it/` |
-| Testi dell'interfaccia (menu, bottoni) | `src/i18n/ui.ts` |
-| Colori, font, spazi | `src/styles/tokens.css` (regole in `DESIGN.md`) |
+| Articoli | `src/content/blog/<lingua>/` |
+| Testi dell'interfaccia e della home, nelle due lingue | `src/i18n/ui.ts` |
+| Colori dei due temi, font, spazi | `src/styles/tokens.css` (regole in `DESIGN.md`) |
+
+## Aggiungere una lingua
+
+Le istruzioni sono in cima a `src/i18n/ui.ts`: si aggiunge la lingua lì e in
+`astro.config.mjs`, poi si traducono i testi. Quello che manca resta in italiano.
 
 ## Codice di terzi
 
-Sfondo, titolo, loader, intro e menu sono componenti di
+Sfondo, nome nell'intro, loader, intro e indice degli articoli sono componenti di
 [React Bits](https://reactbits.dev) di David Haz, riscritti senza React.
 Licenza MIT + Commons Clause: si possono usare come parte di questo sito, ma non
 vendere né ridistribuire da soli. Nota di copyright e licenza sono in ogni file.
