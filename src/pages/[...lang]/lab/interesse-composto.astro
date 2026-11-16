@@ -1,0 +1,798 @@
+---
+// Esperimento: calcolatore di interesse composto con versamenti mensili.
+// /lab/interesse-composto/ e /en/lab/interesse-composto/.
+// Nato da un file HTML fatto con Claude e riscritto per il sito: stile «Vetro», due temi,
+// due lingue, nessun servizio esterno (il grafico è un SVG disegnato qui, niente Chart.js).
+// Il calcolo sta in src/lib/interesse-composto.ts: la build scrive già i valori iniziali,
+// lo script in fondo ricalcola e disegna il grafico quando si muovono i cursori.
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { calcola, composizione, percentuali } from '../../../lib/interesse-composto';
+import { locales, type Lang } from '../../../i18n/ui';
+import { langPaths, langPrefix, useTranslations } from '../../../i18n/utils';
+
+export const getStaticPaths = () => langPaths();
+
+const { lang } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+const locale = locales[lang];
+
+// Cursori: valori di partenza e limiti (tasso in percento)
+const campi = {
+  capitale: { min: 0, max: 100000, step: 1000, value: 10000 },
+  mensile: { min: 0, max: 2000, step: 50, value: 100 },
+  tasso: { min: 1, max: 50, step: 0.5, value: 5 },
+  anni: { min: 1, max: 50, step: 1, value: 20 },
+};
+
+// Gli stessi formati usati dallo script nel browser, così i valori iniziali non "saltano"
+const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const euroSegno = new Intl.NumberFormat(locale, {
+  style: 'currency',
+  currency: 'EUR',
+  maximumFractionDigits: 0,
+  signDisplay: 'exceptZero',
+});
+const decimale = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+const testi = {
+  perMonth: t('calc.perMonth'),
+  year: t('calc.year'),
+  yearsUnit: t('calc.yearsUnit'),
+  yearN: t('calc.yearN'),
+  today: t('calc.today'),
+  chart: t('calc.chart'),
+  compound: t('calc.series.compound'),
+  invested: t('calc.series.invested'),
+  initial: t('calc.series.initial'),
+};
+const mostra = {
+  capitale: (v: number) => euro.format(v),
+  mensile: (v: number) => `${euro.format(v)} ${testi.perMonth}`,
+  tasso: (v: number) => `${decimale.format(v)}%`,
+  anni: (v: number) => `${v} ${v === 1 ? testi.year : testi.yearsUnit}`,
+};
+
+const ris = calcola({
+  capitale: campi.capitale.value,
+  mensile: campi.mensile.value,
+  tasso: campi.tasso.value / 100,
+  anni: campi.anni.value,
+});
+const quote = composizione(ris, campi.capitale.value);
+const perc = percentuali(quote);
+
+const etichette = {
+  capitale: t('calc.principal'),
+  mensile: t('calc.monthly'),
+  tasso: t('calc.rate'),
+  anni: t('calc.years'),
+};
+const nomi = Object.keys(campi) as (keyof typeof campi)[];
+const parti = [
+  { key: 'iniziale', label: t('calc.part.initial') },
+  { key: 'versamenti', label: t('calc.part.deposits') },
+  { key: 'interessi', label: t('calc.part.interest') },
+] as const;
+const serie = [
+  { key: 'composto', label: testi.compound },
+  { key: 'versato', label: testi.invested },
+  { key: 'soloIniziale', label: testi.initial },
+] as const;
+---
+
+<BaseLayout title={t('calc.title')} description={t('calc.description')}>
+  <div class="container page">
+    <article
+      class="panel calc"
+      aria-labelledby="calc-titolo"
+      data-calc
+      data-locale={locale}
+      data-testi={JSON.stringify(testi)}
+    >
+      <header class="head">
+        <p class="label"><a href={`${langPrefix(lang)}/#esperimenti`}>// {t('nav.lab')}</a></p>
+        <h1 id="calc-titolo">{t('calc.title')}</h1>
+        <p class="lead">{t('calc.lead')}</p>
+        <p class="tags"><span class="pill">{t('lab.ai')}</span></p>
+      </header>
+
+      <div class="results">
+        <div class="card stat stat-final">
+          <p class="label">{t('calc.final')}</p>
+          <p class="value" data-out="finale">{euro.format(ris.finale)}</p>
+        </div>
+        <div class="card stat">
+          <p class="label">{t('calc.invested')}</p>
+          <p class="value" data-out="versato">{euro.format(ris.totaleVersato)}</p>
+        </div>
+        <div class="card stat">
+          <p class="label">{t('calc.interest')}</p>
+          <p class="value" data-out="interessi">{euroSegno.format(ris.interessi)}</p>
+        </div>
+      </div>
+      <p class="note">{t('calc.gross')}</p>
+
+      <div class="main">
+        <form class="card controls" aria-label={t('calc.controls')} data-form>
+          {
+            nomi.map((nome) => (
+              <div class="field">
+                <div class="field-head">
+                  <label for={`calc-${nome}`}>{etichette[nome]}</label>
+                  <output for={`calc-${nome}`} data-show={nome}>
+                    {mostra[nome](campi[nome].value)}
+                  </output>
+                </div>
+                <input
+                  type="range"
+                  id={`calc-${nome}`}
+                  name={nome}
+                  min={campi[nome].min}
+                  max={campi[nome].max}
+                  step={campi[nome].step}
+                  value={campi[nome].value}
+                  aria-valuetext={mostra[nome](campi[nome].value)}
+                />
+              </div>
+            ))
+          }
+        </form>
+
+        <figure class="card chart-card">
+          <figcaption class="chart-head">
+            <h2 class="label">{t('calc.chart')}</h2>
+            <ul class="legend">
+              {
+                serie.map((s) => (
+                  <li>
+                    <span class={`sw sw-${s.key}`} aria-hidden="true" />
+                    {s.label}
+                  </li>
+                ))
+              }
+            </ul>
+          </figcaption>
+          <div class="chart" data-chart tabindex="0">
+            <svg role="img" aria-label={t('calc.chart')} data-svg></svg>
+            <div class="tip" data-tip hidden>
+              <p class="tip-title" data-tip-title></p>
+              {
+                serie.map((s) => (
+                  <p class="tip-row">
+                    <span class={`sw sw-${s.key}`} aria-hidden="true" />
+                    <span class="tip-label">{s.label}</span>
+                    <span class="tip-value" data-tip-value={s.key} />
+                  </p>
+                ))
+              }
+            </div>
+          </div>
+        </figure>
+      </div>
+
+      <div class="extra">
+        <section class="card breakdown" aria-labelledby="calc-composizione">
+          <h2 class="label" id="calc-composizione">{t('calc.breakdown')}</h2>
+          <div class="bar" aria-hidden="true">
+            {parti.map((p) => <span class={`part-${p.key}`} data-bar={p.key} style={`width: ${quote[p.key] * 100}%`} />)}
+          </div>
+          <ul class="legend">
+            {
+              parti.map((p) => (
+                <li>
+                  <span class={`sq part-${p.key}`} aria-hidden="true" />
+                  {p.label} <span class="pct" data-pct={p.key}>{perc[p.key]}%</span>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="card formula" aria-labelledby="calc-formula">
+          <h2 class="label" id="calc-formula">{t('calc.formula')}</h2>
+          <p class="formula-text">
+            <span>C × (1 + r/12)<sup>12n</sup></span> <span>+ m × [(1 + r/12)<sup>12n</sup> − 1] / (r/12)</span>
+          </p>
+          <p class="small">{t('calc.vars')}</p>
+          <p class="small">{t('calc.formulaNote')}</p>
+        </section>
+      </div>
+
+      <p class="disclaimer">{t('calc.disclaimer')}</p>
+    </article>
+  </div>
+</BaseLayout>
+
+<script>
+  import { calcola, composizione, percentuali, type Risultato } from '../../../lib/interesse-composto';
+
+  const root = document.querySelector<HTMLElement>('[data-calc]');
+  if (root) avvia(root);
+
+  function avvia(root: HTMLElement) {
+    const locale = root.dataset.locale ?? 'it-IT';
+    const testi = JSON.parse(root.dataset.testi ?? '{}') as Record<string, string>;
+    const euro = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    const euroSegno = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 0,
+      signDisplay: 'exceptZero',
+    });
+    const euroBreve = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+    const decimale = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+    const mostra: Record<string, (v: number) => string> = {
+      capitale: (v) => euro.format(v),
+      mensile: (v) => `${euro.format(v)} ${testi.perMonth}`,
+      tasso: (v) => `${decimale.format(v)}%`,
+      anni: (v) => `${v} ${v === 1 ? testi.year : testi.yearsUnit}`,
+    };
+
+    const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+    const box = root.querySelector<HTMLElement>('[data-chart]')!;
+    const svg = root.querySelector<SVGSVGElement>('[data-svg]')!;
+    const tip = root.querySelector<HTMLElement>('[data-tip]')!;
+    const out = (sel: string) => root.querySelector<HTMLElement>(sel)!;
+    const valore = (nome: string) => Number((form.elements.namedItem(nome) as HTMLInputElement).value);
+
+    let ris: Risultato;
+    // Geometria dell'ultimo disegno, per trovare l'anno sotto il dito o il mouse
+    let geo = { left: 0, top: 0, w: 0, h: 0, cima: 1 };
+    let attivo: number | null = null;
+
+    function aggiorna() {
+      const capitale = valore('capitale');
+      ris = calcola({ capitale, mensile: valore('mensile'), tasso: valore('tasso') / 100, anni: valore('anni') });
+
+      form.querySelectorAll<HTMLInputElement>('input[type="range"]').forEach((input) => {
+        const testo = mostra[input.name](Number(input.value));
+        out(`[data-show="${input.name}"]`).textContent = testo;
+        input.setAttribute('aria-valuetext', testo);
+      });
+
+      out('[data-out="finale"]').textContent = euro.format(ris.finale);
+      out('[data-out="versato"]').textContent = euro.format(ris.totaleVersato);
+      out('[data-out="interessi"]').textContent = euroSegno.format(ris.interessi);
+
+      // Capitale finale 0: quote tutte a 0, la barra resta vuota
+      const quote = composizione(ris, capitale);
+      const perc = percentuali(quote);
+      (['iniziale', 'versamenti', 'interessi'] as const).forEach((k) => {
+        out(`[data-bar="${k}"]`).style.width = `${quote[k] * 100}%`;
+        out(`[data-pct="${k}"]`).textContent = `${perc[k]}%`;
+      });
+
+      if (attivo !== null) attivo = Math.min(attivo, ris.composto.length - 1);
+      disegna();
+    }
+
+    // Gradini "tondi" dell'asse verticale: 1, 2, 2,5 o 5 per una potenza di 10, circa 4 righe
+    function scala(max: number) {
+      if (!(max > 0)) return { passo: 250, cima: 1000 };
+      const grezzo = max / 4;
+      const pot = 10 ** Math.floor(Math.log10(grezzo));
+      const passo = [1, 2, 2.5, 5, 10].map((f) => f * pot).find((p) => p >= grezzo)!;
+      return { passo, cima: Math.ceil(max / passo - 1e-9) * passo };
+    }
+
+    function disegna() {
+      const W = box.clientWidth;
+      const H = box.clientHeight;
+      if (!W || !H || !ris) return;
+
+      const n = ris.composto.length - 1;
+      const max = Math.max(...ris.composto, ...ris.versato, ...ris.soloIniziale);
+      const { passo, cima } = scala(max);
+      const righe = Array.from({ length: Math.round(cima / passo) + 1 }, (_, i) => i * passo);
+      const etichetteY = righe.map((v) => euroBreve.format(v));
+
+      // Etichette in monospazio da 11 px: ogni carattere è largo 0,6 em
+      const left = Math.max(...etichetteY.map((s) => s.length)) * 6.6 + 10;
+      const top = 10;
+      const bottom = 26;
+      const right = 10;
+      const w = W - left - right;
+      const h = H - top - bottom;
+      geo = { left, top, w, h, cima };
+
+      const x = (i: number) => left + (n ? (i / n) * w : 0);
+      const y = (v: number) => top + h * (1 - v / cima);
+      const linea = (valori: number[]) => valori.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join('');
+
+      // Anni sull'asse orizzontale: 1, 2, 5 o 10 alla volta, quanti ne stanno
+      const quanti = Math.max(2, Math.floor(w / 46));
+      const passoX = [1, 2, 5, 10, 20].find((p) => n / p <= quanti) ?? 20;
+      const anni: number[] = [];
+      for (let a = 0; a <= n; a += passoX) anni.push(a);
+
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.innerHTML = `
+        <g class="grid">${righe.map((v) => `<line x1="${left}" x2="${W - right}" y1="${y(v)}" y2="${y(v)}"/>`).join('')}</g>
+        <g class="axis">
+          ${righe.map((v, i) => `<text x="${left - 8}" y="${y(v)}" text-anchor="end" dominant-baseline="middle">${etichetteY[i]}</text>`).join('')}
+          ${anni.map((a) => `<text x="${x(a)}" y="${H - 6}" text-anchor="middle">${a}</text>`).join('')}
+        </g>
+        <path class="area" d="${linea(ris.composto)}L${x(n)} ${y(0)}L${x(0)} ${y(0)}Z"/>
+        <path class="line l-soloIniziale" d="${linea(ris.soloIniziale)}"/>
+        <path class="line l-versato" d="${linea(ris.versato)}"/>
+        <path class="line l-composto" d="${linea(ris.composto)}"/>
+        <g class="hover" data-hover style="display:none">
+          <line y1="${top}" y2="${top + h}"/>
+          <circle r="4" class="d-soloIniziale"/><circle r="4" class="d-versato"/><circle r="4" class="d-composto"/>
+        </g>`;
+
+      const fine = n === 1 ? testi.year : testi.yearsUnit;
+      svg.setAttribute(
+        'aria-label',
+        `${testi.chart}, ${n} ${fine}: ${testi.compound} ${euro.format(ris.finale)}, ${testi.invested} ${euro.format(ris.totaleVersato)}, ${testi.initial} ${euro.format(ris.soloIniziale[n])}.`
+      );
+      mostraAnno(attivo);
+    }
+
+    // Linea verticale, puntini e riquadro con i valori dell'anno scelto
+    function mostraAnno(i: number | null) {
+      attivo = i;
+      const g = svg.querySelector<SVGGElement>('[data-hover]');
+      if (i === null || !g) {
+        if (g) g.style.display = 'none';
+        tip.hidden = true;
+        return;
+      }
+      const n = ris.composto.length - 1;
+      const px = geo.left + (n ? (i / n) * geo.w : 0);
+      const py = (v: number) => geo.top + geo.h * (1 - v / geo.cima);
+      g.style.display = '';
+      g.querySelector('line')!.setAttribute('x1', String(px));
+      g.querySelector('line')!.setAttribute('x2', String(px));
+      (['composto', 'versato', 'soloIniziale'] as const).forEach((k) => {
+        const c = g.querySelector(`.d-${k}`)!;
+        c.setAttribute('cx', String(px));
+        c.setAttribute('cy', String(py(ris[k][i])));
+        out(`[data-tip-value="${k}"]`).textContent = euro.format(ris[k][i]);
+      });
+      out('[data-tip-title]').textContent = i === 0 ? testi.today : `${testi.yearN} ${i}`;
+      tip.hidden = false;
+      // Il riquadro va a destra della linea, se non c'è posto a sinistra,
+      // e su telefono (dove non ci sta da nessuna parte) resta comunque dentro il grafico
+      const W = box.clientWidth;
+      const tw = tip.offsetWidth;
+      let sx = px + 12;
+      if (sx + tw > W) sx = px - 12 - tw;
+      if (sx < 0) sx = Math.max(0, Math.min(W - tw, px - tw / 2));
+      tip.style.left = `${sx}px`;
+    }
+
+    function annoDa(evento: PointerEvent) {
+      if (!(geo.w > 0)) return null;
+      const n = ris.composto.length - 1;
+      const rx = evento.clientX - box.getBoundingClientRect().left;
+      return Math.min(n, Math.max(0, Math.round(((rx - geo.left) / geo.w) * n)));
+    }
+
+    box.addEventListener('pointermove', (e) => mostraAnno(annoDa(e)));
+    box.addEventListener('pointerdown', (e) => mostraAnno(annoDa(e)));
+    box.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse') mostraAnno(null);
+    });
+    box.addEventListener('blur', () => mostraAnno(null));
+    // Da tastiera: frecce per spostarsi di un anno, Inizio/Fine per gli estremi
+    box.addEventListener('keydown', (e) => {
+      const n = ris.composto.length - 1;
+      const ora = attivo ?? n;
+      const nuovo = { ArrowLeft: ora - 1, ArrowRight: ora + 1, Home: 0, End: n }[e.key];
+      if (nuovo === undefined) return;
+      e.preventDefault();
+      mostraAnno(Math.min(n, Math.max(0, nuovo)));
+    });
+    box.addEventListener('focus', () => {
+      if (box.matches(':focus-visible')) mostraAnno(attivo ?? ris.composto.length - 1);
+    });
+    // Tocco fuori dal grafico: il riquadro si chiude
+    document.addEventListener('pointerdown', (e) => {
+      if (!box.contains(e.target as Node)) mostraAnno(null);
+    });
+
+    form.addEventListener('input', aggiorna);
+    form.addEventListener('submit', (e) => e.preventDefault());
+    new ResizeObserver(() => disegna()).observe(box);
+    aggiorna();
+  }
+</script>
+
+<style>
+  .page {
+    padding-top: 6rem;
+    padding-bottom: var(--space-5);
+  }
+
+  .head .label a {
+    text-decoration: none;
+  }
+
+  .head .label a:hover {
+    color: var(--ink);
+  }
+
+  h1 {
+    margin-top: var(--space-2);
+  }
+
+  .lead {
+    margin-top: var(--space-3);
+    color: var(--muted);
+    font-size: var(--step-1);
+  }
+
+  .tags {
+    margin-top: var(--space-4);
+  }
+
+  /* ---------- Risultati ---------- */
+  .results {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  .stat {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  .value {
+    margin-top: var(--space-2);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.6vw, 2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  .stat-final .value {
+    color: var(--accent-text);
+  }
+
+  .note {
+    margin-top: var(--space-3);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  /* ---------- Cursori e grafico ---------- */
+  .main {
+    display: grid;
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  /* I cursori si distribuiscono sull'altezza del grafico accanto */
+  .controls {
+    display: grid;
+    align-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-5);
+  }
+
+  .field-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0 var(--space-3);
+  }
+
+  .field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .field output {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  input[type='range'] {
+    display: block;
+    width: 100%;
+    height: 1.75rem;
+    margin-top: var(--space-1);
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  .chart-card {
+    min-width: 0;
+    padding: var(--space-5);
+  }
+
+  .chart-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-5);
+  }
+
+  h2.label {
+    font-size: var(--step--2);
+    letter-spacing: 0.1em;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-4);
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Colori delle serie: blu = interesse composto, blu chiaro = solo capitale iniziale,
+     colore del testo = soldi versati senza interessi. Nel tema scuro cambiano da soli. */
+  .sw {
+    flex: none;
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .sw-composto {
+    background: var(--accent);
+  }
+
+  .sw-versato {
+    background: var(--ink);
+  }
+
+  .sw-soloIniziale {
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .chart {
+    position: relative;
+    height: 19rem;
+    margin-top: var(--space-4);
+    touch-action: pan-y;
+    border-radius: 12px;
+  }
+
+  .chart svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .chart :global(.grid line) {
+    stroke: var(--line);
+  }
+
+  .chart :global(.axis text) {
+    fill: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .chart :global(.area) {
+    fill: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+
+  .chart :global(.line) {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .chart :global(.l-composto) {
+    stroke: var(--accent);
+    stroke-width: 2.5;
+  }
+
+  .chart :global(.l-versato) {
+    stroke: var(--ink);
+    stroke-width: 1.75;
+  }
+
+  .chart :global(.l-soloIniziale) {
+    stroke: color-mix(in srgb, var(--accent) 45%, transparent);
+    stroke-width: 2;
+  }
+
+  .chart :global(.hover line) {
+    stroke: color-mix(in srgb, var(--muted) 50%, transparent);
+  }
+
+  .chart :global(.hover circle) {
+    fill: var(--panel-strong);
+    stroke-width: 2;
+  }
+
+  .chart :global(.d-composto) {
+    stroke: var(--accent);
+  }
+
+  .chart :global(.d-versato) {
+    stroke: var(--ink);
+  }
+
+  .chart :global(.d-soloIniziale) {
+    stroke: color-mix(in srgb, var(--accent) 45%, var(--panel-strong));
+  }
+
+  .tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: var(--space-2) var(--space-3);
+    border-radius: 14px;
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    pointer-events: none;
+  }
+
+  .tip[hidden] {
+    display: none;
+  }
+
+  .tip-title {
+    font-weight: 600;
+  }
+
+  .tip-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .tip-label {
+    color: var(--muted);
+  }
+
+  .tip-value {
+    margin-left: auto;
+    padding-left: var(--space-3);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ---------- Composizione e formula ---------- */
+  .extra {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .breakdown,
+  .formula {
+    padding: var(--space-5);
+  }
+
+  .bar {
+    display: flex;
+    height: 14px;
+    margin: var(--space-4) 0 var(--space-3);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    background: var(--line);
+  }
+
+  .bar span {
+    height: 100%;
+  }
+
+  .sq {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  .part-iniziale {
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .part-versamenti {
+    background: var(--ink);
+  }
+
+  .part-interessi {
+    background: var(--accent);
+  }
+
+  .pct {
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+
+  .formula-text {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    line-height: 1.9;
+  }
+
+  .formula-text span {
+    display: inline-block;
+  }
+
+  .formula-text sup {
+    font-size: 0.7em;
+  }
+
+  .small {
+    margin-top: var(--space-2);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .disclaimer {
+    max-width: none;
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  @media (max-width: 54rem) {
+    .main,
+    .extra {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    /* Una scheda per riga: anche «1.300.000 €» resta su una riga sola */
+    .results {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      margin-top: var(--space-5);
+    }
+
+    .stat {
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .value {
+      margin-top: var(--space-1);
+      font-size: 1.4rem;
+    }
+
+    .stat-final .value {
+      font-size: 1.75rem;
+    }
+
+    .controls,
+    .chart-card,
+    .breakdown,
+    .formula {
+      padding: var(--space-4);
+    }
+
+    .chart {
+      height: 15rem;
+    }
+  }
+</style>
