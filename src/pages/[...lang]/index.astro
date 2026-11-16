@@ -3,6 +3,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Hero from '../../components/Hero.astro';
 import Projects from '../../components/Projects.astro';
+import Experiments from '../../components/Experiments.astro';
 import Path from '../../components/Path.astro';
 import PostCard from '../../components/PostCard.astro';
 import Icon from '../../components/Icon.astro';
@@ -30,10 +31,12 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
 
     <Projects projects={projects} />
 
+    <Experiments />
+
     <Path steps={profile.path} />
 
     <section id="studio" class="panel" aria-labelledby="studio-titolo">
-      <SectionHead num="03" label={t('nav.its')} title={t('its.title')} titleId="studio-titolo" />
+      <SectionHead num="04" label={t('nav.its')} title={t('its.title')} titleId="studio-titolo" />
       <div class="soon">
         <span class="pill">{t('its.soon')}</span>
         <p>{t('its.text')}</p>
@@ -41,7 +44,7 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
     </section>
 
     <section id="articoli" class="panel" aria-labelledby="articoli-titolo">
-      <SectionHead num="04" label={t('nav.posts')} title={t('posts.title')} titleId="articoli-titolo">
+      <SectionHead num="05" label={t('nav.posts')} title={t('posts.title')} titleId="articoli-titolo">
         <a slot="action" class="btn btn-secondary" href={`${langPrefix(lang)}/blog/`}>
           {t('posts.all')}<span class="arrow"><Icon name="arrow" /></span>
         </a>
@@ -54,7 +57,7 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
 
     <section id="contatti" class="panel" aria-labelledby="contatti-titolo">
       <SectionHead
-        num="05"
+        num="06"
         label={t('nav.contact')}
         title={t('contact.title')}
         subtitle={t('contact.text')}
@@ -127,7 +130,7 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
     color: var(--muted);
   }
 
-  /* ---------- 05 Contatti ---------- */
+  /* ---------- 06 Contatti ---------- */
   .contact-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

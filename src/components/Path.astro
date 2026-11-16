@@ -1,5 +1,5 @@
 ---
-// 02 Percorso: le tappe in fila. Orizzontale da 54rem, verticale su telefono.
+// 03 Percorso: le tappe in fila. Orizzontale da 54rem, verticale su telefono.
 // Punto pieno = fatto, punto con anello = in corso, punto vuoto = obiettivo.
 import SectionHead from './SectionHead.astro';
 import type { PathStep } from '../data/profilo';
@@ -21,7 +21,7 @@ const reached = Math.max(
 ---
 
 <section id="percorso" class="panel" aria-labelledby="percorso-titolo">
-  <SectionHead num="02" label={t('nav.path')} title={t('path.title')} titleId="percorso-titolo" />
+  <SectionHead num="03" label={t('nav.path')} title={t('path.title')} titleId="percorso-titolo" />
 
   <ol class="timeline" style={`--steps: ${steps.length}`}>
     {

@@ -22,12 +22,16 @@ const isHome = path === homePath;
 const anchor = (id: string) => (isHome ? `#${id}` : `${homePath}#${id}`);
 const items = [
   { id: 'progetti', label: t('nav.projects'), href: anchor('progetti') },
+  { id: 'esperimenti', label: t('nav.lab'), href: anchor('esperimenti') },
   { id: 'percorso', label: t('nav.path'), href: anchor('percorso') },
   { id: 'studio', label: t('nav.its'), href: anchor('studio') },
   { id: 'articoli', label: t('nav.posts'), href: isHome ? '#articoli' : `${langPrefix(lang)}/blog/` },
   { id: 'contatti', label: t('nav.contact'), href: anchor('contatti') },
 ];
 const isBlog = /\/(blog|tag)\//.test(path);
+const isLab = /\/lab\//.test(path);
+// Fuori dalla home si accende la voce della sezione a cui appartiene la pagina
+const current = (id: string) => !isHome && ((isBlog && id === 'articoli') || (isLab && id === 'esperimenti'));
 ---
 
 <header class="site-nav" data-site-nav data-home={isHome ? '' : undefined}>
@@ -41,7 +45,7 @@ const isBlog = /\/(blog|tag)\//.test(path);
             <a
               href={item.href}
               data-section={isHome ? item.id : undefined}
-              aria-current={!isHome && isBlog && item.id === 'articoli' ? 'page' : undefined}
+              aria-current={current(item.id) ? 'page' : undefined}
             >
               {item.label}
             </a>

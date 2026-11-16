@@ -1,0 +1,145 @@
+---
+// 02 Esperimenti: piccole pagine del sito (/lab/…), una scheda per esperimento con
+// schermata, etichetta «Fatto con l'aiuto dell'IA» se serve, una riga e il link «Prova».
+// I dati sono in src/data/esperimenti.ts.
+import { Image } from 'astro:assets';
+import SectionHead from './SectionHead.astro';
+import Icon from './Icon.astro';
+import { experiments } from '../data/esperimenti';
+import { getLangFromUrl, langPrefix, pick, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<section id="esperimenti" class="panel" aria-labelledby="esperimenti-titolo">
+  <SectionHead num="02" label={t('nav.lab')} title={t('lab.title')} titleId="esperimenti-titolo" />
+
+  <div class="experiments">
+    {
+      experiments.map((exp) => {
+        const title = pick(exp.title, lang);
+        const href = `${langPrefix(lang)}${exp.path}`;
+        return (
+          <article class="card experiment" aria-labelledby={`esperimento-${exp.id}-titolo`}>
+            <div class="shot">
+              {exp.image ? (
+                <Image
+                  src={exp.image}
+                  alt={exp.imageAlt ? pick(exp.imageAlt, lang) : title}
+                  widths={[480, 720, 960]}
+                  sizes="(min-width: 54rem) 460px, calc(100vw - 4rem)"
+                  loading="lazy"
+                />
+              ) : (
+                <span class="placeholder label" aria-hidden="true">
+                  {title}
+                </span>
+              )}
+            </div>
+
+            <div class="body">
+              <p class="meta">
+                {exp.ai && <span class="pill">{t('lab.ai')}</span>}
+                <span class="label">{pick(exp.category, lang)}</span>
+              </p>
+              <h3 id={`esperimento-${exp.id}-titolo`}>{title}</h3>
+              <p class="description">{pick(exp.description, lang)}</p>
+              <a class="btn btn-secondary" href={href}>
+                {t('lab.open')}
+                <span class="visually-hidden">: {title}</span>
+                <span class="arrow">
+                  <Icon name="arrow" />
+                </span>
+              </a>
+            </div>
+          </article>
+        );
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .experiments {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .experiment {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    padding: 14px;
+  }
+
+  .shot {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+  }
+
+  .shot :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-4) var(--space-3) 0;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  h3 {
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+  }
+
+  .description {
+    color: var(--muted);
+  }
+
+  .body .btn {
+    margin-top: auto;
+    align-self: flex-start;
+  }
+
+  @media (max-width: 54rem) {
+    .experiment {
+      grid-template-columns: 1fr;
+    }
+
+    .body {
+      padding: var(--space-1) var(--space-2) var(--space-2);
+    }
+
+    .body .btn {
+      margin-top: var(--space-2);
+    }
+  }
+
+  @media (max-width: 32rem) {
+    /* L'etichetta lunga non deve allargare la scheda */
+    .meta .pill {
+      white-space: normal;
+    }
+  }
+</style>

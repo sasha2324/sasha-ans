@@ -90,10 +90,13 @@ nel blog è accesa «Articoli».
    icone LinkedIn, GitHub, X e Telegram.
 2. **01 Progetti**: schede grandi, immagine 4:3 a sinistra e a destra numero, categoria,
    titolo, descrizione e link. Pubblici da GitHub, privati scritti a mano.
-3. **02 Percorso**: le tappe in fila, orizzontali da 54rem e verticali su telefono.
-4. **03 Studio ITS**: riquadro tratteggiato «In arrivo».
-5. **04 Articoli**: gli ultimi tre articoli.
-6. **05 Contatti**: niente modulo. Due riquadri (icona in un quadratino bianco, etichetta,
+3. **02 Esperimenti**: piccole pagine del sito sotto `/lab/` (dati in `src/data/esperimenti.ts`).
+   Scheda come quella dei progetti: schermata 4:3, pillola «Fatto con l'aiuto dell'IA» se
+   serve, categoria, titolo, una riga e il pulsante «Prova».
+4. **03 Percorso**: le tappe in fila, orizzontali da 54rem e verticali su telefono.
+5. **04 Studio ITS**: riquadro tratteggiato «In arrivo».
+6. **05 Articoli**: gli ultimi tre articoli.
+7. **06 Contatti**: niente modulo. Due riquadri (icona in un quadratino bianco, etichetta,
    domanda, due righe) con un alone blu leggero nell'angolo; sotto, centrati, i pulsanti
    «Scrivimi su LinkedIn / X / Telegram»: pillola bianca con il logo nel cerchio blu.
    GitHub è nell'intro e nel footer, Instagram e il feed RSS solo nel footer.
@@ -105,6 +108,15 @@ nel blog è accesa «Articoli».
 - **Articolo**: un pannello con il testo a 68ch; da 72rem l'indice (LineSidebar) è a
   destra in un piccolo pannello fisso, sotto è un blocco richiudibile.
 - Codice: Shiki `min-light` nel tema chiaro, `min-dark` nello scuro.
+
+## Esperimenti (`/lab/…`)
+
+Un pannello con «// Esperimenti» (link alla sezione della home), titolo, una frase e la
+pillola dell'IA; dentro, schede `card`. Nel menu è accesa «Esperimenti».
+Calcolatore di interesse composto: grafico SVG disegnato dal sito (niente librerie né CDN),
+serie in blu `--accent` (interesse composto), blu al 45% (solo capitale iniziale) e
+`--ink` (versato senza interessi); i colori seguono il tema da soli. In fondo sempre la
+nota «Strumento a scopo illustrativo, non è una consulenza finanziaria».
 
 ## Sequenza di ingresso (solo home)
 
