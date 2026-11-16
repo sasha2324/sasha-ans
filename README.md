@@ -77,8 +77,9 @@ richieste senza token: aggiungi la variabile `GITHUB_TOKEN` al progetto su Cloud
 
 Ogni giorno una GitHub Action guarda se nel portfolio c'è un progetto nuovo e per ognuno
 apre una issue «Draft post: …» (etichetta `post-x`) con la bozza in inglese. **Non pubblica
-su X**: il post lo fai tu a mano. I progetti che hanno già la bozza sono in
-`data/annunciati.json`. Prova senza creare niente: `node scripts/x-drafts/main.mjs --dry-run`;
+su X**: il post lo fai tu a mano. I testi dei post si scrivono in `data/post-x.md`, una
+sezione `## nome-del-repository` per progetto (se manca, la issue mostra lo schema da
+riempire). I progetti che hanno già la bozza sono in `data/annunciati.json`. Prova senza creare niente: `node scripts/x-drafts/main.mjs --dry-run`;
 test: `node --test 'scripts/x-drafts/*.test.mjs'`. Dettagli in
 `docs/superpowers/specs/2026-11-17-x-post-drafts-design.md`.
 
