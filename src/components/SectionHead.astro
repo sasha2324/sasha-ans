@@ -1,0 +1,110 @@
+---
+// Intestazione delle sezioni numerate della home: a sinistra il numero in un riquadro
+// con il puntino blu, poi una linea verticale, l'etichetta «// SEZIONE», il titolo e,
+// se c'è, una frase. A destra un'azione facoltativa (slot "action", es. «Tutti gli articoli»).
+interface Props {
+  num: string;
+  label: string;
+  title: string;
+  /** id del titolo, per aria-labelledby della sezione */
+  titleId: string;
+  subtitle?: string;
+}
+
+const { num, label, title, titleId, subtitle } = Astro.props;
+const hasAction = Astro.slots.has('action');
+---
+
+<header class="sh">
+  <div class="mark" aria-hidden="true">
+    <span class="num">{num}</span>
+    <span class="dot"></span>
+  </div>
+  <div class="text">
+    <p class="label">// {label}</p>
+    <h2 id={titleId}>{title}</h2>
+    {subtitle && <p class="subtitle">{subtitle}</p>}
+  </div>
+  {
+    hasAction && (
+      <div class="action">
+        <slot name="action" />
+      </div>
+    )
+  }
+</header>
+
+<style>
+  .sh {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-2) var(--space-5);
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .mark {
+    position: relative;
+    padding-top: 2px;
+  }
+
+  .num {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: color-mix(in srgb, var(--panel-strong) 70%, transparent);
+    box-shadow: 0 1px 2px rgba(15, 23, 36, 0.05);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  /* Il puntino blu accanto al numero */
+  .dot {
+    position: absolute;
+    top: 8px;
+    right: -14px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  /* La linea verticale tra il numero e il testo */
+  .text {
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--line);
+  }
+
+  h2 {
+    margin-top: var(--space-1);
+  }
+
+  .subtitle {
+    margin-top: var(--space-2);
+    color: var(--muted);
+  }
+
+  .action {
+    align-self: end;
+  }
+
+  @media (max-width: 40rem) {
+    .sh {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .text {
+      padding-left: var(--space-4);
+    }
+
+    .action {
+      grid-column: 1 / -1;
+      margin-top: var(--space-2);
+    }
+  }
+</style>

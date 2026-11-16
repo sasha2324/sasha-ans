@@ -6,6 +6,7 @@ import Projects from '../../components/Projects.astro';
 import Path from '../../components/Path.astro';
 import PostCard from '../../components/PostCard.astro';
 import Icon from '../../components/Icon.astro';
+import SectionHead from '../../components/SectionHead.astro';
 import { profile } from '../../data/profilo';
 import { loadPortfolioRepos } from '../../data/github';
 import { showcase } from '../../lib/projects';
@@ -32,12 +33,7 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
     <Path steps={profile.path} />
 
     <section id="studio" class="panel" aria-labelledby="studio-titolo">
-      <div class="section-head">
-        <div>
-          <p class="label"><span class="num">03</span> // {t('nav.its')}</p>
-          <h2 id="studio-titolo">{t('its.title')}</h2>
-        </div>
-      </div>
+      <SectionHead num="03" label={t('nav.its')} title={t('its.title')} titleId="studio-titolo" />
       <div class="soon">
         <span class="pill">{t('its.soon')}</span>
         <p>{t('its.text')}</p>
@@ -45,39 +41,54 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
     </section>
 
     <section id="articoli" class="panel" aria-labelledby="articoli-titolo">
-      <div class="section-head">
-        <div>
-          <p class="label"><span class="num">04</span> // {t('nav.posts')}</p>
-          <h2 id="articoli-titolo">{t('posts.title')}</h2>
-        </div>
-        <a class="btn btn-secondary" href={`${langPrefix(lang)}/blog/`}>
+      <SectionHead num="04" label={t('nav.posts')} title={t('posts.title')} titleId="articoli-titolo">
+        <a slot="action" class="btn btn-secondary" href={`${langPrefix(lang)}/blog/`}>
           {t('posts.all')}<span class="arrow"><Icon name="arrow" /></span>
         </a>
-      </div>
+      </SectionHead>
       {posts.length === 0 && <p class="empty">{t('blog.empty')}</p>}
       <div class="posts">
         {posts.map((item) => <PostCard item={item} />)}
       </div>
     </section>
 
-    <section id="contatti" class="panel contact" aria-labelledby="contatti-titolo">
-      <div>
-        <p class="label"><span class="num">05</span> // {t('nav.contact')}</p>
-        <h2 id="contatti-titolo">{t('contact.title')}</h2>
-        <p class="lead">{t('contact.text')}</p>
+    <section id="contatti" class="panel" aria-labelledby="contatti-titolo">
+      <SectionHead
+        num="05"
+        label={t('nav.contact')}
+        title={t('contact.title')}
+        subtitle={t('contact.text')}
+        titleId="contatti-titolo"
+      />
+
+      <div class="contact-cards">
+        <article class="card contact-card">
+          <p class="card-top">
+            <span class="card-icon"><Icon name="sparkles" /></span>
+            <span class="label">{t('contact.ideas.label')}</span>
+          </p>
+          <h3>{t('contact.ideas.title')}</h3>
+          <p class="card-text">{t('contact.ideas.text')}</p>
+        </article>
+        <article class="card contact-card">
+          <p class="card-top">
+            <span class="card-icon"><Icon name="shield" /></span>
+            <span class="label">{t('contact.study.label')}</span>
+          </p>
+          <h3>{t('contact.study.title')}</h3>
+          <p class="card-text">{t('contact.study.text')}</p>
+        </article>
       </div>
-      <div class="buttons">
-        <a class="btn btn-primary" href={profile.linkedin.url} rel="me">
-          <span class="with-icon"><Icon name="linkedin" class="icon" />LinkedIn</span><span class="arrow"><Icon name="external" /></span>
+
+      <div class="dm">
+        <a class="dm-btn" href={profile.linkedin.url} rel="me">
+          <span class="dm-icon"><Icon name="linkedin" /></span>{t('contact.dm.linkedin')}
         </a>
-        <a class="btn btn-secondary" href={profile.github.url} rel="me">
-          <span class="with-icon"><Icon name="github" class="icon" />GitHub</span><span class="arrow"><Icon name="external" /></span>
+        <a class="dm-btn" href={profile.x.url} rel="me">
+          <span class="dm-icon"><Icon name="x" /></span>{t('contact.dm.x')}
         </a>
-        <a class="btn btn-secondary" href={profile.x.url} rel="me">
-          <span class="with-icon"><Icon name="x" class="icon" />X (Twitter)</span><span class="arrow"><Icon name="external" /></span>
-        </a>
-        <a class="btn btn-secondary" href={profile.telegram.url} rel="me">
-          <span class="with-icon"><Icon name="telegram" class="icon" />Telegram</span><span class="arrow"><Icon name="external" /></span>
+        <a class="dm-btn" href={profile.telegram.url} rel="me">
+          <span class="dm-icon"><Icon name="telegram" /></span>{t('contact.dm.telegram')}
         </a>
       </div>
     </section>
@@ -116,49 +127,133 @@ const posts = (await getPostsFor(lang)).slice(0, 3);
     color: var(--muted);
   }
 
-  .contact {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-    gap: var(--space-5);
-  }
-
-  .contact h2 {
-    margin-top: var(--space-2);
-  }
-
-  .contact .lead {
-    margin-top: var(--space-3);
-    color: var(--muted);
-    font-size: var(--step-1);
-  }
-
-  .with-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  /* Quattro contatti: due per riga, tutti della stessa larghezza */
-  .buttons {
+  /* ---------- 05 Contatti ---------- */
+  .contact-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .contact-card {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-6);
+  }
+
+  /* Un alone blu leggero nell'angolo, come quelli ai bordi della pagina */
+  .contact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      28rem 16rem at 100% 0%,
+      color-mix(in srgb, var(--accent) 9%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .card-top {
+    position: relative;
+    display: flex;
+    align-items: center;
     gap: var(--space-3);
   }
 
-  .buttons .btn {
-    justify-content: space-between;
+  .card-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(15, 23, 36, 0.06);
+    color: var(--accent-text);
   }
 
-  @media (max-width: 54rem) {
-    .contact {
+  .card-icon :global(svg) {
+    width: 19px;
+    height: 19px;
+  }
+
+  .contact-card h3 {
+    position: relative;
+    margin-top: var(--space-5);
+    font-size: var(--step-2);
+  }
+
+  .card-text {
+    position: relative;
+    margin-top: var(--space-2);
+    color: var(--muted);
+  }
+
+  .dm {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+
+  /* Pillola bianca con il logo nel cerchio blu */
+  .dm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: 50px;
+    padding: 6px 22px 6px 6px;
+    border-radius: var(--radius-pill);
+    background: var(--panel-strong);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    color: var(--ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 150ms ease;
+  }
+
+  .dm-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .dm-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+
+  .dm-icon :global(svg) {
+    width: 17px;
+    height: 17px;
+  }
+
+  @media (max-width: 48rem) {
+    .contact-cards {
       grid-template-columns: 1fr;
     }
   }
 
   @media (max-width: 32rem) {
-    .buttons {
-      grid-template-columns: 1fr;
+    .contact-card {
+      padding: var(--space-5);
+    }
+
+    .dm-btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dm-btn:hover {
+      transform: none;
     }
   }
 </style>

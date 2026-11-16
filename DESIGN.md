@@ -55,7 +55,10 @@ Il blu come **testo** usa sempre `--accent-text`, mai `--accent`.
 | Testo | IBM Plex Sans 400 / 500 / 600 | paragrafi, menu, pulsanti |
 | Etichette | IBM Plex Mono 500, maiuscolo, spaziatura 0.1em | «01 // PROGETTI», date, stati, categorie |
 
-Il numero della sezione nelle etichette è in `--accent-text`. Scala ~1.25, base 17 px
+Intestazione delle sezioni numerate (SectionHead.astro): il numero in un riquadro da 46 px
+in monospazio, con un puntino blu accanto; una linea verticale sottile; poi l'etichetta
+«// SEZIONE», il titolo e, se serve, una frase. Un'azione facoltativa sta a destra.
+Scala ~1.25, base 17 px
 su telefono e 18 px da 768 px. Righe di testo al massimo 68ch.
 
 ## Forme e profondità
@@ -90,8 +93,10 @@ nel blog è accesa «Articoli».
 3. **02 Percorso**: le tappe in fila, orizzontali da 54rem e verticali su telefono.
 4. **03 Studio ITS**: riquadro tratteggiato «In arrivo».
 5. **04 Articoli**: gli ultimi tre articoli.
-6. **05 Contatti**: LinkedIn, GitHub, X e Telegram (due per riga), niente modulo.
-   Instagram e il feed RSS sono nel footer.
+6. **05 Contatti**: niente modulo. Due riquadri (icona in un quadratino bianco, etichetta,
+   domanda, due righe) con un alone blu leggero nell'angolo; sotto, centrati, i pulsanti
+   «Scrivimi su LinkedIn / X / Telegram»: pillola bianca con il logo nel cerchio blu.
+   GitHub è nell'intro e nel footer, Instagram e il feed RSS solo nel footer.
 
 ## Blog
 

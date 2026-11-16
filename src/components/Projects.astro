@@ -2,6 +2,7 @@
 // 01 Progetti: una scheda grande per progetto, immagine a sinistra e testo a destra
 // (su telefono l'immagine sta sopra). I dati arrivano da src/lib/projects.ts:
 // prima i repository pubblici di GitHub, poi i progetti privati scritti a mano.
+import SectionHead from './SectionHead.astro';
 import { Image } from 'astro:assets';
 import Icon from './Icon.astro';
 import type { ShowcaseProject } from '../lib/projects';
@@ -17,12 +18,7 @@ const nn = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
 <section id="progetti" class="panel" aria-labelledby="progetti-titolo">
-  <div class="section-head">
-    <div>
-      <p class="label"><span class="num">01</span> // {t('nav.projects')}</p>
-      <h2 id="progetti-titolo">{t('projects.title')}</h2>
-    </div>
-  </div>
+  <SectionHead num="01" label={t('nav.projects')} title={t('projects.title')} titleId="progetti-titolo" />
 
   <div class="projects">
     {

@@ -2,7 +2,7 @@
 // Icone SVG del sito, sempre decorative (aria-hidden): il testo va messo accanto
 // o nell'aria-label del link. GitHub, LinkedIn, X e Telegram sono i loghi ufficiali semplificati.
 interface Props {
-  name: 'arrow' | 'external' | 'github' | 'linkedin' | 'x' | 'telegram' | 'sun' | 'moon';
+  name: 'arrow' | 'external' | 'github' | 'linkedin' | 'x' | 'telegram' | 'sun' | 'moon' | 'sparkles' | 'shield';
   class?: string;
 }
 
@@ -43,5 +43,17 @@ const stroke = { fill: 'none', stroke: 'currentColor', 'stroke-width': 2.4, 'str
 {name === 'telegram' && (
   <svg class={className} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
     <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm4.96 7.22c.1 0 .32.02.47.14.12.1.15.23.17.33.02.09.04.3.02.47-.18 1.9-.96 6.5-1.36 8.63-.17.9-.5 1.2-.82 1.23-.7.06-1.22-.46-1.9-.9-1.06-.7-1.65-1.13-2.68-1.8-1.18-.78-.42-1.21.26-1.91.18-.19 3.25-2.98 3.3-3.23.01-.03.02-.15-.05-.21-.07-.06-.18-.04-.25-.03-.1.03-1.8 1.14-5.06 3.35-.48.33-.91.49-1.3.48-.43-.01-1.25-.24-1.87-.44-.75-.25-1.35-.37-1.3-.79.03-.22.33-.44.9-.66 3.5-1.52 5.83-2.53 7-3.01 3.33-1.39 4.02-1.63 4.47-1.64z" />
+  </svg>
+)}
+{name === 'sparkles' && (
+  <svg class={className} viewBox="0 0 24 24" aria-hidden="true" {...stroke} stroke-width="1.8">
+    <path d="M10 3.5l1.6 4.4 4.4 1.6-4.4 1.6L10 15.5l-1.6-4.4L4 9.5l4.4-1.6z" />
+    <path d="M17.5 13.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z" />
+  </svg>
+)}
+{name === 'shield' && (
+  <svg class={className} viewBox="0 0 24 24" aria-hidden="true" {...stroke} stroke-width="1.8">
+    <path d="M12 3l7 3v5.5c0 4.3-2.9 8-7 9.5-4.1-1.5-7-5.2-7-9.5V6z" />
+    <path d="M9 12l2 2 4-4" />
   </svg>
 )}
