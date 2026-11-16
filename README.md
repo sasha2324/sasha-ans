@@ -68,9 +68,19 @@ richieste senza token: aggiungi la variabile `GITHUB_TOKEN` al progetto su Cloud
 | Contatti e percorso | `src/data/profilo.ts` |
 | Progetti: dati in più e progetti privati | `src/data/progetti.ts` |
 | Progetti pubblici (lettura da GitHub) | `src/data/github.ts` |
+| Bozze dei post per X | `.github/workflows/draft-x-posts.yml`, `scripts/x-drafts/` |
 | Articoli | `src/content/blog/<lingua>/` |
 | Testi dell'interfaccia e della home, nelle due lingue | `src/i18n/ui.ts` |
 | Colori dei due temi, font, spazi | `src/styles/tokens.css` (regole in `DESIGN.md`) |
+
+## Bozze dei post per X
+
+Ogni giorno una GitHub Action guarda se nel portfolio c'è un progetto nuovo e per ognuno
+apre una issue «Draft post: …» (etichetta `post-x`) con la bozza in inglese. **Non pubblica
+su X**: il post lo fai tu a mano. I progetti che hanno già la bozza sono in
+`data/annunciati.json`. Prova senza creare niente: `node scripts/x-drafts/main.mjs --dry-run`;
+test: `node --test 'scripts/x-drafts/*.test.mjs'`. Dettagli in
+`docs/superpowers/specs/2026-11-17-x-post-drafts-design.md`.
 
 ## Aggiungere una lingua
 
