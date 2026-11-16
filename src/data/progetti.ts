@@ -14,6 +14,7 @@ import type { Localized } from '../i18n/utils';
 // Immagini 4:3: schermate vere dei progetti (con dati di prova, mai dati veri di persone)
 import imgCarburanti from '../assets/progetti/carburanti-terni.png';
 import imgSub4 from '../assets/progetti/sub4.png';
+import imgRapportino from '../assets/progetti/rapportino.png';
 
 export interface ProjectExtra {
   /** Ordine nella pagina (più basso = prima). Senza, il progetto va in fondo. */
@@ -52,6 +53,19 @@ export const extras: Record<string, ProjectExtra> = {
     imageAlt: {
       it: 'Grafico a barre dei chilometri corsi ogni settimana da agosto a novembre, con le settimane previste in sagoma.',
       en: 'Bar chart of the kilometres run each week from August to November, with the planned weeks drawn as outlines.',
+    },
+  },
+  rapportino: {
+    order: 3,
+    title: { it: 'Rapportino' },
+    category: { it: 'App per telefono · Lavoro', en: 'Mobile app · Work' },
+    description: {
+      en: 'A timesheet for employees that any company can set up: the form travels in the link, the data stays on the phone.',
+    },
+    image: imgRapportino,
+    imageAlt: {
+      it: "Due schermate con dati di prova: a sinistra il titolare sceglie il modello del modulo, a destra l'app del dipendente con i giorni del mese compilati.",
+      en: "Two screens with sample data: on the left the owner picks a form template, on the right the employee's app with the month's days filled in.",
     },
   },
 };
