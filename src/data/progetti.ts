@@ -11,6 +11,10 @@
 // niente dati veri di dipendenti nelle immagini.
 import type { ImageMetadata } from 'astro';
 import type { Localized } from '../i18n/utils';
+// Immagini 4:3: schermate vere dei progetti (per DDA solo dati di prova inventati)
+import imgCarburanti from '../assets/progetti/carburanti-terni.png';
+import imgSub4 from '../assets/progetti/sub4.png';
+import imgDda from '../assets/progetti/dda.png';
 
 export interface ProjectExtra {
   /** Ordine nella pagina (più basso = prima). Senza, il progetto va in fondo. */
@@ -32,6 +36,11 @@ export const extras: Record<string, ProjectExtra> = {
     description: {
       en: 'Fuel prices in the province of Terni, updated every morning from MIMIT open data.',
     },
+    image: imgCarburanti,
+    imageAlt: {
+      it: 'Grafici dei prezzi di benzina e gasolio di un distributore di Terni, self e servito, da aprile a novembre 2026.',
+      en: 'Petrol and diesel price charts for a petrol station in Terni, self-service and full service, April to November 2026.',
+    },
   },
   sub4: {
     order: 2,
@@ -39,6 +48,11 @@ export const extras: Record<string, ProjectExtra> = {
     category: { it: 'Sport · Analisi dati', en: 'Sport · Data analysis' },
     description: {
       en: 'My tracker for training to run a marathon in under 4 hours.',
+    },
+    image: imgSub4,
+    imageAlt: {
+      it: 'Grafico a barre dei chilometri corsi ogni settimana da agosto a novembre, con le settimane previste in sagoma.',
+      en: 'Bar chart of the kilometres run each week from August to November, with the planned weeks drawn as outlines.',
     },
   },
 };
@@ -60,6 +74,11 @@ export const privateProjects: PrivateProject[] = [
     description: {
       it: "App per il telefono dei dipendenti: ore, viaggi, spese e cantiere di ogni giorno, con l'Excel del mese da condividere.",
       en: "A phone app for employees: each day's hours, travel, expenses and job site, with the month's Excel file to share.",
+    },
+    image: imgDda,
+    imageAlt: {
+      it: "Due schermate dell'app con dati di prova: l'elenco dei giorni del mese e un giorno aperto con cantiere, ore e spese.",
+      en: 'Two screens of the app with sample data: the list of days in the month and an open day with job site, hours and expenses.',
     },
   },
 ];
