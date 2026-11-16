@@ -1,7 +1,7 @@
 // Decides what to do for each portfolio project: create an issue, update it, or nothing.
 // It talks to GitHub only through the `github` object it receives (see main.mjs),
 // so the tests can use a fake GitHub.
-import { buildDraft, draftIssueBody, missingDescriptionBody, MISSING_MARK } from './text.mjs';
+import { draftIssueBody, missingDescriptionBody, waitingForPostBody, waitingState, withLink } from './text.mjs';
 
 const TOPIC = 'portfolio';
 
@@ -12,21 +12,31 @@ export const portfolioRepos = (repos) =>
 /** Readable name: the title on the site (English, else Italian), else the repo name. */
 const projectName = (repo, extra) => extra?.title?.en ?? extra?.title?.it ?? repo.name;
 
-/** What the project does, in English if the site has it. */
-function whatItDoes(repo, extra) {
-  const english = extra?.description?.en?.trim();
-  if (english) return { description: english, source: 'the English description on the site (`src/data/progetti.ts`)' };
-  return {
-    description: repo.description,
-    source: 'the GitHub description of the repository. Check that it is in English',
-  };
+/**
+ * The issue for one project, and whether the post is ready.
+ * state: 'description' or 'post' = still waiting for it; 'ready' = the post is there.
+ */
+function issueFor(repo, { extra, post, siteUrl }) {
+  if (!repo.description?.trim()) {
+    return { state: 'description', body: missingDescriptionBody(repo.html_url) };
+  }
+  // The live app if the repo has a website, else the project card on the English site.
+  const link = repo.homepage?.trim() || `${siteUrl}/en/#progetto-${repo.name}`;
+  if (!post) {
+    const description = extra?.description?.en?.trim() || repo.description.trim();
+    return {
+      state: 'post',
+      body: waitingForPostBody({ repo: repo.name, description, link, readme: `${repo.html_url}#readme` }),
+    };
+  }
+  return { state: 'ready', body: draftIssueBody(withLink(post, link)) };
 }
 
 /**
- * Creates the draft issues for the new projects.
- * Returns the new list of projects that have a draft (the content of data/annunciati.json).
+ * Creates or updates the draft issues of the new projects.
+ * Returns the new list of projects that have their draft (the content of data/annunciati.json).
  */
-export async function runDrafts({ repos, announced, extras, siteUrl, github, log = console.log }) {
+export async function runDrafts({ repos, announced, extras, posts, siteUrl, github, log = console.log }) {
   const fresh = portfolioRepos(repos).filter((r) => !announced.includes(r.name));
   if (fresh.length === 0) {
     log('No new projects.');
@@ -39,26 +49,19 @@ export async function runDrafts({ repos, announced, extras, siteUrl, github, log
 
   for (const repo of fresh) {
     const extra = extras[repo.name];
-    const name = projectName(repo, extra);
-    const title = `Draft post: ${name}`;
+    const title = `Draft post: ${projectName(repo, extra)}`;
+    const { state, body } = issueFor(repo, { extra, post: posts[repo.name], siteUrl });
     const old = existing.find((issue) => issue.title === title);
-
-    if (!repo.description?.trim()) {
-      // Not added to the list: the script checks it again at the next run.
-      if (old) log(`${repo.name}: still no description, the issue #${old.number} waits.`);
-      else await github.createIssue(title, missingDescriptionBody(repo.html_url));
-      continue;
-    }
-
-    const { description, source } = whatItDoes(repo, extra);
-    const draft = buildDraft({ name, description, link: `${siteUrl}/en/#progetto-${repo.name}` });
-    const body = draftIssueBody({ ...draft, source });
+    const oldState = old && waitingState(old.body);
 
     if (!old) await github.createIssue(title, body);
-    else if (old.body?.includes(MISSING_MARK)) await github.updateIssue(old.number, body);
-    else log(`${repo.name}: the issue #${old.number} already has the draft.`);
+    // Only when something changed (the description or the post arrived):
+    // so the script never deletes what Sasha writes in a waiting issue.
+    else if (oldState && oldState !== state) await github.updateIssue(old.number, body);
+    else log(`${repo.name}: issue #${old.number} unchanged (${oldState ? `waiting for the ${oldState}` : 'draft ready'}).`);
 
-    result.push(repo.name);
+    // Projects still waiting are not added: the script checks them again at the next run.
+    if (state === 'ready') result.push(repo.name);
   }
   return result;
 }

@@ -1,4 +1,4 @@
-// The text of the draft post for X, and the text of the GitHub issue.
+// The text of the GitHub issues with the draft posts for X.
 // No network and no files here: only text, so it is easy to test.
 
 const LIMIT = 280;
@@ -10,7 +10,7 @@ const LINK = /https?:\/\/\S+/g;
 // X counts these characters as 1 (Latin letters with accents too, Cyrillic, Greek,
 // common punctuation). Everything else counts as 2: emoji, Chinese, Japanese…
 // (rules of twitter-text v3). An emoji made of several symbols, like ❤️, counts
-// more here than on X: the draft can only look a bit longer, never too short.
+// more here than on X: the post can only look a bit longer, never too short.
 const SINGLE = [
   [0x0000, 0x10ff],
   [0x2000, 0x200d],
@@ -30,60 +30,102 @@ export function xLength(text) {
   return length;
 }
 
-const asSentence = (text) => (/[.!?…]$/.test(text) ? text : `${text}.`);
-
-const compose = (name, description, link) =>
-  `New project in my portfolio: ${name}.\n\n${description}\n\n${link}`;
+/** The link goes last, on its own line, unless the text already has one. */
+export const withLink = (text, link) => (/https?:\/\//.test(text) ? text : `${text}\n\n${link}`);
 
 /**
- * The draft post: a first line with the name, what the project does, the link.
- * If it is longer than 280, the description is cut at a word and ends with "…".
+ * Reads data/post-x.md: every "## repo-name" section is the post of that project.
+ * The text before the first section is help for Sasha and is ignored.
  */
-export function buildDraft({ name, description, link }) {
-  const clean = description.trim();
-  const text = compose(name, asSentence(clean), link);
-  if (xLength(text) <= LIMIT) return { text, shortened: false };
-
-  const words = clean.split(/\s+/);
-  let shorter = text;
-  while (words.length > 1) {
-    words.pop();
-    shorter = compose(name, `${words.join(' ').replace(/[\s,;:.]+$/, '')}…`, link);
-    if (xLength(shorter) <= LIMIT) break;
+export function parsePosts(markdown) {
+  const posts = {};
+  let current = null;
+  let lines = [];
+  const save = () => {
+    const text = lines.join('\n').trim();
+    if (current && text) posts[current] = text;
+  };
+  for (const line of markdown.split(/\r?\n/)) {
+    const heading = line.match(/^##\s+(\S+)\s*$/);
+    if (heading) {
+      save();
+      current = heading[1];
+      lines = [];
+    } else {
+      lines.push(line);
+    }
   }
-  return { text: shorter, shortened: true };
+  save();
+  return posts;
 }
 
-/** Hidden mark in the issues that wait for a repository description. */
-export const MISSING_MARK = '<!-- x-drafts: missing description -->';
+// Hidden marks: they tell the script that an issue is still waiting for something.
+const WAITING = {
+  description: '<!-- x-drafts: waiting for description -->',
+  post: '<!-- x-drafts: waiting for post text -->',
+};
 
-/** Body of the issue with the draft. */
-export function draftIssueBody({ text, shortened, source }) {
-  const cut = shortened ? '\n⚠️ The description was too long and was cut. Check the end of the text.\n' : '';
+/** 'description' or 'post' if the issue is waiting for it, else null. */
+export const waitingState = (body) =>
+  Object.keys(WAITING).find((state) => body?.includes(WAITING[state])) ?? null;
+
+const CHECKLIST = `## Checklist
+
+- [ ] Add a GIF or short video
+- [ ] Post on X
+- [ ] Close this issue
+`;
+
+/** Body of the issue with the ready post. */
+export function draftIssueBody(text) {
+  const length = xLength(text);
+  const tooLong = length > LIMIT ? '\n⚠️ **Too long for X.** Make it shorter here or in `data/post-x.md`.\n' : '';
   return `Draft post for X. Check it, copy it and post it by hand.
 
 \`\`\`text
 ${text}
 \`\`\`
 
-**${xLength(text)}/${LIMIT} characters** (X counts every link as ${LINK_LENGTH}).
-${cut}
-Text from: ${source}.
+**${length}/${LIMIT} characters** (X counts every link as ${LINK_LENGTH}).
+${tooLong}
+Text from \`data/post-x.md\`.
 
-## Checklist
+${CHECKLIST}`;
+}
 
-- [ ] Add a GIF or short video
-- [ ] Post on X
-- [ ] Close this issue
-`;
+/** Body of the issue when data/post-x.md has no post for the project yet. */
+export function waitingForPostBody({ repo, description, link, readme }) {
+  return `${WAITING.post}
+✏️ **Write the post in \`data/post-x.md\`**, in a section \`## ${repo}\`.
+At the next run (every day, or "Run workflow" in the Actions tab) the draft appears here.
+
+The shape, from Dilum Sanjaya's posts on X:
+
+\`\`\`text
+✏️ First line: a problem or a question your reader knows.
+
+So I built ✏️ … (what it does, in first person)
+
+✏️ One or two short facts. "Built with …" only if it is true.
+\`\`\`
+
+The script adds the link at the end. No hashtags.
+
+**Facts for you**
+
+- What it does: ${description}
+- Link: ${link}
+- README: ${readme}
+
+${CHECKLIST}`;
 }
 
 /** Body of the issue when the repository has no description on GitHub. */
 export function missingDescriptionBody(repoUrl) {
-  return `${MISSING_MARK}
+  return `${WAITING.description}
 ⚠️ **Add a description to the repository first.**
 
 Open ${repoUrl}, click ⚙️ next to "About" and write one sentence about what the project does.
-At the next run (every day, or "Run workflow" in the Actions tab) the draft appears here.
+At the next run (every day, or "Run workflow" in the Actions tab) this issue changes.
 `;
 }

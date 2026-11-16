@@ -1,6 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { xLength, buildDraft, draftIssueBody, missingDescriptionBody, MISSING_MARK } from './text.mjs';
+import {
+  xLength,
+  withLink,
+  parsePosts,
+  draftIssueBody,
+  waitingForPostBody,
+  missingDescriptionBody,
+  waitingState,
+} from './text.mjs';
 
 const LINK = 'https://sasha-ans.pages.dev/en/#progetto-sub4';
 
@@ -21,64 +29,80 @@ test('xLength counts an emoji as 2', () => {
   assert.equal(xLength('🏃'), 2);
 });
 
-test('buildDraft puts name, description and link on separate lines', () => {
-  const { text, shortened } = buildDraft({
-    name: 'Sub4',
+test('withLink puts the link at the end, after an empty line', () => {
+  assert.equal(withLink('So I built it.', LINK), `So I built it.\n\n${LINK}`);
+});
+
+test('withLink adds nothing when the text already has a link', () => {
+  const text = 'Play with it here\nhttps://sasha2324.github.io/carburanti-terni/';
+  assert.equal(withLink(text, LINK), text);
+});
+
+test('parsePosts reads one post for each "## repo-name" section', () => {
+  const markdown = `# Posts for X
+
+Some help text that is not a post.
+
+## sub4
+
+First line.
+
+Second line.
+Third line.
+
+## rapportino
+Rapportino post.
+`;
+  assert.deepEqual(parsePosts(markdown), {
+    sub4: 'First line.\n\nSecond line.\nThird line.',
+    rapportino: 'Rapportino post.',
+  });
+});
+
+test('parsePosts ignores empty sections', () => {
+  assert.deepEqual(parsePosts('## sub4\n\n## rapportino\nText.\n'), { rapportino: 'Text.' });
+});
+
+test('draftIssueBody has the post in a code block, the count and the checklist', () => {
+  const body = draftIssueBody('So I built Sub4.');
+  assert.match(body, /```text\nSo I built Sub4\.\n```/);
+  assert.match(body, /16\/280 characters/);
+  assert.match(body, /data\/post-x\.md/);
+  assert.match(body, /- \[ \] Add a GIF or short video\n- \[ \] Post on X\n- \[ \] Close this issue/);
+  assert.doesNotMatch(body, /Too long/);
+  assert.equal(waitingState(body), null);
+});
+
+test('draftIssueBody warns when the post is longer than 280', () => {
+  const body = draftIssueBody('word '.repeat(60).trim());
+  assert.match(body, /299\/280 characters/);
+  assert.match(body, /Too long for X/);
+});
+
+test('waitingForPostBody shows the shape, the facts and the checklist', () => {
+  const body = waitingForPostBody({
+    repo: 'sub4',
     description: 'My tracker for training to run a marathon in under 4 hours.',
     link: LINK,
+    readme: 'https://github.com/sasha2324/sub4#readme',
   });
-  assert.equal(
-    text,
-    `New project in my portfolio: Sub4.\n\nMy tracker for training to run a marathon in under 4 hours.\n\n${LINK}`
-  );
-  assert.equal(shortened, false);
+  assert.match(body, /`## sub4`/);
+  assert.match(body, /So I built ✏️/);
+  assert.match(body, /My tracker for training to run a marathon in under 4 hours\./);
+  assert.ok(body.includes(LINK));
+  assert.match(body, /https:\/\/github\.com\/sasha2324\/sub4#readme/);
+  assert.match(body, /- \[ \] Post on X/);
+  assert.equal(waitingState(body), 'post');
 });
 
-test('buildDraft adds a full stop when the description has none', () => {
-  const { text } = buildDraft({ name: 'Sub4', description: 'My marathon tracker', link: LINK });
-  assert.match(text, /\nMy marathon tracker\.\n/);
-});
-
-test('buildDraft keeps a description that ends with ! or ?', () => {
-  const { text } = buildDraft({ name: 'Sub4', description: 'Run faster!', link: LINK });
-  assert.match(text, /\nRun faster!\n/);
-});
-
-test('buildDraft trims spaces around the description', () => {
-  const { text } = buildDraft({ name: 'Sub4', description: '  My tracker.  ', link: LINK });
-  assert.match(text, /\nMy tracker\.\n/);
-});
-
-test('buildDraft cuts a long description at a word and ends with …', () => {
-  const description = 'word '.repeat(80).trim(); // 399 characters
-  const { text, shortened } = buildDraft({ name: 'Sub4', description, link: LINK });
-  assert.equal(shortened, true);
-  assert.ok(xLength(text) <= 280, `too long: ${xLength(text)}`);
-  assert.match(text, /\nword( word)*…\n/);
-});
-
-test('draftIssueBody has the draft in a code block, the count, the source and the checklist', () => {
-  const body = draftIssueBody({
-    text: 'New project in my portfolio: Sub4.',
-    shortened: false,
-    source: 'the English description on the site (`src/data/progetti.ts`)',
-  });
-  assert.match(body, /```text\nNew project in my portfolio: Sub4\.\n```/);
-  assert.match(body, /34\/280 characters/);
-  assert.match(body, /Text from: the English description on the site/);
-  assert.match(body, /- \[ \] Add a GIF or short video\n- \[ \] Post on X\n- \[ \] Close this issue/);
-  assert.doesNotMatch(body, /was too long/);
-  assert.doesNotMatch(body, new RegExp(MISSING_MARK));
-});
-
-test('draftIssueBody says when the description was cut', () => {
-  const body = draftIssueBody({ text: 'x', shortened: true, source: 'the GitHub description' });
-  assert.match(body, /was too long/);
-});
-
-test('missingDescriptionBody asks for a description and has the mark', () => {
+test('missingDescriptionBody asks for a description', () => {
   const body = missingDescriptionBody('https://github.com/sasha2324/sub4');
   assert.match(body, /Add a description to the repository first/);
   assert.match(body, /https:\/\/github\.com\/sasha2324\/sub4/);
-  assert.ok(body.includes(MISSING_MARK));
+  assert.equal(waitingState(body), 'description');
+});
+
+test('waitingState is null for a text without the hidden mark', () => {
+  assert.equal(waitingState('Some text written by Sasha'), null);
+  assert.equal(waitingState(null), null);
 });

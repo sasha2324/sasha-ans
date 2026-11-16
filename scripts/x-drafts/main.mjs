@@ -2,7 +2,8 @@
 // (.github/workflows/draft-x-posts.yml). It never posts on X: Sasha posts by hand.
 //
 // 1. reads the public repositories with the topic «portfolio» (same list as the site);
-// 2. for each project not in data/annunciati.json, creates the issue with the draft;
+// 2. for each project not in data/annunciati.json, creates the issue with the post
+//    written in data/post-x.md (or, if it is not there yet, with the shape to fill in);
 // 3. writes the new list in data/annunciati.json (the workflow commits it).
 //
 // Try it on your computer without changing anything:
@@ -10,10 +11,12 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { registerHooks } from 'node:module';
 import { runDrafts } from './drafts.mjs';
+import { parsePosts } from './text.mjs';
 
 const SITE = 'https://sasha-ans.pages.dev'; // the same as `site` in astro.config.mjs
 const LABEL = { name: 'post-x', color: '1d9bf0', description: 'Draft post for X, to post by hand' };
 const LIST_FILE = new URL('../../data/annunciati.json', import.meta.url);
+const POSTS_FILE = new URL('../../data/post-x.md', import.meta.url);
 
 const dryRun = process.argv.includes('--dry-run');
 const token = process.env.GITHUB_TOKEN;
@@ -93,6 +96,7 @@ async function main() {
   if (!Array.isArray(announced) || !announced.every((name) => typeof name === 'string')) {
     throw new Error('data/annunciati.json must be a list of repository names, for example ["sub4"].');
   }
+  const posts = parsePosts(await readFile(POSTS_FILE, 'utf8'));
 
   // The same request as the site (src/data/github.ts).
   const repos = await api(`/users/${profile.github.username}/repos?per_page=100&sort=pushed`);
@@ -101,6 +105,7 @@ async function main() {
     repos,
     announced,
     extras,
+    posts,
     siteUrl: SITE,
     github: dryRun ? dryRunGitHub : realGitHub,
   });
